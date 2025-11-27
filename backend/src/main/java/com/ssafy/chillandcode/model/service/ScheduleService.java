@@ -1,5 +1,5 @@
 package com.ssafy.chillandcode.model.service;
 
-public class test {
+public interface ScheduleService {
 
 }

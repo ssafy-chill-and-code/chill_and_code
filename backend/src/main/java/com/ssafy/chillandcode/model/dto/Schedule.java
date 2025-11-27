@@ -1,5 +1,5 @@
 package com.ssafy.chillandcode.model.dto;
 
-public class test {
+public class Schedule {
 
 }
