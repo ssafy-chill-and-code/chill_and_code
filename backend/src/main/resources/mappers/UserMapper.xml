@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.chillandcode.model.dao.UserDao">
+	<!-- 회원 가입(등록) -->
+	<insert id="insertUser" parameterType="User">
+		INSERT INTO users (email, password, nickname, region)
+		VALUES (#{email}, #{password}, #{nickname}, #{region})
+	</insert>
+	
+	<!-- 회원 정보 조회 (프로필 조회) -->
+	<select id="selectUser" parameterType="int" resultType="User">
+		SELECT *
+		FROM users
+		WHERE user_id = #{userId}
+			AND is_deleted = 0
+	</select>
+	
+	<!-- 회원 정보 수정 (프로필 수정) -->
+	<update id="updateUser" parameterType="User">
+		UPDATE users
+		<set>
+			<if test="email != null">
+				email = #{email},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname},
+			</if>
+			<if test="region != null">
+				region = #{region},
+			</if>
+		</set>
+		WHERE user_id=#{userId}
+			AND is_deleted = 0
+	</update>
+	
+	<!-- 회원 정보 삭제 (탈퇴) -->
+	<update id="softDelete" parameterType="int">
+		UPDATE users
+		SET 
+			is_deleted = 1,
+			deleted_at = NOW()
+		WHERE user_id = #{userId}
+	</update>
+	
+	<!-- 로그인 -->
+	<select id="login" parameterType="User" resultType="User">
+		SELECT *
+		FROM users
+		WHERE email = #{email}
+			AND password = #{password}
+			AND is_deleted = 0
+	</select>
+	
+	<!-- 로그아웃 -->
+	
+</mapper>
