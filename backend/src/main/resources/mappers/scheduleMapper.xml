@@ -3,5 +3,56 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.chillandcode.model.dao.ScheduleDao">
-
+	<!--일정 생성-->
+	<insert id="insertSchedule" parameterType="Schedule">
+		INSERT INTO schedule (user_id, title, schedule_type, start_datetime, end_datetime, created_at)
+		VALUES (
+				#{userId},
+				#{title}, 
+				#{scheduleType},
+				#{startDateTime}, 
+				#{endDateTime},
+				Now()
+				)
+	</insert>
+	
+	<!--월별 일정 조회-->
+	<select id="selectScheduleByMonth" resultType="Schedule">
+		SELECT *
+		FROM schedule
+		WHERE user_id = #{userId}
+			AND DATE_FORMAT(start_datetime, '%Y-%m') = #{month}
+		ORDER BY start_datetime
+	</select>
+	
+	<!--일정 수정-->
+	<update id="updateSchedule" parameterType="Schedule">
+		UPDATE schedule
+		<set>
+			<if test="title != null">
+				title = #{title},
+			</if>
+			<if test="scheduleType != null">
+				schedule_type = #{scheduleType},
+			</if>
+			<if test="startDateTime != null">
+				start_datetime = #{startDateTime},
+			</if>
+			<if test="endDateTime != null">
+				end_datetime = #{endDateTime},
+			</if>
+			created_at = NOW()
+		</set>
+		WHERE schedule_id = #{scheduleId}
+			AND user_id = #{userId}
+	</update>
+	
+	<!-- 일정 삭제 -->
+	<delete id="deleteSchedule" parameterType="int">
+		DELETE
+		FROM schedule
+		WHERE schedule_id = #{scheduleId}
+			AND user_id = #{userId}
+	</delete>
+	
 </mapper>
