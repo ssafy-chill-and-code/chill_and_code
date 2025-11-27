@@ -9,29 +9,19 @@ import com.ssafy.chillandcode.model.dto.Post;
  */
 public interface PostService {
 
-	/** 게시글 등록
-	 */
+	// 게시글 등록
 	int insert(Post post);
 
-	/**
-	 * 게시글 목록 조회
-	 */
+	// 게시글 목록 조회
 	List<Post> selectAll(String region);
-	
-	/**
-	 * 게시글 상세조회
-	 */
+
+	// 게시글 상세조회
 	Post selectById(Long postId);
-	
-	/**
-	 * 게시글 수정
-	 */
+
+	// 게시글 수정
 	int update(Post post);
-	
-	/**
-	 * 게시글 삭제
-	 */
+
+	// 게시글 삭제
 	int delete(Long postId);
-	
 
 }
