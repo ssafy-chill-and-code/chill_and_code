@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.chillandcode.model.dao.PostDao">
+
+	<!-- 寃뚯떆湲 ?묒꽦 -->
+	<insert id="insert" parameterType="Post" useGeneratedKeys="true"
+		keyProperty="postId">
+		INSERT INTO post(user_id, title, content, region)
+		VALUES(#{userId}, #{title}, #{content}, #{region})
+	</insert>
+
+	<!-- 寃뚯떆湲 紐⑸줉 議고쉶 -->
+	<select id="selectAll" resultType="Post">
+		SELECT post_id,
+		title,
+		region,
+		created_at
+		FROM post
+		<where>
+			<if test="region != null and region != ''">
+				region = #{region}
+			</if>
+		</where>
+		ORDER BY created_at DESC
+	</select>
+
+	<!-- 寃뚯떆湲 ?곸꽭 議고쉶 -->
+	<select id="selectById" resultType="Post">
+		SELECT post_id,
+		user_id,
+		title,
+		content,
+		region,
+		created_at
+		FROM post
+		WHERE
+		post_id = #{postId}
+	</select>
+
+	<!-- 寃뚯떆湲 ?섏젙 -->
+	<update id="update" parameterType="Post">
+		UPDATE post
+		<set>
+			<if test="title != null and title != ''">
+				title = #{title},
+			</if>
+			<if test="content != null and content != ''">
+				content = #{content},
+			</if>
+			<if test="region != null and region != ''">
+				region = #{region},
+			</if>
+		</set>
+		WHERE post_id = #{postId}
+	</update>
+
+
+	<!-- 寃뚯떆湲 ??젣 -->
+	<delete id="delete" parameterType="Long">
+		DELETE FROM post
+		WHERE post_id
+		= #{postId}
+	</delete>
+
+</mapper>
