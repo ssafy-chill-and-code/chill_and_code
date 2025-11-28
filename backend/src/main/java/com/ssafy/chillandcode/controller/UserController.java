@@ -79,17 +79,18 @@ public class UserController {
 		return new ResponseEntity<String>("회원 탈퇴가 완료되었습니다.", HttpStatus.OK);
 	}
 	
-	//로그인
+	//로그인 (세션 기반)
 	@PostMapping("/login")
 	@Operation(summary = "로그인", description = "이메일과 비밀번호를 입력받아 사용자를 인증합니다.")
-	public ResponseEntity<?> login(@RequestBody User user){
+	public ResponseEntity<String> login(@RequestBody User user, HttpSession session){
 		User result = userService.login(user);
 		
 		if(result == null) {
 			return new ResponseEntity<String>("로그인에 실패했습니다.", HttpStatus.UNAUTHORIZED);
 		}
 		
-		return new ResponseEntity<User>(result, HttpStatus.OK);
+		session.setAttribute("userId", result.getUserId());
+		return new ResponseEntity<>("로그인이 완료되었습니다.", HttpStatus.OK);
 	}
 	
 	//로그아웃
