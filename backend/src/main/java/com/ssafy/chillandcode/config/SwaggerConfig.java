@@ -14,7 +14,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Chill & Code API Documentation")
-                        .description("?크케?션 추천 · ?정 관?· 커?티 기능???공?는 Chill & Code REST API 명세?")
+                        .description("??��????추천 · ???관?· �???기능???�???Chill & Code REST API 명세?")
                         .version("v1.0.0")
                         .license(new License()
                                 .name("Chill & Code Project")
