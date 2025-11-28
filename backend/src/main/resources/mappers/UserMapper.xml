@@ -10,7 +10,7 @@
 	</insert>
 	
 	<!-- 회원 정보 조회 (프로필 조회) -->
-	<select id="selectUser" parameterType="int" resultType="User">
+	<select id="selectUser" parameterType="long" resultType="User">
 		SELECT *
 		FROM users
 		WHERE user_id = #{userId}
@@ -39,7 +39,7 @@
 	</update>
 	
 	<!-- 회원 정보 삭제 (탈퇴) -->
-	<update id="softDelete" parameterType="int">
+	<update id="softDelete" parameterType="long">
 		UPDATE users
 		SET 
 			is_deleted = 1,

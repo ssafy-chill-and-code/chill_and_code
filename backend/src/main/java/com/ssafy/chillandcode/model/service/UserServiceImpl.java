@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
 	
 	//회원 정보 조회
 	@Override
-	public User selectUser(int userId) {
+	public User selectUser(long userId) {
 		return userDao.selectUser(userId);
 	}
 	
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 	
 	//회원 정보 삭제(탈퇴)
 	@Override
-	public boolean softDelete(int userId) {
+	public boolean softDelete(long userId) {
 		return userDao.softDelete(userId) == 1;
 	}
 	
