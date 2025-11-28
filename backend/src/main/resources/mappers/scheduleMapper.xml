@@ -26,20 +26,20 @@
 	</select>
 	
 	<!--일정 수정-->
-	<update id="updateSchedule" parameterType="Schedule">
+	<update id="updateSchedule">
 		UPDATE schedule
 		<set>
-			<if test="title != null">
-				title = #{title},
+			<if test="schedule.title != null">
+				title = #{schedule.title},
 			</if>
-			<if test="scheduleType != null">
-				schedule_type = #{scheduleType},
+			<if test="schedule.scheduleType != null">
+				schedule_type = #{schedule.scheduleType},
 			</if>
-			<if test="startDateTime != null">
-				start_datetime = #{startDateTime},
+			<if test="schedule.startDateTime != null">
+				start_datetime = #{schedule.startDateTime},
 			</if>
-			<if test="endDateTime != null">
-				end_datetime = #{endDateTime},
+			<if test="schedule.endDateTime != null">
+				end_datetime = #{schedule.endDateTime},
 			</if>
 			created_at = NOW()
 		</set>
@@ -48,7 +48,7 @@
 	</update>
 	
 	<!-- 일정 삭제 -->
-	<delete id="deleteSchedule" parameterType="int">
+	<delete id="deleteSchedule">
 		DELETE
 		FROM schedule
 		WHERE schedule_id = #{scheduleId}

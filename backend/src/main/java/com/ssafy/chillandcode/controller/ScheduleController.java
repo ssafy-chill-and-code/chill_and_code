@@ -32,7 +32,9 @@ public class ScheduleController {
 	@PostMapping
 	@Operation(summary = "일정 등록", description = "로그인된 사용자의 userId를 세션에서 가져와 새 일정을 생성합니다.")
 	public ResponseEntity<String> insertSchedule(@RequestBody Schedule schedule, HttpSession session) {
-		long userId = (Long) session.getAttribute("userId");
+//		long userId = (Long) session.getAttribute("userId");
+		long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
+
 		schedule.setUserId(userId);
 
 		boolean result = scheduleService.insertSchedule(schedule);
@@ -48,7 +50,9 @@ public class ScheduleController {
 	@GetMapping
 	@Operation(summary = "월별 일정 조회", description = "월 정보(YYYY-MM)를 Query Parameter로 받아 해당 사용자의 월별 일정을 조회합니다.")
 	public ResponseEntity<?> selectScheduleByMonth(@RequestParam String month, HttpSession session) {
-		Long userId = (Long) session.getAttribute("userId");
+//		long userId = (Long) session.getAttribute("userId");
+		long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
+		
 
 		List<Schedule> result = scheduleService.selectScheduleByMonth(userId, month);
 
@@ -61,7 +65,8 @@ public class ScheduleController {
 	public ResponseEntity<String> updateSchedule(@PathVariable long scheduleId, @RequestBody Schedule schedule,
 			HttpSession session) {
 
-		long userId = (Long) session.getAttribute("userId");
+//		long userId = (Long) session.getAttribute("userId");
+		long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
 		schedule.setScheduleId(scheduleId);
 		schedule.setUserId(userId);
 		
@@ -77,7 +82,9 @@ public class ScheduleController {
 	@DeleteMapping("/{scheduleId}")
 	@Operation(summary = "일정 삭제", description = "scheduleId에 해당하는 일정을 삭제합니다. 로그인한 사용자 본인의 일정만 삭제 가능합니다.")
 	public ResponseEntity<String> deleteSchedule(@PathVariable long scheduleId, HttpSession session) {
-		Long userId = (Long) session.getAttribute("userId");
+//		Long userId = (Long) session.getAttribute("userId");
+		long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
+
 		boolean result = scheduleService.deleteSchedule(userId, scheduleId);
 
 		if (!result) {
