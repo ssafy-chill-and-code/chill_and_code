@@ -48,6 +48,12 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.selectByPostId(postId);
     }
 
+    // 내가 쓴 댓글 목록 조회
+    @Override
+    public List<Comment> findByUserId(Long userId) {
+    	return commentDao.selectByPostId(userId);
+    }
+    
     // 댓글 수정
     @Override
     public boolean updateComment(Long commentId, Long userId, String content) {
@@ -75,4 +81,5 @@ public class CommentServiceImpl implements CommentService {
 
         return commentDao.delete(commentId) > 0;
     }
+
 }

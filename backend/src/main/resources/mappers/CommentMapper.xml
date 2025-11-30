@@ -23,6 +23,25 @@
 		WHERE c.post_id = #{postId}
 	</select>
 
+	<!-- 내가 쓴 댓글 조회 -->
+	<select id="selectByUserId" parameterType="long"
+		resultType="Comment">
+		SELECT
+		c.comment_id,
+		c.post_id,
+		c.user_id,
+		c.content,
+		c.created_at,
+		u.nickname,
+		p.title AS post_title
+		FROM comment c
+		JOIN users u ON c.user_id = u.user_id
+		JOIN post p ON c.post_id = p.post_id
+		WHERE c.user_id = #{userId}
+		ORDER BY c.created_at DESC
+	</select>
+
+
 	<!-- 댓글 상세 조회 -->
 	<select id="selectByCommentId" resultType="Comment">
 		SELECT comment_id,

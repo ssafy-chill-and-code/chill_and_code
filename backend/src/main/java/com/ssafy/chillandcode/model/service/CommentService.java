@@ -20,6 +20,11 @@ public interface CommentService {
 	List<Comment> findCommentsByPostId(Long postId);
 
 	/**
+	 * 내가 쓴 댓글 목록 조회
+	 */
+	List<Comment> findByUserId(Long userId);
+	
+	/**
 	 * 댓글 수정
 	 */
 	boolean updateComment(Long commentId, Long userId, String content);
@@ -28,5 +33,6 @@ public interface CommentService {
 	 * 댓글 삭제
 	 */
 	boolean deleteComment(Long commentId, Long userId);
+
 
 }

@@ -13,6 +13,7 @@ public class Comment {
 
 	private String content; // 댓글 내용
 	private LocalDateTime createdAt; // 작성 시간
+	private String postTitle; // 게시글 제목
 
 	// JOIN 결과
 	private String nickname; // 작성자 닉네임 

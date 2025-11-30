@@ -12,18 +12,21 @@ import com.ssafy.chillandcode.model.dto.Comment;
 @Mapper
 public interface CommentDao {
 
-    /** 댓글 등록 */
-    int insert(Comment comment);
+	/** 댓글 등록 */
+	int insert(Comment comment);
 
-    /** 댓글 목록 조회 */
-    List<Comment> selectByPostId(Long postId);
+	/** 댓글 목록 조회 */
+	List<Comment> selectByPostId(Long postId);
 
-    /** 댓글 상세 조회 */
-    Comment selectByCommentId(Long commentId);
+	/** 내가 쓴 댓글 목록 조회 */
+	List<Comment> selectByUserId(Long userId);
 
-    /** 댓글 수정 */
-    int update(Comment comment);
+	/** 댓글 상세 조회 */
+	Comment selectByCommentId(Long commentId);
 
-    /** 댓글 삭제 */
-    int delete(Long commentId);
+	/** 댓글 수정 */
+	int update(Comment comment);
+
+	/** 댓글 삭제 */
+	int delete(Long commentId);
 }
