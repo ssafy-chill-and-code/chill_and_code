@@ -58,4 +58,11 @@
 	
 	<!-- 로그아웃 -->
 	
+	<!--이메일 중복 검사-->
+	<select id="existsByEmail" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM users
+		WHERE email = #{email}
+	</select>
+	
 </mapper>

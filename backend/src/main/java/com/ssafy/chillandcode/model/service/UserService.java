@@ -1,10 +1,11 @@
 package com.ssafy.chillandcode.model.service;
 
 import com.ssafy.chillandcode.model.dto.User;
+import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
 
 public interface UserService {
 	// 회원 가입 (등록)
-	boolean insertUser(User user);
+	void insertUser(UserSignUpRequest req);
 
 	// 회원 정보 조회
 	User selectUser(long userId);

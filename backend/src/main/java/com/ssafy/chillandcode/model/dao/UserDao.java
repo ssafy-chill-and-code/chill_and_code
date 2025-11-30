@@ -21,4 +21,7 @@ public interface UserDao {
 	
 	//로그인
 	User login(User user);
+	
+	//이메일 중복 검사
+	int existsByEmail(String email);
 }

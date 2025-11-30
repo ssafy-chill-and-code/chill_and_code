@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.model.dto.User;
+import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
 import com.ssafy.chillandcode.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,12 +28,9 @@ public class UserController {
 	// 회원 가입 (등록)
 	@PostMapping
 	@Operation(summary = "회원가입", description = "사용자 정보를 입력받아 새로운 회원을 등록합니다.")
-	public ResponseEntity<String> insertUser(@RequestBody User user) {
-		boolean result = userService.insertUser(user);
-
-		if (!result) {
-			return new ResponseEntity<>("회원가입에 실패했습니다.", HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<String> insertUser(@RequestBody UserSignUpRequest req) {
+		//검증 실패/중복 등은 service에서 예외로 처리됨
+		userService.insertUser(req);
 
 		return new ResponseEntity<String>("회원가입이 완료되었습니다.", HttpStatus.CREATED);
 	}
