@@ -1,6 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ssafy.chillandcode.model.dto.Post;
 
@@ -16,7 +17,12 @@ public interface PostService {
 	/**
 	 * 게시글 목록 조회
 	 */
-	List<Post> selectAll(String region);
+	List<Post> selectAll(Map<String, Object> params);
+	
+	/**
+	 * 내가 쓴 게시글 조회
+	 */
+	List<Post> findByUserId(Long userId);
 	
 	/**
 	 * 게시글 상세조회
@@ -32,6 +38,8 @@ public interface PostService {
 	 * 게시글 삭제
 	 */
 	int delete(Long postId);
+
+	
 	
 
 }

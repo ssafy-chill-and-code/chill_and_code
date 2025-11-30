@@ -1,6 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,15 +14,20 @@ public class PostServiceImpl implements PostService {
 
 	@Autowired
 	private PostDao postDao;
-	
+
 	@Override
 	public int insert(Post post) {
 		return postDao.insert(post);
 	}
 
 	@Override
-	public List<Post> selectAll(String region) {
-		return postDao.selectAll(region);
+	public List<Post> selectAll(Map<String, Object> params) {
+		return postDao.selectAll(params);
+	}
+
+	@Override
+	public List<Post> findByUserId(Long userId) {
+		return postDao.selectByUserId(userId);
 	}
 
 	@Override

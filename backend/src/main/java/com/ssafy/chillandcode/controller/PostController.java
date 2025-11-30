@@ -1,5 +1,6 @@
 package com.ssafy.chillandcode.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,10 +54,37 @@ public class PostController {
 	}
 
 	// 게시글 목록 조회
-	@Operation(summary = "게시글 목록 조회", description = "전체 또는 지역별 게시글을 조회합니다.")
+	@Operation(summary = "게시글 목록 조회", description = "지역/검색/정렬/페이징 기반 게시글 목록 조회")
 	@GetMapping("/posts")
-	public List<Post> list(@RequestParam(required = false) String region) {
-		return postService.selectAll(region);
+	public ResponseEntity<?> list(@RequestParam(required = false) String region,
+			@RequestParam(defaultValue = "latest") String sort, @RequestParam(required = false) String search,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("region", region);
+		params.put("sort", sort);
+		params.put("search", search);
+		params.put("offset", (page - 1) * size);
+		params.put("limit", size);
+
+		return ResponseEntity.ok(Map.of("posts", postService.selectAll(params)));
+	}
+
+	// 내가 쓴 게시글 조회
+	@Operation(summary = "내가 쓴 게시글 조회", description = "현재 로그인한 사용자가 작성한 모든 게시글을 조회합니다.")
+	@GetMapping("/posts/my")
+	public ResponseEntity<?> myPosts(HttpSession session) {
+
+		Long userId = (Long) session.getAttribute("userId");
+
+		// Swagger 테스트용 fallback
+		if (userId == null) {
+			userId = 1L;
+		}
+
+		List<Post> posts = postService.findByUserId(userId);
+
+		return ResponseEntity.ok(Map.of("posts", posts));
 	}
 
 	// 게시글 상세 조회
@@ -143,4 +171,5 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(Map.of("success", false, "message", "게시글 삭제에 실패했습니다."));
 	}
+
 }

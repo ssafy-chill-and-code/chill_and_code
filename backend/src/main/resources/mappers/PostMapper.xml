@@ -12,17 +12,64 @@
 	</insert>
 
 	<!-- 게시글 목록 조회 -->
-	<select id="selectAll" resultType="Post">
-		SELECT post_id,
+	<select id="selectAll" parameterType="map" resultType="Post">
+		SELECT
+		post_id,
+		user_id,
 		title,
+		content,
 		region,
 		created_at
 		FROM post
 		<where>
+			<!-- 지역 필터 -->
 			<if test="region != null and region != ''">
 				region = #{region}
 			</if>
+
+			<!-- 검색(제목+내용) -->
+			<if test="search != null and search != ''">
+				AND (title LIKE CONCAT('%', #{search}, '%')
+				OR content LIKE CONCAT('%', #{search}, '%'))
+			</if>
 		</where>
+
+		<!-- 정렬 -->
+		<choose>
+			<when test="sort == 'latest'">
+				ORDER BY created_at DESC
+			</when>
+			<when test="sort == 'oldest'">
+				ORDER BY created_at ASC
+			</when>
+			<when test="sort == 'popular'">
+				ORDER BY
+				(SELECT COUNT(*) FROM comment c
+				WHERE c.post_id = post.post_id) DESC
+			</when>
+			<otherwise>
+				ORDER BY created_at DESC
+			</otherwise>
+		</choose>
+
+		<!-- 페이징 -->
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+
+	<!-- 내가 쓴 게시글 조회 -->
+	<select id="selectByUserId" parameterType="Long"
+		resultType="Post">
+		SELECT
+		post_id,
+		user_id,
+		title,
+		content,
+		region,
+		created_at
+		FROM
+		post
+		WHERE user_id = #{userId}
 		ORDER BY created_at DESC
 	</select>
 
