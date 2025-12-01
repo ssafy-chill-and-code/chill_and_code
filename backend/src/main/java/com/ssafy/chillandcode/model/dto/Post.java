@@ -1,0 +1,64 @@
+package com.ssafy.chillandcode.model.dto;
+
+import java.time.LocalDateTime;
+
+/**
+ * Post는 커뮤니티 게시글 정보를 담는 DTO 입니다.
+ */
+public class Post {
+    private Long postId;    // 게시글 ID
+    private Long userId;    // 작성자 ID
+    private String title;   // 제목
+    private String content; // 내용
+    private String region;  // 지역별 게시판 필터링
+    private LocalDateTime createdAt; // 작성일
+
+    public Long getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Long postId) {
+        this.postId = postId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+}
