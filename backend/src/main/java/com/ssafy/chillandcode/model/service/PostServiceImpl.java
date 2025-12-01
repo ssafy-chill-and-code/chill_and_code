@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.PostDao;
 import com.ssafy.chillandcode.model.dto.Post;
+import com.ssafy.chillandcode.exception.ApiException;
+import com.ssafy.chillandcode.exception.ErrorCode;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -16,9 +18,13 @@ public class PostServiceImpl implements PostService {
 	private PostDao postDao;
 
 	@Override
-	public int insert(Post post) {
-		return postDao.insert(post);
-	}
+    public int insert(Post post) {
+		int rows = postDao.insert(post);
+		if (rows != 1) {
+			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		return rows;
+    }
 
 	@Override
 	public List<Post> selectAll(Map<String, Object> params) {
@@ -36,13 +42,21 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public int update(Post post) {
-		return postDao.update(post);
-	}
+    public int update(Post post) {
+		int rows = postDao.update(post);
+		if (rows != 1) {
+			throw new ApiException(ErrorCode.POST_NOT_FOUND);
+		}
+		return rows;
+    }
 
 	@Override
-	public int delete(Long postId) {
-		return postDao.delete(postId);
-	}
+    public int delete(Long postId) {
+		int rows = postDao.delete(postId);
+		if (rows != 1) {
+			throw new ApiException(ErrorCode.POST_NOT_FOUND);
+		}
+		return rows;
+    }
 
 }

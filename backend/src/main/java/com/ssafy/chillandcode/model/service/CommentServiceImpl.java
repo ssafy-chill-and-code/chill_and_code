@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.ssafy.chillandcode.model.dao.CommentDao;
 import com.ssafy.chillandcode.model.dao.PostDao;
 import com.ssafy.chillandcode.model.dto.Comment;
+import com.ssafy.chillandcode.exception.ApiException;
+import com.ssafy.chillandcode.exception.ErrorCode;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -24,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
 
         // 게시글이 존재하는지 체크
         if (postDao.selectById(postId) == null) {
-            return null; // Controller에서 404 처리
+            throw new ApiException(ErrorCode.POST_NOT_FOUND);
         }
 
         Comment comment = new Comment();
@@ -42,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> findCommentsByPostId(Long postId) {
 
         if (postDao.selectById(postId) == null) {
-            return null; // Controller에서 404 처리
+            throw new ApiException(ErrorCode.POST_NOT_FOUND);
         }
 
         return commentDao.selectByPostId(postId);
@@ -60,14 +62,17 @@ public class CommentServiceImpl implements CommentService {
 
         Comment target = commentDao.selectByCommentId(commentId);
 
-        if (target == null) return false;                     // 댓글 없음
-        if (!target.getUserId().equals(userId)) return false; // 작성자가 아니면 수정 불가
+        if (target == null) throw new ApiException(ErrorCode.COMMENT_NOT_FOUND);
+        if (!target.getUserId().equals(userId)) throw new ApiException(ErrorCode.COMMENT_OWNER_MISMATCH);
 
         Comment updated = new Comment();
         updated.setCommentId(commentId);
         updated.setContent(content);
 
-        return commentDao.update(updated) > 0;
+        if (commentDao.update(updated) <= 0) {
+            throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+        return true;
     }
 
     // 댓글 삭제
@@ -76,10 +81,13 @@ public class CommentServiceImpl implements CommentService {
 
         Comment target = commentDao.selectByCommentId(commentId);
 
-        if (target == null) return false;                     // 댓글 없음
-        if (!target.getUserId().equals(userId)) return false; // 작성자가 아니면 삭제 불가
+        if (target == null) throw new ApiException(ErrorCode.COMMENT_NOT_FOUND);
+        if (!target.getUserId().equals(userId)) throw new ApiException(ErrorCode.COMMENT_OWNER_MISMATCH);
 
-        return commentDao.delete(commentId) > 0;
+        if (commentDao.delete(commentId) <= 0) {
+            throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+        return true;
     }
 
 }

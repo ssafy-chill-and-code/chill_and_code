@@ -3,8 +3,8 @@ package com.ssafy.chillandcode.model.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//import com.ssafy.chillandcode.exception.ApiException;
-//import com.ssafy.chillandcode.exception.ErrorCode;
+import com.ssafy.chillandcode.exception.ApiException;
+import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.UserDao;
 import com.ssafy.chillandcode.model.dto.User;
 import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
@@ -15,37 +15,33 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserDao userDao;
 	
-	//회원 가입 (등록)
-	@Override
-	public void insertUser(UserSignUpRequest req) {
-		
-		//검증
-//		if(!isValidEmail(req.getEmail())) {
-//			throw new ApiException(ErrorCode.INVALID_EMAIL_FORMAT);
-//		}
-//		
-//		if(!isValidPassword(req.getPassword())) {
-//			throw new ApiException(ErrorCode.INVALID_PASSWORD);
-//		}
-//		
-//		if(!isValidNickname(req.getNickname())) {
-//			throw new ApiException(ErrorCode.INVALID_NICKNAME);
-//		}
-//		
-//		//중복 체크
-//		if(userDao.existsByEmail(req.getEmail()) > 0) {
-//			throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
-//		}
-		
-		
+    //회원 가입 (등록)
+    @Override
+    public void insertUser(UserSignUpRequest req) {
+
+		// 입력값 검증
+		if (!isValidEmail(req.getEmail())) {
+			throw new ApiException(ErrorCode.INVALID_EMAIL_FORMAT);
+		}
+		if (!isValidPassword(req.getPassword())) {
+			throw new ApiException(ErrorCode.INVALID_PASSWORD);
+		}
+		if (!isValidNickname(req.getNickname())) {
+			throw new ApiException(ErrorCode.INVALID_NICKNAME);
+		}
+
+		// 중복 체크
+		if (userDao.existsByEmail(req.getEmail()) > 0) {
+			throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
+		}
+
 		User user = req.toEntity();
 		int rows = userDao.insertUser(user);
-//		if(rows != 1) {
-//			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
-//		}
-		
-		return;
-	}
+		if (rows != 1) {
+			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
+		}
+
+    }
 	
 	//회원 정보 조회
 	@Override
@@ -55,21 +51,31 @@ public class UserServiceImpl implements UserService {
 	
 	//회원 정보 수정
 	@Override
-	public boolean updateUser(User user) {
-		return userDao.updateUser(user) == 1;
-	}
+    public boolean updateUser(User user) {
+		if (userDao.updateUser(user) != 1) {
+			throw new ApiException(ErrorCode.USER_NOT_FOUND);
+		}
+		return true;
+    }
 	
 	//회원 정보 삭제(탈퇴)
 	@Override
-	public boolean softDelete(long userId) {
-		return userDao.softDelete(userId) == 1;
-	}
+    public boolean softDelete(long userId) {
+		if (userDao.softDelete(userId) != 1) {
+			throw new ApiException(ErrorCode.USER_NOT_FOUND);
+		}
+		return true;
+    }
 	
 	//로그인
 	@Override
-	public User login(User user) {
-		return userDao.login(user);
-	}
+    public User login(User user) {
+		User result = userDao.login(user);
+		if (result == null) {
+			throw new ApiException(ErrorCode.LOGIN_FAILED);
+		}
+		return result;
+    }
 	
 	//검증 로직
 	private boolean isValidEmail(String email) {
