@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 //import com.ssafy.chillandcode.exception.ApiException;
 //import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.UserDao;
-import com.ssafy.chillandcode.model.dto.User;
+import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
 
 @Service

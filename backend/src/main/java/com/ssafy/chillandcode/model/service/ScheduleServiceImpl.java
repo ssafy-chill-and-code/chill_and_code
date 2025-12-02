@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.ScheduleDao;
-import com.ssafy.chillandcode.model.dto.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService{

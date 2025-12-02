@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
-import com.ssafy.chillandcode.model.dto.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 import com.ssafy.chillandcode.model.service.ScheduleService;
 
 import io.swagger.v3.oas.annotations.Operation;

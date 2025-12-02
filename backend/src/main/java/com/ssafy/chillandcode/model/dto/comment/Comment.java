@@ -1,4 +1,4 @@
-package com.ssafy.chillandcode.model.dto;
+package com.ssafy.chillandcode.model.dto.comment;
 
 import java.time.LocalDateTime;
 

@@ -2,7 +2,7 @@ package com.ssafy.chillandcode.model.service;
 
 import java.util.List;
 
-import com.ssafy.chillandcode.model.dto.Comment;
+import com.ssafy.chillandcode.model.dto.comment.Comment;
 
 /**
  * CommentService는 댓글 등록/조회/수정/삭제 비즈니스 로직을 담당합니다.

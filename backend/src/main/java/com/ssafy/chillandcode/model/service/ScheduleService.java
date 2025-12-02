@@ -2,7 +2,7 @@ package com.ssafy.chillandcode.model.service;
 
 import java.util.List;
 
-import com.ssafy.chillandcode.model.dto.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 
 public interface ScheduleService {
 	// 일정 생성

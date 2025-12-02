@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
-import com.ssafy.chillandcode.model.dto.Post;
+import com.ssafy.chillandcode.model.dto.post.Post;
 import com.ssafy.chillandcode.model.service.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.PostDao;
-import com.ssafy.chillandcode.model.dto.Post;
+import com.ssafy.chillandcode.model.dto.post.Post;
 
 @Service
 public class PostServiceImpl implements PostService {

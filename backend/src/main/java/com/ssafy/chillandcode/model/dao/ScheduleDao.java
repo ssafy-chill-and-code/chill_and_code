@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.ssafy.chillandcode.model.dto.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 
 @Mapper
 public interface ScheduleDao {

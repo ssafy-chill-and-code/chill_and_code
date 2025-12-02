@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
-import com.ssafy.chillandcode.model.dto.Comment;
+import com.ssafy.chillandcode.model.dto.comment.Comment;
+import com.ssafy.chillandcode.model.dto.comment.CommentCreateRequest;
+import com.ssafy.chillandcode.model.dto.comment.CommentUpdateRequest;
 import com.ssafy.chillandcode.model.service.CommentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +34,7 @@ public class CommentController {
 	// 댓글 작성
 	@Operation(summary = "댓글 등록", description = "특정 게시글(postId)에 댓글을 등록합니다.")
 	@PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentRequest req,
+    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentCreateRequest req,
             HttpSession session) {
 
 		// 로그인 사용자 확인
@@ -92,7 +94,7 @@ public class CommentController {
 	// 댓글 수정
 	@Operation(summary = "댓글 수정", description = "특정 댓글(commentId)을 수정합니다. 작성자 본인만 수정할 수 있습니다.")
 	@PatchMapping("/comments/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody UpdateRequest req,
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentUpdateRequest req,
             HttpSession session) {
 
 		Long userId = (Long) session.getAttribute("userId");
@@ -139,30 +141,5 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success("댓글이 삭제되었습니다.", null));
 	}
 
-	// 내부 DTO 정의 (userId 제거)
-	static class CommentRequest {
-		private String content;
-
-		public String getContent() {
-			return content;
-		}
-
-		public void setContent(String content) {
-			this.content = content;
-		}
-	}
-
-	static class UpdateRequest {
-		private String content;
-
-		public String getContent() {
-			return content;
-		}
-
-		public void setContent(String content) {
-			this.content = content;
-		}
-	}
-
-    // 내부 DTO 제거: ApiResponse로 통일
+    // 요청 DTO는 외부 파일로 분리하여 재사용/검증이 용이하도록 구성
 }

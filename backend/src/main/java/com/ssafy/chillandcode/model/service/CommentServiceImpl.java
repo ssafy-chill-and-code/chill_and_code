@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.CommentDao;
 import com.ssafy.chillandcode.model.dao.PostDao;
-import com.ssafy.chillandcode.model.dto.Comment;
+import com.ssafy.chillandcode.model.dto.comment.Comment;
 
 @Service
 public class CommentServiceImpl implements CommentService {

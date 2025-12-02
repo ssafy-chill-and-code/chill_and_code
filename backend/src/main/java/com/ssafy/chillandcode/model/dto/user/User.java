@@ -1,4 +1,4 @@
-package com.ssafy.chillandcode.model.dto;
+package com.ssafy.chillandcode.model.dto.user;
 
 /**
  * User는 회원 기본 정보를 담는 DTO 입니다.

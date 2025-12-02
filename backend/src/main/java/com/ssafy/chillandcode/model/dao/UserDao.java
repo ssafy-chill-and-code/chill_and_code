@@ -3,7 +3,7 @@ package com.ssafy.chillandcode.model.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ssafy.chillandcode.model.dto.User;
+import com.ssafy.chillandcode.model.dto.user.User;
 
 @Mapper
 public interface UserDao {

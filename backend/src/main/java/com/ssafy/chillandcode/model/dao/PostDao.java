@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ssafy.chillandcode.model.dto.Post;
+import com.ssafy.chillandcode.model.dto.post.Post;
 
 /**
  * PostDao는 게시글 정보에 대한 DB접근을 담당하는 MyBatis 매퍼 인터페이스입니다.

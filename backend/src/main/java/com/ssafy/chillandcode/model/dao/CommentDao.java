@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ssafy.chillandcode.model.dto.Comment;
+import com.ssafy.chillandcode.model.dto.comment.Comment;
 
 /**
  * CommentDao는 댓글 정보에 대한 DB 접근을 담당하는 MyBatis 매퍼 인터페이스입니다.

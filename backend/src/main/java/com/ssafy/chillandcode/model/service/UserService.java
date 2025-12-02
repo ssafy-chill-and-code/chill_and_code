@@ -1,6 +1,6 @@
 package com.ssafy.chillandcode.model.service;
 
-import com.ssafy.chillandcode.model.dto.User;
+import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
 
 public interface UserService {

@@ -1,4 +1,4 @@
-package com.ssafy.chillandcode.model.dto;
+package com.ssafy.chillandcode.model.dto.schedule;
 
 public class Schedule {
 	private long scheduleId; // 일정 ID (PK)
