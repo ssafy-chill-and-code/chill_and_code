@@ -1,4 +1,6 @@
-package com.ssafy.chillandcode.model.dto;
+package com.ssafy.chillandcode.model.dto.user;
+
+import com.ssafy.chillandcode.model.dto.user.User;
 
 public class UserSignUpRequest {
 
