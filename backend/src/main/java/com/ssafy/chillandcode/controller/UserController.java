@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.chillandcode.common.ApiResponse;
 import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dto.user.User;
-import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
+import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;

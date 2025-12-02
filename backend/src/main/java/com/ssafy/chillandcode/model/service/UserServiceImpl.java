@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 //import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.UserDao;
 import com.ssafy.chillandcode.model.dto.user.User;
-import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
+import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 
 @Service
 public class UserServiceImpl implements UserService {

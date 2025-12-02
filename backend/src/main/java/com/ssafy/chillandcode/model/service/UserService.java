@@ -1,7 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
 import com.ssafy.chillandcode.model.dto.user.User;
-import com.ssafy.chillandcode.model.dto.UserSignUpRequest;
+import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 
 public interface UserService {
 	// 회원 가입 (등록)
