@@ -39,21 +39,47 @@ onMounted(load)
 
     <div class="community-layout">
       <!-- 좌측: 검색 + 목록 -->
-      <section class="community-main">
-        <div class="search-section">
-          <div class="form-group">
-            <input class="form-input" v-model="search" placeholder="검색어를 입력하세요" />
-          </div>
-          <div class="form-group">
-            <select class="form-input"></select>
-          </div>
-          <div class="form-group">
-            <select class="form-input"></select>
-          </div>
-          <div class="form-group">
-            <button class="btn" @click="load">검색</button>
-          </div>
-        </div>
+  <section class="community-main">
+    <div class="search-section">
+      <div class="form-group">
+        <input class="form-input" v-model="search" placeholder="검색어를 입력하세요" @keydown.enter="load" />
+      </div>
+      <div class="form-group">
+        <!-- 지역 필터 -->
+        <select class="form-input" v-model="region" @change="load">
+          <option value="">전체 지역</option>
+          <option value="서울">서울</option>
+          <option value="부산">부산</option>
+          <option value="제주">제주</option>
+          <option value="인천">인천</option>
+          <option value="대구">대구</option>
+          <option value="대전">대전</option>
+          <option value="광주">광주</option>
+          <option value="울산">울산</option>
+          <option value="경기">경기</option>
+          <option value="강원">강원</option>
+          <option value="충북">충북</option>
+          <option value="충남">충남</option>
+          <option value="전북">전북</option>
+          <option value="전남">전남</option>
+          <option value="경북">경북</option>
+          <option value="경남">경남</option>
+          <option value="세종">세종</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <!-- 정렬 -->
+        <select class="form-input" v-model="sort" @change="load">
+          <!-- 백엔드 Mapper 기준: latest | oldest | popular -->
+          <option value="latest">최신순</option>
+          <option value="oldest">오래된순</option>
+          <option value="popular">인기순(댓글수)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <button class="btn" @click="load">검색</button>
+      </div>
+    </div>
 
         <div class="post-list-section">
           <!-- 실제 데이터 목록 표시 영역 (기존 로직 유지) -->
