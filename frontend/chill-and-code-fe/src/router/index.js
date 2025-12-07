@@ -1,22 +1,29 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import LoginView from '../views/LoginView.vue'
+import SignupView from '../views/SignupView.vue'
+import MyPageView from '../views/MyPageView.vue'
+import ScheduleView from '../views/ScheduleView.vue'
+import ScheduleCreateView from '../views/ScheduleCreateView.vue'
+import ScheduleEditView from '../views/ScheduleEditView.vue'
+import ScheduleDetailView from '../views/ScheduleDetailView.vue'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
+    { path: '/', name: 'home', component: HomeView },
+    { path: '/login', name: 'login', component: LoginView },
+    { path: '/signup', name: 'signup', component: SignupView },
+    { path: '/mypage', name: 'mypage', component: MyPageView },
+    { path: '/schedule', name: 'schedule', component: ScheduleView },
+    { path: '/schedule/create', name: 'schedule-create', component: ScheduleCreateView },
+    { path: '/schedule/:id', name: 'schedule-detail', component: ScheduleDetailView },
+    { path: '/schedule/:id/edit', name: 'schedule-edit', component: ScheduleEditView },
+    { path: '/posts', name: 'posts', component: () => import('../views/PostListView.vue') },
+    { path: '/posts/create', name: 'post-create', component: () => import('../views/PostCreateView.vue') },
+    { path: '/posts/:postId', name: 'post-detail', component: () => import('../views/PostDetailView.vue'), props: true },
+    { path: '/posts/:postId/edit', name: 'post-edit', component: () => import('../views/PostEditView.vue'), props: true },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
 
