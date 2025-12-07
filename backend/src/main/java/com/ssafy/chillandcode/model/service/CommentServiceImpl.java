@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
     // 내가 쓴 댓글 목록 조회
     @Override
     public List<Comment> findByUserId(Long userId) {
-    	return commentDao.selectByPostId(userId);
+    	return commentDao.selectByUserId(userId);
     }
     
     // 댓글 수정
