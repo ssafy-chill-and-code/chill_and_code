@@ -30,15 +30,16 @@ const onlyDate = (dateTime) => dateTime?.substring(0, 10)
 </script>
 
 <template>
-  <div style="max-width: 720px; margin: 24px auto;">
-    <h2>월별 일정</h2>
-    <button @click="goCreate" style="margin: 8px 0; padding:6px 12px;">일정 추가</button>
+  <div>
+    <h2 class="page-title">월별 일정</h2>
+    <button class="btn" @click="goCreate">일정 추가</button>
     <ul>
-      <li v-for="s in schedules" :key="s.scheduleId" style="margin:6px 0;">
+      <li v-for="s in schedules" :key="s.scheduleId">
         <a href="javascript:void(0)" @click="goDetail(s.scheduleId)">
           {{ s.title }} ({{ onlyDate(s.startDateTime) }} ~ {{ onlyDate(s.endDateTime) }})
         </a>
       </li>
     </ul>
   </div>
+  
 </template>

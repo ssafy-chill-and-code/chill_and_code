@@ -22,25 +22,24 @@ const onSignup = async () => {
 </script>
 
 <template>
-  <div style="max-width: 480px; margin: 24px auto;">
-    <h2>회원가입</h2>
-    <div style="margin: 8px 0;">
-      <label>이메일</label>
-      <input v-model="email" type="email" style="display:block; width:100%; padding:6px;" />
+  <div>
+    <h2 class="page-title">회원가입</h2>
+    <div class="form-group">
+      <label class="form-label">이메일</label>
+      <input class="form-input" v-model="email" type="email" />
     </div>
-    <div style="margin: 8px 0;">
-      <label>비밀번호</label>
-      <input v-model="password" type="password" style="display:block; width:100%; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">비밀번호</label>
+      <input class="form-input" v-model="password" type="password" />
     </div>
-    <div style="margin: 8px 0;">
-      <label>닉네임</label>
-      <input v-model="nickname" style="display:block; width:100%; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">닉네임</label>
+      <input class="form-input" v-model="nickname" />
     </div>
-    <div style="margin: 8px 0;">
-      <label>지역</label>
-      <input v-model="region" style="display:block; width:100%; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">지역</label>
+      <input class="form-input" v-model="region" />
     </div>
-    <button @click="onSignup" style="padding:6px 12px;">회원가입</button>
+    <button class="btn" @click="onSignup">회원가입</button>
   </div>
 </template>
-

@@ -27,17 +27,17 @@ const remove = async () => {
 </script>
 
 <template>
-  <div style="max-width: 720px; margin: 24px auto;">
-    <h2>일정 상세</h2>
+  <div>
+    <h2 class="page-title">일정 상세</h2>
     <div v-if="detail">
       <p><b>제목:</b> {{ detail.title }}</p>
       <p><b>타입:</b> {{ detail.scheduleType }}</p>
       <p><b>시작일:</b> {{ onlyDate(detail.startDateTime) }}</p>
       <p><b>종료일:</b> {{ onlyDate(detail.endDateTime) }}</p>
     </div>
-    <div style="margin-top: 12px;">
-      <button @click="edit" style="padding:6px 12px; margin-right: 6px;">수정하기</button>
-      <button @click="remove" style="padding:6px 12px;">삭제하기</button>
+    <div>
+      <button class="btn" @click="edit">수정하기</button>
+      <button class="btn" @click="remove">삭제하기</button>
     </div>
   </div>
 </template>

@@ -19,26 +19,28 @@ const onLogout = async () => {
 </script>
 
 <template>
-  <header style="padding: 8px 12px; border-bottom: 1px solid #ddd;">
-    <nav style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-      <RouterLink to="/schedule">스케줄</RouterLink>
-      <RouterLink to="/schedule/create">생성</RouterLink>
-      <RouterLink to="/mypage">마이페이지</RouterLink>
-      <span style="margin-left:auto"></span>
-      <template v-if="isLoggedIn">
-        <span>안녕하세요, {{ nickname }}</span>
-        <button @click="onLogout" style="padding:4px 8px;">로그아웃</button>
-      </template>
-      <template v-else>
-        <RouterLink to="/login">로그인</RouterLink>
-        <RouterLink to="/signup">회원가입</RouterLink>
-      </template>
-    </nav>
-  </header>
-  <main style="padding: 12px;">
-    <RouterView />
-  </main>
-  
+  <div class="container">
+    <header class="header">
+      <nav style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <span>🌴 Chill & Code</span>
+        <RouterLink to="/schedule">스케줄</RouterLink>
+        <RouterLink to="/schedule/create">생성</RouterLink>
+        <RouterLink to="/mypage">마이페이지</RouterLink>
+        <span style="margin-left:auto"></span>
+        <template v-if="isLoggedIn">
+          <span>안녕하세요, {{ nickname }}</span>
+          <button class="btn" @click="onLogout">로그아웃</button>
+        </template>
+        <template v-else>
+          <RouterLink to="/login">로그인</RouterLink>
+          <RouterLink to="/signup">회원가입</RouterLink>
+        </template>
+      </nav>
+    </header>
+    <main class="main">
+      <RouterView />
+    </main>
+  </div>
 </template>
 
 <style scoped>

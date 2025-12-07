@@ -29,21 +29,20 @@ const onUpdate = async () => {
 </script>
 
 <template>
-  <div style="max-width: 640px; margin: 24px auto;">
-    <h2>마이페이지</h2>
-    <div style="margin: 8px 0;">
-      <label>이메일 (읽기전용)</label>
-      <input v-model="form.email" disabled style="display:block; width:100%; padding:6px;" />
+  <div>
+    <h2 class="page-title">마이페이지</h2>
+    <div class="form-group">
+      <label class="form-label">이메일 (읽기전용)</label>
+      <input class="form-input" v-model="form.email" disabled />
     </div>
-    <div style="margin: 8px 0;">
-      <label>닉네임</label>
-      <input v-model="form.nickname" style="display:block; width:100%; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">닉네임</label>
+      <input class="form-input" v-model="form.nickname" />
     </div>
-    <div style="margin: 8px 0;">
-      <label>지역</label>
-      <input v-model="form.region" style="display:block; width:100%; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">지역</label>
+      <input class="form-input" v-model="form.region" />
     </div>
-    <button @click="onUpdate" style="padding:6px 12px;">수정</button>
+    <button class="btn" @click="onUpdate">수정</button>
   </div>
 </template>
-

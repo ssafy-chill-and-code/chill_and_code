@@ -32,24 +32,24 @@ const onUpdate = async () => {
 </script>
 
 <template>
-  <div style="max-width: 640px; margin: 24px auto;">
-    <h2>일정 수정</h2>
-    <div style="margin: 8px 0;">
-      <label>제목</label>
-      <input v-model="form.title" style="display:block; width:100%; padding:6px;" />
+  <div>
+    <h2 class="page-title">일정 수정</h2>
+    <div class="form-group">
+      <label class="form-label">제목</label>
+      <input class="form-input" v-model="form.title" />
     </div>
-    <div style="margin: 8px 0;">
-      <label>시작일</label>
-      <input v-model="form.startDateTime" type="date" style="display:block; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">시작일</label>
+      <input class="form-input" v-model="form.startDateTime" type="date" />
     </div>
-    <div style="margin: 8px 0;">
-      <label>종료일</label>
-      <input v-model="form.endDateTime" type="date" style="display:block; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">종료일</label>
+      <input class="form-input" v-model="form.endDateTime" type="date" />
     </div>
-    <div style="margin: 8px 0;">
-      <label>타입</label>
-      <input v-model="form.scheduleType" style="display:block; width:100%; padding:6px;" />
+    <div class="form-group">
+      <label class="form-label">타입</label>
+      <input class="form-input" v-model="form.scheduleType" />
     </div>
-    <button @click="onUpdate" style="padding:6px 12px;">수정</button>
+    <button class="btn" @click="onUpdate">수정</button>
   </div>
 </template>
