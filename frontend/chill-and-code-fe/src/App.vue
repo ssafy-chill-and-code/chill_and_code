@@ -22,7 +22,7 @@ const onLogout = async () => {
   <div class="container">
     <header class="header">
       <nav style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-        <span>🌴 Chill & Code</span>
+        <RouterLink to="/">🌴 Chill & Code</RouterLink>
         <RouterLink to="/schedule">스케줄</RouterLink>
         <RouterLink to="/schedule/create">생성</RouterLink>
         <RouterLink to="/mypage">마이페이지</RouterLink>
