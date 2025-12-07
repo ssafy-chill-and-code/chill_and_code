@@ -25,12 +25,12 @@ export const useUserStore = defineStore('user', {
     },
     async fetchProfile() {
       const { data } = await axios.get('/users/me')
-      this.user = data
-      this.isLoggedIn = !!data
+      this.user = data.data
+      this.isLoggedIn = !!data.data
     },
     async updateProfile(payload) {
       const { data } = await axios.patch('/users/me', payload)
-      this.user = data
+      this.user = data.data
     },
   },
 })
