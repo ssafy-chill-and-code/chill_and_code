@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
 import com.ssafy.chillandcode.exception.ErrorCode;
+import com.ssafy.chillandcode.model.dto.user.LoginRequest;
+import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
@@ -108,8 +110,8 @@ public class UserController {
 	// 로그인 (세션 기반)
 	@PostMapping("/login")
 	@Operation(summary = "로그인", description = "이메일과 비밀번호를 입력받아 사용자를 인증합니다.")
-    public ResponseEntity<ApiResponse<?>> login(@RequestBody User user, HttpSession session) {
-		User result = userService.login(user);
+    public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest req, HttpSession session) {
+		LoginResponse result = userService.login(req);
 
 		if (result == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -118,7 +120,7 @@ public class UserController {
 
 		session.setAttribute("userId", result.getUserId());
 
-        return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", result));
 	}
 
 	// 로그아웃

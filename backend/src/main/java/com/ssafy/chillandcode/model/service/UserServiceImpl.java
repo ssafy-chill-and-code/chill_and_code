@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import com.ssafy.chillandcode.exception.ApiException;
 import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.UserDao;
+import com.ssafy.chillandcode.model.dto.user.LoginRequest;
+import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
@@ -69,11 +71,34 @@ public class UserServiceImpl implements UserService {
 	
 	//로그인
 	@Override
-	public User login(User user) {
-		return userDao.login(user);
+	public LoginResponse login(LoginRequest req) {
+		
+		// 이메일로 사용자 조회 (존재하지 않으면 INVALID_LOGIN 처리)
+		User user = userDao.findByEmail(req.getEmail());
+		if(user==null) {
+			throw new ApiException(ErrorCode.INVALID_LOGIN);
+		}
+		
+		// 보안상 탈퇴 사용자도 별도 처리
+		if(user.getIsDeleted() == 1) {
+			throw new ApiException(ErrorCode.DELETED_USER);
+		}
+		
+		// 비밀번호 불일치 시 동일 에러 코드로 처리 (사용자 정보 유추 방지)
+		if(!user.getPassword().equals(req.getPassword())) {
+			throw new ApiException(ErrorCode.INVALID_LOGIN);
+		}
+		
+		LoginResponse response = LoginResponse.from(user);
+		
+		return response;
 	}
 	
-	//검증 로직
+	
+	
+	/**
+		검증로직
+	 */
 	private boolean isValidEmail(String email) {
 		if(email == null) return false;
 		return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");

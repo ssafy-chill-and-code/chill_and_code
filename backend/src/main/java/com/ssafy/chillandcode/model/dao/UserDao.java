@@ -3,6 +3,8 @@ package com.ssafy.chillandcode.model.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.ssafy.chillandcode.model.dto.user.LoginRequest;
+import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 
@@ -20,9 +22,9 @@ public interface UserDao {
 	//회원 정보 삭제(탈퇴)
 	int softDelete(long userId);
 	
-	//로그인
-	User login(User user);
-	
 	//이메일 중복 검사
 	int existsByEmail(String email);
+	
+	//회원 1명 조회
+	User findByEmail(String email);
 }

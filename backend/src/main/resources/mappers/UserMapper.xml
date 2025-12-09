@@ -44,20 +44,16 @@
 		WHERE user_id = #{userId}
 	</update>
 	
-	<!-- 로그인 -->
-	<select id="login" parameterType="User" resultType="User">
-		SELECT *
-		FROM users
-		WHERE email = #{email}
-			AND password = #{password}
-			AND is_deleted = 0
-	</select>
-	
-	<!-- 로그아웃 -->
-	
 	<!--이메일 중복 검사-->
 	<select id="existsByEmail" parameterType="String" resultType="int">
 		SELECT COUNT(*)
+		FROM users
+		WHERE email = #{email}
+	</select>
+	
+	<!--회원 1명 조회-->
+	<select id="findByEmail" parameterType="String" resultType="User">
+		SELECT *
 		FROM users
 		WHERE email = #{email}
 	</select>

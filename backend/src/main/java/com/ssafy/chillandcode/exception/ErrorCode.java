@@ -11,6 +11,8 @@ public enum ErrorCode {
 	INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 2~10자이며 공백이 없어야 합니다."),
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
+	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다."),
+	DELETED_USER(HttpStatus.UNAUTHORIZED, "탈퇴한 회원입니다."),
 	
 	//5xx
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
