@@ -4,6 +4,7 @@ package com.ssafy.chillandcode.model.dao;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.chillandcode.model.dto.user.User;
+import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 
 @Mapper
 public interface UserDao {
@@ -14,7 +15,7 @@ public interface UserDao {
 	User selectUser(long userId);
 	
 	//회원 정보 수정
-	int updateUser(User user);
+	int updateUser(UserUpdateRequest req);
 	
 	//회원 정보 삭제(탈퇴)
 	int softDelete(long userId);

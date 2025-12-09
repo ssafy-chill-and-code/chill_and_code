@@ -18,12 +18,9 @@
 	</select>
 	
 	<!-- 회원 정보 수정 (프로필 수정) -->
-	<update id="updateUser" parameterType="User">
+	<update id="updateUser" parameterType="UserUpdateRequest">
 		UPDATE users
 		<set>
-			<if test="email != null">
-				email = #{email},
-			</if>
 			<if test="password != null">
 				password = #{password},
 			</if>

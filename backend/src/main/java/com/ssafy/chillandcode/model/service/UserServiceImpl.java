@@ -3,11 +3,12 @@ package com.ssafy.chillandcode.model.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//import com.ssafy.chillandcode.exception.ApiException;
-//import com.ssafy.chillandcode.exception.ErrorCode;
+import com.ssafy.chillandcode.exception.ApiException;
+import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.UserDao;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
+import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,29 +21,29 @@ public class UserServiceImpl implements UserService {
 	public void insertUser(UserSignUpRequest req) {
 		
 		//검증
-//		if(!isValidEmail(req.getEmail())) {
-//			throw new ApiException(ErrorCode.INVALID_EMAIL_FORMAT);
-//		}
-//		
-//		if(!isValidPassword(req.getPassword())) {
-//			throw new ApiException(ErrorCode.INVALID_PASSWORD);
-//		}
-//		
-//		if(!isValidNickname(req.getNickname())) {
-//			throw new ApiException(ErrorCode.INVALID_NICKNAME);
-//		}
-//		
-//		//중복 체크
-//		if(userDao.existsByEmail(req.getEmail()) > 0) {
-//			throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
-//		}
+		if(!isValidEmail(req.getEmail())) {
+			throw new ApiException(ErrorCode.INVALID_EMAIL_FORMAT);
+		}
+		
+		if(!isValidPassword(req.getPassword())) {
+			throw new ApiException(ErrorCode.INVALID_PASSWORD);
+		}
+		
+		if(!isValidNickname(req.getNickname())) {
+			throw new ApiException(ErrorCode.INVALID_NICKNAME);
+		}
+		
+		//중복 체크
+		if(userDao.existsByEmail(req.getEmail()) > 0) {
+			throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
+		}
 		
 		
 		User user = req.toEntity();
 		int rows = userDao.insertUser(user);
-//		if(rows != 1) {
-//			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
-//		}
+		if(rows != 1) {
+			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
+		}
 		
 		return;
 	}
@@ -55,8 +56,9 @@ public class UserServiceImpl implements UserService {
 	
 	//회원 정보 수정
 	@Override
-	public boolean updateUser(User user) {
-		return userDao.updateUser(user) == 1;
+	public boolean updateUser(long userId, UserUpdateRequest req) {
+		req.setUserId(userId);
+		return userDao.updateUser(req) == 1;
 	}
 	
 	//회원 정보 삭제(탈퇴)
