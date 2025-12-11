@@ -1,6 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,14 +9,15 @@ import org.springframework.stereotype.Service;
 import com.ssafy.chillandcode.model.dao.ScheduleDao;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleResponse;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService{
-	
+public class ScheduleServiceImpl implements ScheduleService {
+
 	@Autowired
 	private ScheduleDao scheduleDao;
-	
+
 	@Override
 	public boolean insertSchedule(ScheduleCreateRequest req) {
 		Schedule schedule = req.toEntity();
@@ -23,8 +25,16 @@ public class ScheduleServiceImpl implements ScheduleService{
 	}
 
 	@Override
-	public List<Schedule> selectScheduleByMonth(long userId, String month) {
-		return scheduleDao.selectScheduleByMonth(userId, month);
+	public List<ScheduleResponse> selectScheduleByMonth(long userId, String month) {
+		List<Schedule> schedules = scheduleDao.selectScheduleByMonth(userId, month);
+
+		return schedules.stream().map(s -> new ScheduleResponse(
+				s.getScheduleId(), 
+				s.getTitle(),
+				s.getScheduleType(),
+				s.getStartDateTime(), 
+				s.getEndDateTime()
+				)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -37,5 +47,4 @@ public class ScheduleServiceImpl implements ScheduleService{
 		return scheduleDao.deleteSchedule(userId, scheduleId) == 1;
 	}
 
-	
 }

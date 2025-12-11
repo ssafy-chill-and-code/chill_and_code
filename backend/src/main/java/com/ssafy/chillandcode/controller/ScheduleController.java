@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
-import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleResponse;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
 import com.ssafy.chillandcode.model.service.ScheduleService;
 
@@ -60,7 +60,7 @@ public class ScheduleController {
 		// long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
 		
 
-		List<Schedule> result = scheduleService.selectScheduleByMonth(userId, month);
+		List<ScheduleResponse> result = scheduleService.selectScheduleByMonth(userId, month);
 
         return ResponseEntity.ok(ApiResponse.success(Map.of("schedules", result)));
 	}
