@@ -30,6 +30,12 @@
 		FROM schedule
 		WHERE user_id = #{userId}
 			AND DATE_FORMAT(start_datetime, '%Y-%m') = #{month}
+			<if test="type != null and type.size() > 0">
+				AND schedule_type IN
+				<foreach collection="type" item="t" open="(" separator="," close=")">
+					#{t}
+				</foreach>
+			</if>
 		ORDER BY start_datetime
 	</select>
 	

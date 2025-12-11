@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.ScheduleDao;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleResponse;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
@@ -25,8 +26,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 
 	@Override
-	public List<ScheduleResponse> selectScheduleByMonth(long userId, String month) {
-		List<Schedule> schedules = scheduleDao.selectScheduleByMonth(userId, month);
+	public List<ScheduleResponse> selectScheduleByMonth(long userId, String month, List<ScheduleType> type) {
+		List<Schedule> schedules = scheduleDao.selectScheduleByMonth(userId, month, type);
 
 		return schedules.stream().map(s -> new ScheduleResponse(
 				s.getScheduleId(), 

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleResponse;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
@@ -55,12 +56,15 @@ public class ScheduleController {
 	// 일정 조회
 	@GetMapping
 	@Operation(summary = "월별 일정 조회", description = "월 정보(YYYY-MM)를 Query Parameter로 받아 해당 사용자의 월별 일정을 조회합니다.")
-    public ResponseEntity<?> selectScheduleByMonth(@RequestParam String month, HttpSession session) {
+    public ResponseEntity<?> selectScheduleByMonth(
+    		@RequestParam String month,
+    		@RequestParam(required = false) List<ScheduleType> type,
+    		HttpSession session) {
 		long userId = (Long) session.getAttribute("userId");
 		// long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
 		
 
-		List<ScheduleResponse> result = scheduleService.selectScheduleByMonth(userId, month);
+		List<ScheduleResponse> result = scheduleService.selectScheduleByMonth(userId, month, type);
 
         return ResponseEntity.ok(ApiResponse.success(Map.of("schedules", result)));
 	}
