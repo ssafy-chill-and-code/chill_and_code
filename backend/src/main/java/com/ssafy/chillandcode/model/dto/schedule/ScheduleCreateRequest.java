@@ -1,21 +1,23 @@
 package com.ssafy.chillandcode.model.dto.schedule;
 
+import java.time.LocalDateTime;
+
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 
 public class ScheduleCreateRequest {
 	private long userId; // 일정 소유자 (Security 도입 시 제거 가능)
 	private String title; // 일정 제목
 	private ScheduleType scheduleType; // 일정 분류 (enum)
-	private String startDateTime; // 일정 시작일
-	private String endDateTime; // 일정 종료일
+	private LocalDateTime startDateTime; // 일정 시작일
+	private LocalDateTime endDateTime; // 일정 종료일
 	private String userTag; // (선택) 사용자가 직접 지정한 태그
 
 	public ScheduleCreateRequest() {
 
 	}
 
-	public ScheduleCreateRequest(long userId, String title, ScheduleType scheduleType, String startDateTime,
-			String endDateTime, String userTag) {
+	public ScheduleCreateRequest(long userId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
+			LocalDateTime endDateTime, String userTag) {
 		super();
 		this.userId = userId;
 		this.title = title;
@@ -60,19 +62,19 @@ public class ScheduleCreateRequest {
 		this.scheduleType = scheduleType;
 	}
 
-	public String getStartDateTime() {
+	public LocalDateTime getStartDateTime() {
 		return startDateTime;
 	}
 
-	public void setStartDateTime(String startDateTime) {
+	public void setStartDateTime(LocalDateTime startDateTime) {
 		this.startDateTime = startDateTime;
 	}
 
-	public String getEndDateTime() {
+	public LocalDateTime getEndDateTime() {
 		return endDateTime;
 	}
 
-	public void setEndDateTime(String endDateTime) {
+	public void setEndDateTime(LocalDateTime endDateTime) {
 		this.endDateTime = endDateTime;
 	}
 

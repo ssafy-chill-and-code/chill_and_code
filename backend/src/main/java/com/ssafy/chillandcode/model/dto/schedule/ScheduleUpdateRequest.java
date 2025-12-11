@@ -1,13 +1,15 @@
 package com.ssafy.chillandcode.model.dto.schedule;
 
+import java.time.LocalDateTime;
+
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 
 public class ScheduleUpdateRequest {
 	private long scheduleId; // 수정할 일정
 	private long userId;
 	private String title;
-	private String startDateTime;
-	private String endDateTime;
+	private LocalDateTime startDateTime;
+	private LocalDateTime endDateTime;
 	private ScheduleType scheduleType;
 	private String userTag;
 
@@ -15,7 +17,7 @@ public class ScheduleUpdateRequest {
 
 	}
 
-	public ScheduleUpdateRequest(long scheduleId, String title, String startDateTime, String endDateTime,
+	public ScheduleUpdateRequest(long scheduleId, String title, LocalDateTime startDateTime, LocalDateTime endDateTime,
 			ScheduleType scheduleType, String userTag) {
 		super();
 		this.scheduleId = scheduleId;
@@ -26,7 +28,7 @@ public class ScheduleUpdateRequest {
 		this.userTag = userTag;
 	}
 
-	public ScheduleUpdateRequest(long scheduleId, long userId, String title, String startDateTime, String endDateTime,
+	public ScheduleUpdateRequest(long scheduleId, long userId, String title, LocalDateTime startDateTime, LocalDateTime endDateTime,
 			ScheduleType scheduleType, String userTag) {
 		super();
 		this.scheduleId = scheduleId;
@@ -62,19 +64,19 @@ public class ScheduleUpdateRequest {
 		this.title = title;
 	}
 
-	public String getStartDateTime() {
+	public LocalDateTime getStartDateTime() {
 		return startDateTime;
 	}
 
-	public void setStartDateTime(String startDateTime) {
+	public void setStartDateTime(LocalDateTime startDateTime) {
 		this.startDateTime = startDateTime;
 	}
 
-	public String getEndDateTime() {
+	public LocalDateTime getEndDateTime() {
 		return endDateTime;
 	}
 
-	public void setEndDateTime(String endDateTime) {
+	public void setEndDateTime(LocalDateTime endDateTime) {
 		this.endDateTime = endDateTime;
 	}
 

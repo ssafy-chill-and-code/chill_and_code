@@ -1,12 +1,14 @@
 package com.ssafy.chillandcode.model.dto.schedule;
 
+import java.time.LocalDateTime;
+
 public class Schedule {
 	private long scheduleId; // 일정 ID (PK)
 	private long userId; // 사용자 ID (일정 소유자)
 	private String title; // 일정 제목
 	private ScheduleType scheduleType; // 일정 분류 (enum)
-	private String startDateTime; // 일정 시작일
-	private String endDateTime; // 일정 종료일
+	private LocalDateTime startDateTime; // 일정 시작일
+	private LocalDateTime endDateTime; // 일정 종료일
 	private String createdAt; // 일정 생성일
 	private String autoTag;
 	private String userTag; // 사용자 태그
@@ -20,8 +22,8 @@ public class Schedule {
 
 	}
 
-	public Schedule(long scheduleId, long userId, String title, ScheduleType scheduleType, String startDateTime,
-			String endDateTime, String createdAt, String autoTag, String userTag, String updatedAt) {
+	public Schedule(long scheduleId, long userId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
+			LocalDateTime endDateTime, String createdAt, String autoTag, String userTag, String updatedAt) {
 		super();
 		this.scheduleId = scheduleId;
 		this.userId = userId;
@@ -67,19 +69,19 @@ public class Schedule {
 		this.scheduleType = scheduleType;
 	}
 
-	public String getStartDateTime() {
+	public LocalDateTime getStartDateTime() {
 		return startDateTime;
 	}
 
-	public void setStartDateTime(String startDateTime) {
+	public void setStartDateTime(LocalDateTime startDateTime) {
 		this.startDateTime = startDateTime;
 	}
 
-	public String getEndDateTime() {
+	public LocalDateTime getEndDateTime() {
 		return endDateTime;
 	}
 
-	public void setEndDateTime(String endDateTime) {
+	public void setEndDateTime(LocalDateTime endDateTime) {
 		this.endDateTime = endDateTime;
 	}
 
