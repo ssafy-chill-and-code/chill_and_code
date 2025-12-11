@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
 import com.ssafy.chillandcode.model.service.ScheduleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,13 +35,13 @@ public class ScheduleController {
 	// 일정 생성
 	@PostMapping
 	@Operation(summary = "일정 등록", description = "로그인된 사용자의 userId를 세션에서 가져와 새 일정을 생성합니다.")
-    public ResponseEntity<ApiResponse<?>> insertSchedule(@RequestBody Schedule schedule, HttpSession session) {
+    public ResponseEntity<ApiResponse<?>> insertSchedule(@RequestBody ScheduleCreateRequest req, HttpSession session) {
 		long userId = (Long) session.getAttribute("userId");
 		// long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
 
-		schedule.setUserId(userId);
+		req.setUserId(userId);
 
-		boolean result = scheduleService.insertSchedule(schedule);
+		boolean result = scheduleService.insertSchedule(req);
 
         if (!result) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -66,15 +68,15 @@ public class ScheduleController {
 	// 일정 수정
 	@PatchMapping("/{scheduleId}")
 	@Operation(summary = "일정 수정", description = "scheduleId에 해당하는 일정을 수정합니다. 해당 일정의 소유자인지 userId로 확인합니다.")
-    public ResponseEntity<ApiResponse<?>> updateSchedule(@PathVariable long scheduleId, @RequestBody Schedule schedule,
+    public ResponseEntity<ApiResponse<?>> updateSchedule(@PathVariable long scheduleId, @RequestBody ScheduleUpdateRequest req,
             HttpSession session) {
 
 		long userId = (Long) session.getAttribute("userId");
 		// long userId = 1L; // swagger 테스트용 하드코딩 (나중에 삭제)
-		schedule.setScheduleId(scheduleId);
-		schedule.setUserId(userId);
+		req.setScheduleId(scheduleId);
+		req.setUserId(userId);
 		
-		boolean result = scheduleService.updateSchedule(userId, scheduleId, schedule);
+		boolean result = scheduleService.updateSchedule(req);
 
         if (!result) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

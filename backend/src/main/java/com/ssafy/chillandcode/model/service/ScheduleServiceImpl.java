@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.ScheduleDao;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService{
@@ -15,7 +17,8 @@ public class ScheduleServiceImpl implements ScheduleService{
 	private ScheduleDao scheduleDao;
 	
 	@Override
-	public boolean insertSchedule(Schedule schedule) {
+	public boolean insertSchedule(ScheduleCreateRequest req) {
+		Schedule schedule = req.toEntity();
 		return scheduleDao.insertSchedule(schedule) == 1;
 	}
 
@@ -25,8 +28,8 @@ public class ScheduleServiceImpl implements ScheduleService{
 	}
 
 	@Override
-	public boolean updateSchedule(long userId, long scheduleId, Schedule schedule) {
-		return scheduleDao.updateSchedule(userId, scheduleId, schedule) == 1;
+	public boolean updateSchedule(ScheduleUpdateRequest req) {
+		return scheduleDao.updateSchedule(req) == 1;
 	}
 
 	@Override

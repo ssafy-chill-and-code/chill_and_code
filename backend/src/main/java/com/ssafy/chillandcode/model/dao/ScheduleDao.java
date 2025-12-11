@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
 
 @Mapper
 public interface ScheduleDao {
@@ -18,8 +19,7 @@ public interface ScheduleDao {
 			@Param("userId") long userId, @Param("month") String month);
 	
 	//일정 수정
-	int updateSchedule(
-			@Param("userId") long userId, @Param("scheduleId") long scheduleId, Schedule schedule);
+	int updateSchedule(ScheduleUpdateRequest req);
 	
 	//일정 삭제
 	int deleteSchedule(
