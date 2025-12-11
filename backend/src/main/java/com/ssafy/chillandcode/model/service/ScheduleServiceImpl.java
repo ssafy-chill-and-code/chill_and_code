@@ -1,5 +1,6 @@
 package com.ssafy.chillandcode.model.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,5 +48,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 	public boolean deleteSchedule(long userId, long scheduleId) {
 		return scheduleDao.deleteSchedule(userId, scheduleId) == 1;
 	}
+
+	@Override
+	public List<Schedule> findScheduleByRange(long userId, LocalDateTime start, LocalDateTime end) {
+		return scheduleDao.selectScheduleByRange(userId, start, end);
+	}
+
 
 }

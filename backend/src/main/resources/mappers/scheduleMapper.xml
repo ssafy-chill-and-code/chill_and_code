@@ -39,6 +39,16 @@
 		ORDER BY start_datetime
 	</select>
 	
+	<!-- 특정 기간 일정 조회 -->
+	<select id="selectScheduleByRange" resultType="Schedule">
+		SELECT *
+		FROM schedule
+		WHERE user_id = #{userId}
+			AND start_datetime &lt; #{end}
+			AND end_datetime &gt; #{start}
+		ORDER BY start_datetime
+	</select>
+	
 	<!--일정 수정-->
 	<update id="updateSchedule" parameterType="ScheduleUpdateRequest">
 		UPDATE schedule

@@ -1,5 +1,6 @@
 package com.ssafy.chillandcode.model.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -26,4 +27,12 @@ public interface ScheduleDao {
 	//일정 삭제
 	int deleteSchedule(
 			@Param("userId") long userId, @Param("scheduleId") long scheduleId);
+	
+	//기간 조회
+	List<Schedule> selectScheduleByRange(
+			@Param("userId") long userId,
+			@Param("start") LocalDateTime start,
+			@Param("end") LocalDateTime end
+			);
+	
 }

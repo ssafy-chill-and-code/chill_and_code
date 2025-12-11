@@ -1,7 +1,9 @@
 package com.ssafy.chillandcode.model.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleResponse;
@@ -19,4 +21,7 @@ public interface ScheduleService {
 
 	// 일정 삭제
 	boolean deleteSchedule(long userId, long scheduleId);
+	
+	// 기간 조회
+	List<Schedule> findScheduleByRange(long userId, LocalDateTime start, LocalDateTime end);
 }
