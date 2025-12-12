@@ -6,6 +6,7 @@ export const usePostStore = defineStore('post', () => {
   const posts = ref([])
   const myPosts = ref([])
   const post = ref(null)
+  const regionRanks = ref([])
   const loading = ref(false)
   const error = ref('')
 
@@ -21,6 +22,18 @@ export const usePostStore = defineStore('post', () => {
       throw e
     } finally {
       loading.value = false
+    }
+  }
+
+  async function fetchRegionRank(params = {}) {
+    try {
+      const { data } = await api.get('/posts/region-rank', { params })
+      regionRanks.value = data?.data?.ranks || []
+      return regionRanks.value
+    } catch (e) {
+      // 랭킹 실패는 전체 로딩에 영향 주지 않도록 에러만 보관
+      console.error('fetchRegionRank error:', e?.response?.data?.message || e.message)
+      return []
     }
   }
 
@@ -84,6 +97,7 @@ export const usePostStore = defineStore('post', () => {
     createPost,
     updatePost,
     deletePost,
+    regionRanks,
+    fetchRegionRank,
   }
 })
-
