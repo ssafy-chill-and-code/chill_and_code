@@ -58,6 +58,8 @@ a,
   margin-bottom: 16px;
 }
 
+.page-subtitle { color: #666; margin-top: -8px; margin-bottom: 12px; }
+
 .form-group {
   margin-bottom: 12px;
 }
@@ -88,6 +90,9 @@ a,
   cursor: pointer;
 }
 
+/* Utilities */
+.w-100 { width: 100%; }
+
 /* NAVBAR 레이아웃 */
 .navbar {
   display: flex; justify-content: space-between; align-items: center;
@@ -99,9 +104,20 @@ a,
 .navbar-right { display: flex; gap: 12px; }
 
 /* 커뮤니티 레이아웃 */
-.community-layout { display: flex; gap: 24px; }
-.community-main { flex: 3; }
-.community-sidebar { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.community-layout { display: grid; gap: 24px; }
+.community-main { min-width: 0; }
+.community-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+/* 데스크탑: 우측 사이드바 고정 폭(320px) */
+@media (min-width: 992px) {
+  .community-layout { grid-template-columns: 1fr 320px; align-items: start; }
+  .community-sidebar { position: sticky; top: 16px; }
+}
+
+/* 카테고리 탭 */
+.category-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; }
+.category-tab { border: 1px solid #ddd; background: #fff; border-radius: 999px; padding: 6px 12px; white-space: nowrap; font-size: 14px; cursor: pointer; }
+.category-tab.active { border-color: #2c7be5; color: #2c7be5; background: #e9f2ff; }
 
 /* Placeholder 박스 */
 .post-item-placeholder,
@@ -118,3 +134,40 @@ a,
   font-weight: 600;
   margin-bottom: 8px;
 }
+
+/* 게시글 리스트 아이템 클릭 가능 스타일 */
+.post-list-item { cursor: pointer; }
+.post-list-item:hover, .post-list-item:focus { background-color: var(--color-background-soft); }
+
+/* PostDetail: 좋아요/공유 비율 7:3 */
+.like-share-actions { display: flex; gap: 8px; }
+.like-share-actions .btn-like { flex: 7 1 0; }
+.like-share-actions .right-actions { flex: 3 1 0; display: flex; gap: 8px; }
+.like-share-actions .right-actions .btn { flex: 1 1 0; }
+
+/* Utilities for list previews */
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.avatar-sm { width: 20px; height: 20px; border-radius: 9999px; }
+.w-3 { width: 12px; }
+.h-3 { height: 12px; }
+
+/* Sidebar: 인기 지역 랭킹 폰트 축소 */
+.sidebar-ranking { font-size: 13px; }
+.sidebar-ranking h3 { font-size: 14px; margin-bottom: 12px; }
+
+/* 실시간 트렌드 카드 스타일 */
+.trend-card h3 { font-size: 14px; margin-bottom: 12px; }
+.trend-card .text-accent { color: #6c63ff; }
+.trend-tag {
+  border: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: linear-gradient(90deg, rgba(44,123,229,0.08), rgba(108,99,255,0.08));
+  color: inherit;
+}
+.trend-tag:hover {
+  background: linear-gradient(90deg, rgba(44,123,229,0.15), rgba(108,99,255,0.15));
+}
+.trend-count { font-size: 11px; color: #777; }

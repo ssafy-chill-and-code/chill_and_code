@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ssafy.chillandcode.model.dto.post.Post;
+import com.ssafy.chillandcode.model.dto.post.RegionRank;
 
 /**
  * PostService는 게시글 정보에 대한 비즈니스 로직을 처리하는 서비스 인터페이스입니다.
@@ -39,7 +40,9 @@ public interface PostService {
 	 */
 	int delete(Long postId);
 
-	
-	
+	/**
+	 * 지역별 게시글 수 랭킹 조회 (옵션: 기간, 제한 개수)
+	 */
+	List<RegionRank> selectRegionRank(Map<String, Object> params);
 
 }

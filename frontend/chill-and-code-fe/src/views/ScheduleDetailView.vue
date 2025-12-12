@@ -28,16 +28,26 @@ const remove = async () => {
 
 <template>
   <div>
-    <h2 class="page-title">일정 상세</h2>
-    <div v-if="detail">
-      <p><b>제목:</b> {{ detail.title }}</p>
-      <p><b>타입:</b> {{ detail.scheduleType }}</p>
-      <p><b>시작일:</b> {{ onlyDate(detail.startDateTime) }}</p>
-      <p><b>종료일:</b> {{ onlyDate(detail.endDateTime) }}</p>
-    </div>
-    <div>
-      <button class="btn" @click="edit">수정하기</button>
-      <button class="btn" @click="remove">삭제하기</button>
+    <div class="card shadow-sm rounded-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-calendar2-week"></i>
+          <h2 class="h4 m-0">일정 상세</h2>
+        </div>
+        <div v-if="detail">
+          <h3 class="h5 fw-semibold mb-2">{{ detail.title }}</h3>
+          <div class="mb-2">
+            <span class="fw-semibold me-2">타입:</span>
+            <span class="badge text-bg-secondary">{{ detail.scheduleType }}</span>
+          </div>
+          <div class="mb-2"><span class="fw-semibold">시작일:</span> {{ onlyDate(detail.startDateTime) }}</div>
+          <div class="mb-2"><span class="fw-semibold">종료일:</span> {{ onlyDate(detail.endDateTime) }}</div>
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button class="btn btn-secondary" @click="edit"><i class="bi bi-pencil-square me-1"></i>수정하기</button>
+          <button class="btn btn-danger" @click="remove"><i class="bi bi-trash3 me-1"></i>삭제하기</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

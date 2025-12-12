@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.PostDao;
 import com.ssafy.chillandcode.model.dto.post.Post;
+import com.ssafy.chillandcode.model.dto.post.RegionRank;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -43,6 +44,11 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public int delete(Long postId) {
 		return postDao.delete(postId);
+	}
+
+	@Override
+	public List<RegionRank> selectRegionRank(Map<String, Object> params) {
+		return postDao.selectRegionRank(params);
 	}
 
 }

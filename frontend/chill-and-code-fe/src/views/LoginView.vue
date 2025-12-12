@@ -19,16 +19,28 @@ const onLogin = async () => {
 </script>
 
 <template>
-  <div>
-    <h2 class="page-title">로그인</h2>
-    <div class="form-group">
-      <label class="form-label">이메일</label>
-      <input class="form-input" v-model="email" type="email" />
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-5 col-lg-4">
+      <div class="card shadow rounded-4 mt-5">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-person-fill"></i>
+            <h2 class="h4 m-0">로그인</h2>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">이메일</label>
+            <input class="form-control" v-model="email" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">비밀번호</label>
+            <input class="form-control" v-model="password" type="password" placeholder="••••••••" />
+          </div>
+          <button class="btn btn-primary w-100" @click="onLogin">로그인</button>
+          <div class="text-center mt-3">
+            <RouterLink class="small text-decoration-none" to="/signup">아직 계정이 없으신가요? 회원가입</RouterLink>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">비밀번호</label>
-      <input class="form-input" v-model="password" type="password" />
-    </div>
-    <button class="btn" @click="onLogin">로그인</button>
   </div>
 </template>
