@@ -3,13 +3,31 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useScheduleStore } from '../stores/schedule'
 
-const form = ref({ title: '', scheduleType: '', startDateTime: '', endDateTime: '' })
+const form = ref({
+  title: '',
+  scheduleType: '',
+  startDate: '',
+  startTime: '',
+  endDate: '',
+  endTime: '',
+})
 const scheduleStore = useScheduleStore()
 const router = useRouter()
 
+const toDateTime = (date, time) => {
+  const t = time && time.length >= 4 ? time : '00:00'
+  return `${date}T${t}:00`
+}
+
 const onCreate = async () => {
   try {
-    await scheduleStore.createSchedule(form.value)
+    const payload = {
+      title: form.value.title,
+      scheduleType: form.value.scheduleType,
+      startDateTime: toDateTime(form.value.startDate, form.value.startTime),
+      endDateTime: toDateTime(form.value.endDate, form.value.endTime),
+    }
+    await scheduleStore.createSchedule(payload)
     alert('일정이 생성되었습니다.')
     router.push('/schedule')
   } catch (e) {
@@ -34,11 +52,21 @@ const onCreate = async () => {
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">시작일</label>
-              <input class="form-control" v-model="form.startDateTime" type="date" />
+              <input class="form-control" v-model="form.startDate" type="date" />
             </div>
             <div class="col-md-6">
+              <label class="form-label">시작 시간</label>
+              <input class="form-control" v-model="form.startTime" type="time" />
+            </div>
+          </div>
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
               <label class="form-label">종료일</label>
-              <input class="form-control" v-model="form.endDateTime" type="date" />
+              <input class="form-control" v-model="form.endDate" type="date" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">종료 시간</label>
+              <input class="form-control" v-model="form.endTime" type="time" />
             </div>
           </div>
           <div class="mt-3">

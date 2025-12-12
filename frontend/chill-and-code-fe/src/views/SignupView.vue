@@ -22,24 +22,36 @@ const onSignup = async () => {
 </script>
 
 <template>
-  <div>
-    <h2 class="page-title">회원가입</h2>
-    <div class="form-group">
-      <label class="form-label">이메일</label>
-      <input class="form-input" v-model="email" type="email" />
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-5 col-lg-4">
+      <div class="card shadow rounded-4 mt-5">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-person-plus-fill"></i>
+            <h2 class="h4 m-0">회원가입</h2>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">이메일</label>
+            <input class="form-control" v-model="email" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">비밀번호</label>
+            <input class="form-control" v-model="password" type="password" placeholder="••••••••" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">닉네임</label>
+            <input class="form-control" v-model="nickname" placeholder="별명" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">지역</label>
+            <input class="form-control" v-model="region" placeholder="예: 서울" />
+          </div>
+          <button class="btn btn-primary w-100" @click="onSignup">회원가입</button>
+          <div class="text-center mt-3">
+            <RouterLink class="small text-decoration-none" to="/login">이미 계정이 있으신가요? 로그인</RouterLink>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">비밀번호</label>
-      <input class="form-input" v-model="password" type="password" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">닉네임</label>
-      <input class="form-input" v-model="nickname" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">지역</label>
-      <input class="form-input" v-model="region" />
-    </div>
-    <button class="btn" @click="onSignup">회원가입</button>
   </div>
 </template>

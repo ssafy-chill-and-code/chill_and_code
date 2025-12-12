@@ -6,23 +6,44 @@ import { useScheduleStore } from '../stores/schedule'
 const route = useRoute()
 const router = useRouter()
 const scheduleStore = useScheduleStore()
-const form = ref({ title: '', startDateTime: '', endDateTime: '', type: '' })
+const form = ref({
+  title: '',
+  scheduleType: '',
+  startDate: '',
+  startTime: '',
+  endDate: '',
+  endTime: '',
+})
 
 onMounted(() => {
   const id = route.params.id
   const data = scheduleStore.schedules.find((s) => String(s.scheduleId) === String(id)) || {}
   const onlyDate = (v) => (typeof v === 'string' ? v.substring(0, 10) : '')
+  const onlyTime = (v) => (typeof v === 'string' && v.length >= 16 ? v.substring(11, 16) : '')
   form.value = {
     title: data.title || '',
-    startDateTime: onlyDate(data.startDateTime),
-    endDateTime: onlyDate(data.endDateTime),
     scheduleType: data.scheduleType || '',
+    startDate: onlyDate(data.startDateTime),
+    startTime: onlyTime(data.startDateTime),
+    endDate: onlyDate(data.endDateTime),
+    endTime: onlyTime(data.endDateTime),
   }
 })
 
+const toDateTime = (date, time) => {
+  const t = time && time.length >= 4 ? time : '00:00'
+  return `${date}T${t}:00`
+}
+
 const onUpdate = async () => {
   try {
-    await scheduleStore.updateSchedule(route.params.id, form.value)
+    const payload = {
+      title: form.value.title,
+      scheduleType: form.value.scheduleType,
+      startDateTime: toDateTime(form.value.startDate, form.value.startTime),
+      endDateTime: toDateTime(form.value.endDate, form.value.endTime),
+    }
+    await scheduleStore.updateSchedule(route.params.id, payload)
     alert('수정되었습니다.')
     router.push('/schedule')
   } catch (e) {
@@ -47,11 +68,21 @@ const onUpdate = async () => {
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">시작일</label>
-              <input class="form-control" v-model="form.startDateTime" type="date" />
+              <input class="form-control" v-model="form.startDate" type="date" />
             </div>
             <div class="col-md-6">
+              <label class="form-label">시작 시간</label>
+              <input class="form-control" v-model="form.startTime" type="time" />
+            </div>
+          </div>
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
               <label class="form-label">종료일</label>
-              <input class="form-control" v-model="form.endDateTime" type="date" />
+              <input class="form-control" v-model="form.endDate" type="date" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">종료 시간</label>
+              <input class="form-control" v-model="form.endTime" type="time" />
             </div>
           </div>
           <div class="mt-3">
