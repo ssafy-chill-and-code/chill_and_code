@@ -109,6 +109,22 @@
 		DELETE FROM post
 		WHERE post_id
 		= #{postId}
-	</delete>
+</delete>
+
+    <!-- 지역별 게시글 수 랭킹 조회 -->
+    <select id="selectRegionRank" parameterType="map" resultType="com.ssafy.chillandcode.model.dto.post.RegionRank">
+        SELECT region,
+               COUNT(*) AS count
+        FROM post
+        WHERE region IS NOT NULL AND region &lt;&gt; ''
+        <if test="windowDays != null">
+            AND created_at &gt;= DATE_SUB(NOW(), INTERVAL #{windowDays} DAY)
+        </if>
+        GROUP BY region
+        ORDER BY count DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
 
 </mapper>

@@ -58,6 +58,8 @@ a,
   margin-bottom: 16px;
 }
 
+.page-subtitle { color: #666; margin-top: -8px; margin-bottom: 12px; }
+
 .form-group {
   margin-bottom: 12px;
 }
@@ -80,8 +82,16 @@ a,
   min-height: 120px;
 }
 
-/* Bootstrap 사용에 따른 기본 버튼 커스텀 제거
-   - Bootstrap의 `.btn`, `.btn-primary` 스타일이 제대로 보이도록 기존 전역 `.btn` 오버라이드 삭제 */
+.btn {
+  padding: 6px 12px;
+  border: 1px solid #aaa;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Utilities */
+.w-100 { width: 100%; }
 
 /* NAVBAR 레이아웃 */
 .navbar {
@@ -94,9 +104,20 @@ a,
 .navbar-right { display: flex; gap: 12px; }
 
 /* 커뮤니티 레이아웃 */
-.community-layout { display: flex; gap: 24px; }
-.community-main { flex: 3; }
-.community-sidebar { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.community-layout { display: grid; gap: 24px; }
+.community-main { min-width: 0; }
+.community-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+/* 데스크탑: 우측 사이드바 고정 폭(320px) */
+@media (min-width: 992px) {
+  .community-layout { grid-template-columns: 1fr 320px; align-items: start; }
+  .community-sidebar { position: sticky; top: 16px; }
+}
+
+/* 카테고리 탭 */
+.category-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; }
+.category-tab { border: 1px solid #ddd; background: #fff; border-radius: 999px; padding: 6px 12px; white-space: nowrap; font-size: 14px; cursor: pointer; }
+.category-tab.active { border-color: #2c7be5; color: #2c7be5; background: #e9f2ff; }
 
 /* Placeholder 박스 */
 .post-item-placeholder,
@@ -114,23 +135,39 @@ a,
   margin-bottom: 8px;
 }
 
-/* ---- UI polish (<= ~20 lines) ---- */
-h2, h3 { margin-bottom: 0.75rem; }
-.card { border-radius: 0.75rem; }
-.btn { border-radius: 0.5rem; }
-.form-control:focus { box-shadow: 0 0 0 .2rem rgba(13,110,253,.15); border-color: #86b7fe; }
-.list-group-item.hoverable { transition: background-color .2s ease, box-shadow .2s ease; }
-.list-group-item.hoverable:hover { background-color: #f8f9fa; box-shadow: 0 .25rem .5rem rgba(0,0,0,.05); }
-.navbar { padding-top: .9rem; padding-bottom: .9rem; }
-.small-badge { font-size: .75rem; padding: .35em .6em; }
+/* 게시글 리스트 아이템 클릭 가능 스타일 */
+.post-list-item { cursor: pointer; }
+.post-list-item:hover, .post-list-item:focus { background-color: var(--color-background-soft); }
 
-/* ---- UI tone adjustments (<= 20 lines) ---- */
-body { background-color: #fafbfc; line-height: 1.7; }
-h2, h3 { color: #2f3a45; }
-.navbar.bg-light { background-color: #fbfcfd !important; border-bottom: 1px solid rgba(0,0,0,0.06) !important; }
-.card { background-color: #fdfdfd; box-shadow: 0 .25rem .75rem rgba(20,20,20,0.06); }
-.card:hover { box-shadow: 0 .5rem 1rem rgba(20,20,20,0.08); }
-.btn-primary { background-color: #3f80ff; border-color: #3a78f0; }
-.btn-primary:hover, .btn-primary:focus { background-color: #356ee6; border-color: #3568da; }
-.btn-outline-secondary { color: #5f6b76; border-color: #cbd3da; }
-.btn-outline-secondary:hover, .btn-outline-secondary:focus { background-color: #eef1f5; border-color: #bfc8d1; color: #4d5964; }
+/* PostDetail: 좋아요/공유 비율 7:3 */
+.like-share-actions { display: flex; gap: 8px; }
+.like-share-actions .btn-like { flex: 7 1 0; }
+.like-share-actions .right-actions { flex: 3 1 0; display: flex; gap: 8px; }
+.like-share-actions .right-actions .btn { flex: 1 1 0; }
+
+/* Utilities for list previews */
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.avatar-sm { width: 20px; height: 20px; border-radius: 9999px; }
+.w-3 { width: 12px; }
+.h-3 { height: 12px; }
+
+/* Sidebar: 인기 지역 랭킹 폰트 축소 */
+.sidebar-ranking { font-size: 13px; }
+.sidebar-ranking h3 { font-size: 14px; margin-bottom: 12px; }
+
+/* 실시간 트렌드 카드 스타일 */
+.trend-card h3 { font-size: 14px; margin-bottom: 12px; }
+.trend-card .text-accent { color: #6c63ff; }
+.trend-tag {
+  border: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: linear-gradient(90deg, rgba(44,123,229,0.08), rgba(108,99,255,0.08));
+  color: inherit;
+}
+.trend-tag:hover {
+  background: linear-gradient(90deg, rgba(44,123,229,0.15), rgba(108,99,255,0.15));
+}
+.trend-count { font-size: 11px; color: #777; }
