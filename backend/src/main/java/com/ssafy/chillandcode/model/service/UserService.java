@@ -1,7 +1,10 @@
 package com.ssafy.chillandcode.model.service;
 
+import com.ssafy.chillandcode.model.dto.user.LoginRequest;
+import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
+import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 
 public interface UserService {
 	// 회원 가입 (등록)
@@ -11,11 +14,11 @@ public interface UserService {
 	User selectUser(long userId);
 
 	// 회원 정보 수정
-	boolean updateUser(User user);
+	boolean updateUser(long userId, UserUpdateRequest req);
 
 	// 회원 정보 삭제(탈퇴)
 	boolean softDelete(long userId);
 
 	// 로그인
-	User login(User user);
+	LoginResponse login(LoginRequest req);
 }

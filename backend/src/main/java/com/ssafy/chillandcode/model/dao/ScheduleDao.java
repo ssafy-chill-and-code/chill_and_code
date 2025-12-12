@@ -1,11 +1,14 @@
 package com.ssafy.chillandcode.model.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
+import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
 
 @Mapper
 public interface ScheduleDao {
@@ -15,13 +18,21 @@ public interface ScheduleDao {
 	
 	//일정 조회
 	List<Schedule> selectScheduleByMonth(
-			@Param("userId") long userId, @Param("month") String month);
+			@Param("userId") long userId, @Param("month") String month, 
+			@Param("type") List<ScheduleType> type);
 	
 	//일정 수정
-	int updateSchedule(
-			@Param("userId") long userId, @Param("scheduleId") long scheduleId, Schedule schedule);
+	int updateSchedule(ScheduleUpdateRequest req);
 	
 	//일정 삭제
 	int deleteSchedule(
 			@Param("userId") long userId, @Param("scheduleId") long scheduleId);
+	
+	//기간 조회
+	List<Schedule> selectScheduleByRange(
+			@Param("userId") long userId,
+			@Param("start") LocalDateTime start,
+			@Param("end") LocalDateTime end
+			);
+	
 }

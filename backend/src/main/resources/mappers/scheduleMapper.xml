@@ -5,13 +5,21 @@
 <mapper namespace="com.ssafy.chillandcode.model.dao.ScheduleDao">
 	<!--일정 생성-->
 	<insert id="insertSchedule" parameterType="Schedule">
-		INSERT INTO schedule (user_id, title, schedule_type, start_datetime, end_datetime, created_at)
+		INSERT INTO schedule (
+			user_id, 
+			title, 
+			schedule_type, 
+			start_datetime, 
+			end_datetime, 
+			auto_tag,
+			created_at)
 		VALUES (
 				#{userId},
 				#{title}, 
 				#{scheduleType},
 				#{startDateTime}, 
 				#{endDateTime},
+				#{autoTag},
 				Now()
 				)
 	</insert>
@@ -22,26 +30,48 @@
 		FROM schedule
 		WHERE user_id = #{userId}
 			AND DATE_FORMAT(start_datetime, '%Y-%m') = #{month}
+			<if test="type != null and type.size() > 0">
+				AND schedule_type IN
+				<foreach collection="type" item="t" open="(" separator="," close=")">
+					#{t}
+				</foreach>
+			</if>
+		ORDER BY start_datetime
+	</select>
+	
+	<!-- 특정 기간 일정 조회 -->
+	<select id="selectScheduleByRange" resultType="Schedule">
+		SELECT *
+		FROM schedule
+		WHERE user_id = #{userId}
+			AND start_datetime &lt; #{end}
+			AND end_datetime &gt; #{start}
 		ORDER BY start_datetime
 	</select>
 	
 	<!--일정 수정-->
-	<update id="updateSchedule">
+	<update id="updateSchedule" parameterType="ScheduleUpdateRequest">
 		UPDATE schedule
 		<set>
-			<if test="schedule.title != null">
-				title = #{schedule.title},
+			<if test="title != null">
+				title = #{title},
 			</if>
-			<if test="schedule.scheduleType != null">
-				schedule_type = #{schedule.scheduleType},
+			<if test="scheduleType != null">
+				schedule_type = #{scheduleType},
 			</if>
-			<if test="schedule.startDateTime != null">
-				start_datetime = #{schedule.startDateTime},
+			<if test="startDateTime != null">
+				start_datetime = #{startDateTime},
 			</if>
-			<if test="schedule.endDateTime != null">
-				end_datetime = #{schedule.endDateTime},
+			<if test="endDateTime != null">
+				end_datetime = #{endDateTime},
 			</if>
-			created_at = NOW()
+			<if test="autoTag != null">
+				auto_tag = #{autoTag},
+			</if>
+			<if test="userTag != null">
+				user_tag = #{userTag},
+			</if>
+			updated_at = NOW()
 		</set>
 		WHERE schedule_id = #{scheduleId}
 			AND user_id = #{userId}

@@ -3,11 +3,14 @@ package com.ssafy.chillandcode.model.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//import com.ssafy.chillandcode.exception.ApiException;
-//import com.ssafy.chillandcode.exception.ErrorCode;
+import com.ssafy.chillandcode.exception.ApiException;
+import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.UserDao;
+import com.ssafy.chillandcode.model.dto.user.LoginRequest;
+import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
+import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,29 +23,29 @@ public class UserServiceImpl implements UserService {
 	public void insertUser(UserSignUpRequest req) {
 		
 		//검증
-//		if(!isValidEmail(req.getEmail())) {
-//			throw new ApiException(ErrorCode.INVALID_EMAIL_FORMAT);
-//		}
-//		
-//		if(!isValidPassword(req.getPassword())) {
-//			throw new ApiException(ErrorCode.INVALID_PASSWORD);
-//		}
-//		
-//		if(!isValidNickname(req.getNickname())) {
-//			throw new ApiException(ErrorCode.INVALID_NICKNAME);
-//		}
-//		
-//		//중복 체크
-//		if(userDao.existsByEmail(req.getEmail()) > 0) {
-//			throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
-//		}
+		if(!isValidEmail(req.getEmail())) {
+			throw new ApiException(ErrorCode.INVALID_EMAIL_FORMAT);
+		}
+		
+		if(!isValidPassword(req.getPassword())) {
+			throw new ApiException(ErrorCode.INVALID_PASSWORD);
+		}
+		
+		if(!isValidNickname(req.getNickname())) {
+			throw new ApiException(ErrorCode.INVALID_NICKNAME);
+		}
+		
+		//중복 체크
+		if(userDao.existsByEmail(req.getEmail()) > 0) {
+			throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
+		}
 		
 		
 		User user = req.toEntity();
 		int rows = userDao.insertUser(user);
-//		if(rows != 1) {
-//			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
-//		}
+		if(rows != 1) {
+			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
+		}
 		
 		return;
 	}
@@ -55,8 +58,9 @@ public class UserServiceImpl implements UserService {
 	
 	//회원 정보 수정
 	@Override
-	public boolean updateUser(User user) {
-		return userDao.updateUser(user) == 1;
+	public boolean updateUser(long userId, UserUpdateRequest req) {
+		req.setUserId(userId);
+		return userDao.updateUser(req) == 1;
 	}
 	
 	//회원 정보 삭제(탈퇴)
@@ -67,11 +71,34 @@ public class UserServiceImpl implements UserService {
 	
 	//로그인
 	@Override
-	public User login(User user) {
-		return userDao.login(user);
+	public LoginResponse login(LoginRequest req) {
+		
+		// 이메일로 사용자 조회 (존재하지 않으면 INVALID_LOGIN 처리)
+		User user = userDao.findByEmail(req.getEmail());
+		if(user==null) {
+			throw new ApiException(ErrorCode.INVALID_LOGIN);
+		}
+		
+		// 보안상 탈퇴 사용자도 별도 처리
+		if(user.getIsDeleted() == 1) {
+			throw new ApiException(ErrorCode.DELETED_USER);
+		}
+		
+		// 비밀번호 불일치 시 동일 에러 코드로 처리 (사용자 정보 유추 방지)
+		if(!user.getPassword().equals(req.getPassword())) {
+			throw new ApiException(ErrorCode.INVALID_LOGIN);
+		}
+		
+		LoginResponse response = LoginResponse.from(user);
+		
+		return response;
 	}
 	
-	//검증 로직
+	
+	
+	/**
+		검증로직
+	 */
 	private boolean isValidEmail(String email) {
 		if(email == null) return false;
 		return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
