@@ -1,35 +1,56 @@
 <template>
   <div>
-    <h2 class="page-title">일과 휴식의 완벽한 균형, Chill & Code</h2>
-    <p>데이터 기반 AI 분석으로 당신에게 최적화된 워케이션 시기와 장소를 추천합니다.</p>
-    <p>
-      <RouterLink class="btn" to="/schedule">📅 캘린더 시작하기</RouterLink>
-      <RouterLink class="btn" to="/recommend">📍 추천 장소 둘러보기</RouterLink>
-    </p>
+    <section class="p-5 mb-4 bg-light rounded-4 shadow-sm text-center">
+      <div class="container py-4">
+        <h2 class="fw-bold mb-2">일과 휴식의 완벽한 균형</h2>
+        <h3 class="h5 text-muted mb-4">Chill & Code로 스마트한 워케이션 계획</h3>
+        <div class="d-flex justify-content-center gap-2">
+          <RouterLink class="btn btn-primary btn-lg" to="/schedule">
+            <i class="bi bi-calendar-event me-1"></i> 캘린더 시작하기
+          </RouterLink>
+          <RouterLink class="btn btn-outline-secondary btn-lg disabled" to="#" aria-disabled="true">
+            <i class="bi bi-geo-alt"></i> 추천 장소(준비중)
+          </RouterLink>
+        </div>
+      </div>
+    </section>
 
-    <h3 class="page-title">왜 Chill & Code인가요?</h3>
-    <p>스마트한 워케이션 계획을 위한 모든 기능을 제공합니다.</p>
-    <ul>
-      <li>
-        <strong>📆 스마트 일정 관리</strong> — 개인, 업무, 워케이션 일정을 한눈에 관리하고 최적의 시간을 찾아보세요.
-      </li>
-      <li>
-        <strong>📈 데이터 기반 분석</strong> — AI가 일정 패턴을 분석하여 워케이션 최적 기간을 추천해드립니다.
-      </li>
-      <li>
-        <strong>📍 맞춤형 장소 추천</strong> — 업무 환경·취향을 반영한 장소 추천으로 만족스러운 워케이션을 경험하세요.
-      </li>
-      <li>
-        <strong>💬 커뮤니티 공유</strong> — 다른 사용자들의 워케이션 노하우와 경험을 공유하며 소통해보세요.
-      </li>
-    </ul>
+    <section class="my-4">
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="card h-100 shadow-sm rounded-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-check2-square"></i>
+                <strong>스마트 일정 관리</strong>
+              </div>
+              <p class="mb-0 text-muted">개인/업무/워케이션 일정을 한눈에.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card h-100 shadow-sm rounded-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-graph-up"></i>
+                <strong>데이터 기반 분석</strong>
+              </div>
+              <p class="mb-0 text-muted">패턴 분석으로 최적 기간 추천.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card h-100 shadow-sm rounded-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-people"></i>
+                <strong>커뮤니티 공유</strong>
+              </div>
+              <p class="mb-0 text-muted">경험 공유와 소통(기능 유지).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
-
-<style scoped>
-p { margin: 8px 0 12px; }
-ul { margin: 8px 0 12px; padding-left: 18px; }
-li { margin: 6px 0; }
-.btn + .btn { margin-left: 8px; }
-</style>
-  

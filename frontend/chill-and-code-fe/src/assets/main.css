@@ -80,13 +80,8 @@ a,
   min-height: 120px;
 }
 
-.btn {
-  padding: 6px 12px;
-  border: 1px solid #aaa;
-  background: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
+/* Bootstrap 사용에 따른 기본 버튼 커스텀 제거
+   - Bootstrap의 `.btn`, `.btn-primary` 스타일이 제대로 보이도록 기존 전역 `.btn` 오버라이드 삭제 */
 
 /* NAVBAR 레이아웃 */
 .navbar {
@@ -118,3 +113,24 @@ a,
   font-weight: 600;
   margin-bottom: 8px;
 }
+
+/* ---- UI polish (<= ~20 lines) ---- */
+h2, h3 { margin-bottom: 0.75rem; }
+.card { border-radius: 0.75rem; }
+.btn { border-radius: 0.5rem; }
+.form-control:focus { box-shadow: 0 0 0 .2rem rgba(13,110,253,.15); border-color: #86b7fe; }
+.list-group-item.hoverable { transition: background-color .2s ease, box-shadow .2s ease; }
+.list-group-item.hoverable:hover { background-color: #f8f9fa; box-shadow: 0 .25rem .5rem rgba(0,0,0,.05); }
+.navbar { padding-top: .9rem; padding-bottom: .9rem; }
+.small-badge { font-size: .75rem; padding: .35em .6em; }
+
+/* ---- UI tone adjustments (<= 20 lines) ---- */
+body { background-color: #fafbfc; line-height: 1.7; }
+h2, h3 { color: #2f3a45; }
+.navbar.bg-light { background-color: #fbfcfd !important; border-bottom: 1px solid rgba(0,0,0,0.06) !important; }
+.card { background-color: #fdfdfd; box-shadow: 0 .25rem .75rem rgba(20,20,20,0.06); }
+.card:hover { box-shadow: 0 .5rem 1rem rgba(20,20,20,0.08); }
+.btn-primary { background-color: #3f80ff; border-color: #3a78f0; }
+.btn-primary:hover, .btn-primary:focus { background-color: #356ee6; border-color: #3568da; }
+.btn-outline-secondary { color: #5f6b76; border-color: #cbd3da; }
+.btn-outline-secondary:hover, .btn-outline-secondary:focus { background-color: #eef1f5; border-color: #bfc8d1; color: #4d5964; }
