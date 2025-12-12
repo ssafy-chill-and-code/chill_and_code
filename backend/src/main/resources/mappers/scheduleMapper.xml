@@ -65,9 +65,6 @@
 			<if test="endDateTime != null">
 				end_datetime = #{endDateTime},
 			</if>
-			<if test="autoTag != null">
-				auto_tag = #{autoTag},
-			</if>
 			<if test="userTag != null">
 				user_tag = #{userTag},
 			</if>
