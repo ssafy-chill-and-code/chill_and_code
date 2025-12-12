@@ -116,7 +116,7 @@
         SELECT region,
                COUNT(*) AS count
         FROM post
-        WHERE region IS NOT NULL AND region <> ''
+        WHERE region IS NOT NULL AND region &lt;&gt; ''
         <if test="windowDays != null">
             AND created_at &gt;= DATE_SUB(NOW(), INTERVAL #{windowDays} DAY)
         </if>
