@@ -1,6 +1,5 @@
 package com.ssafy.chillcode.recommend.period;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -32,7 +31,8 @@ public class PeriodRecommendationEngine {
 		Map<LocalDate, List<Tag>> days = flattenSchedules(schedules, context);
 
 		// 2. 옵션 반영해 busy/free 판정
-		Map<LocalDate, Boolean> busyMap = calculateBusyDays(days, context);
+		BusyDayEvaluator busyDayEvaluator = new BusyDayEvaluator();
+		Map<LocalDate, Boolean> busyMap = busyDayEvaluator.calculateBusyDays(days, context);
 
 		// 3. 연속 free 기간 추출
 		findFreeSegments(busyMap, context);
@@ -91,51 +91,6 @@ public class PeriodRecommendationEngine {
 		return s.getUserTag();
 	}
 
-	/**
-	 * 2. 옵션 반영해 busy/free 판정
-	 */
-	public Map<LocalDate, Boolean> calculateBusyDays(Map<LocalDate, List<Tag>> days,
-			PeriodRecommendationContext context) {
-
-		Map<LocalDate, Boolean> result = new HashMap<>();
-
-		for (Map.Entry<LocalDate, List<Tag>> entry : days.entrySet()) {
-			boolean isBusy = isBusyDay(entry.getValue(), context.isRemoteWorkAllowed(), context.isAllowLightPersonal());
-			result.put(entry.getKey(), isBusy);
-		}
-
-		return result;
-	}
-
-	private boolean isBusyDay(List<Tag> tags, boolean remoteWorkAllowed, boolean allowLightPersonal) {
-		// Busy-day rule (MVP)
-		// 우선순위: HIGH_PRIORITY > ALL_DAY_EVENT > REMOTE_POSSIBLE > PERSONAL_FLEX >
-		// UNKNOWN
-		// HIGH_PRIORITY, ALL_DAY_EVENT -> 항상 busy
-		// REMOTE_POSSIBLE, PERSONAL_FLEX -> 사용자 옵션에 따라
-
-		if (tags == null || tags.isEmpty()) {
-			return false; // free
-		}
-
-		if (tags.contains(Tag.HIGH_PRIORITY)) {
-			return true;
-		}
-
-		if (tags.contains(Tag.ALL_DAY_EVENT)) {
-			return true;
-		}
-
-		if (tags.contains(Tag.REMOTE_POSSIBLE)) {
-			return !remoteWorkAllowed;
-		}
-
-		if (tags.contains(Tag.PERSONAL_FLEX)) {
-			return !allowLightPersonal;
-		}
-
-		return !allowLightPersonal;
-	}
 
 	/**
 	 * 3. 연속 free 기간 추출 후 후보 생성 (min~max)
@@ -211,7 +166,7 @@ public class PeriodRecommendationEngine {
 				.isAfter(segmentEnd); start = start.plusDays(1)) {
 			
 			LocalDate end = start.plusDays(context.getMinDays()).minusDays(1);
-			int weekendCount = countWeekend(start, end);
+			int weekendCount = DateRangeUtils.countWeekend(start, end);
 
 			if (weekendCount > bestWeekendCount) {
 				bestWeekendCount = weekendCount;
@@ -234,22 +189,12 @@ public class PeriodRecommendationEngine {
 			return;
 		}
 		
-		int currentWeekend = countWeekend(weekendCandidate.getStartDate(), weekendCandidate.getEndDate());
+		int currentWeekend = DateRangeUtils.countWeekend(weekendCandidate.getStartDate(), weekendCandidate.getEndDate());
 		if (currentWeekend < bestWeekendCount || (currentWeekend == bestWeekendCount && weekendCandidate.getStartDate().isAfter(bestStartDate))) {
 			weekendCandidate = new PeriodCandidate(bestStartDate, bestStartDate.plusDays(context.getMinDays() - 1), 
 												context.getMinDays(), CandidateType.WEEKEND_OPTIMAL);
 		}
 	}
 
-	private int countWeekend(LocalDate start, LocalDate end) {
-		int count = 0;
-		for(LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
-			DayOfWeek day = d.getDayOfWeek();
-			if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
-				count++;
-			}
-		}
-		
-		return count;
-	}
+	
 }
