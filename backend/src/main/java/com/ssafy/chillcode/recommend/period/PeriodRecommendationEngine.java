@@ -1,5 +1,6 @@
 package com.ssafy.chillcode.recommend.period;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -13,16 +14,20 @@ import com.ssafy.chillandcode.model.dto.schedule.Schedule.Tag;
 public class PeriodRecommendationEngine {
 
 	/**
-	 * 기간 추천(분석) 흐름 
-	 * 0. 특정 기간 일정 리스트를 넘겨받음 
-	 * 1. 날짜 단위 flatten + tag 수집 
-	 * 2. 옵션 반영해 busy/free 판정
-	 * 3. 연속 free 기간 추출 (min~max) 
-	 * 4. scoring + TOP1 선정
+	 * 기간 추천(분석) 흐름 0. 특정 기간 일정 리스트를 넘겨받음 1. 날짜 단위 flatten + tag 수집 2. 옵션 반영해
+	 * busy/free 판정 3. 연속 free 기간 추출 (min~max) 4. scoring + TOP1 선정
 	 */
-	
-	public void recommend(List<Schedule> schedules, PeriodRecommendationContext context) {
 
+	PeriodCandidate longestCandidate;
+	PeriodCandidate fastestCandidate;
+	PeriodCandidate weekendCandidate;
+
+	public List<PeriodCandidate> recommend(List<Schedule> schedules, PeriodRecommendationContext context) {
+
+		longestCandidate = null;
+		fastestCandidate = null;
+		weekendCandidate = null;
+		
 		// 1. 날짜 단위 flatten + 태그 수집
 		Map<LocalDate, List<Tag>> days = flattenSchedules(schedules, context);
 
@@ -31,6 +36,22 @@ public class PeriodRecommendationEngine {
 
 		// 3. 연속 free 기간 추출
 		findFreeSegments(busyMap, context);
+		
+		List<PeriodCandidate> result = new ArrayList<>();
+		
+		if(longestCandidate != null) {
+			result.add(longestCandidate);
+		}
+		
+		if(fastestCandidate != null) {
+			result.add(fastestCandidate);
+		}
+		
+		if(weekendCandidate != null) {
+			result.add(weekendCandidate);
+		}
+		
+		return result;
 	}
 
 	/**
@@ -73,90 +94,162 @@ public class PeriodRecommendationEngine {
 	/**
 	 * 2. 옵션 반영해 busy/free 판정
 	 */
-	public Map<LocalDate, Boolean> calculateBusyDays(Map<LocalDate, List<Tag>> days, PeriodRecommendationContext context) {
+	public Map<LocalDate, Boolean> calculateBusyDays(Map<LocalDate, List<Tag>> days,
+			PeriodRecommendationContext context) {
 
 		Map<LocalDate, Boolean> result = new HashMap<>();
-		
-		for(Map.Entry<LocalDate, List<Tag>> entry : days.entrySet()) {
+
+		for (Map.Entry<LocalDate, List<Tag>> entry : days.entrySet()) {
 			boolean isBusy = isBusyDay(entry.getValue(), context.isRemoteWorkAllowed(), context.isAllowLightPersonal());
 			result.put(entry.getKey(), isBusy);
 		}
-		
+
 		return result;
 	}
 
 	private boolean isBusyDay(List<Tag> tags, boolean remoteWorkAllowed, boolean allowLightPersonal) {
 		// Busy-day rule (MVP)
-		// 우선순위: HIGH_PRIORITY > ALL_DAY_EVENT > REMOTE_POSSIBLE > PERSONAL_FLEX > UNKNOWN
+		// 우선순위: HIGH_PRIORITY > ALL_DAY_EVENT > REMOTE_POSSIBLE > PERSONAL_FLEX >
+		// UNKNOWN
 		// HIGH_PRIORITY, ALL_DAY_EVENT -> 항상 busy
 		// REMOTE_POSSIBLE, PERSONAL_FLEX -> 사용자 옵션에 따라
-		
-		if(tags == null || tags.isEmpty()) {
-			return false; //free
+
+		if (tags == null || tags.isEmpty()) {
+			return false; // free
 		}
-		
-		if(tags.contains(Tag.HIGH_PRIORITY)) {
+
+		if (tags.contains(Tag.HIGH_PRIORITY)) {
 			return true;
 		}
-		
-		if(tags.contains(Tag.ALL_DAY_EVENT)) {
+
+		if (tags.contains(Tag.ALL_DAY_EVENT)) {
 			return true;
 		}
-		
-		if(tags.contains(Tag.REMOTE_POSSIBLE)) {
+
+		if (tags.contains(Tag.REMOTE_POSSIBLE)) {
 			return !remoteWorkAllowed;
 		}
-		
-		if(tags.contains(Tag.PERSONAL_FLEX)) {
+
+		if (tags.contains(Tag.PERSONAL_FLEX)) {
 			return !allowLightPersonal;
 		}
-		
+
 		return !allowLightPersonal;
 	}
 
 	/**
-	 * 3. 연속 free 기간 추출 (min~max)
+	 * 3. 연속 free 기간 추출 후 후보 생성 (min~max)
 	 */
-	public List<FreeSegment> findFreeSegments(Map<LocalDate, Boolean> busyMap, PeriodRecommendationContext context) {
-		List<FreeSegment> result = new ArrayList<>();
-		
+	public void findFreeSegments(Map<LocalDate, Boolean> busyMap, PeriodRecommendationContext context) {
+
 		boolean inFreeSegment = false;
 		LocalDate segmentStart = null;
 		LocalDate segmentEnd = null;
-		
-		//realStart, realEnd 값을 기준으로 날짜에 plus 1 씩하면서 검색을 통한 순회
-		for(LocalDate d = context.getSearchStart(); !d.isAfter(context.getSearchEnd()); d = d.plusDays(1)) {
-			
-			//free 날짜
-			if(!busyMap.getOrDefault(d, false)) {
-				if(!inFreeSegment) {
+
+		// realStart, realEnd 값을 기준으로 날짜에 plus 1 씩하면서 검색을 통한 순회
+		for (LocalDate d = context.getSearchStart(); !d.isAfter(context.getSearchEnd()); d = d.plusDays(1)) {
+
+			// free 날짜
+			if (!busyMap.getOrDefault(d, false)) {
+				if (!inFreeSegment) {
 					inFreeSegment = true;
 					segmentStart = d;
 				}
 			}
-			//busy 날짜
+			// busy 날짜
 			else {
-				if(inFreeSegment) {
+				if (inFreeSegment) {
 					inFreeSegment = false;
 					segmentEnd = d.minusDays(1);
-					
+
 					onFreeSegmentEnd(segmentStart, segmentEnd, context);
 				}
 			}
 		}
-		
-		if(inFreeSegment) {
+
+		if (inFreeSegment) {
 			onFreeSegmentEnd(segmentStart, context.getSearchEnd(), context);
 		}
-		return result;
 	}
-	
-	//free 구간 종료 로직
+
+	// free 구간 종료 로직
 	private void onFreeSegmentEnd(LocalDate segmentStart, LocalDate segmentEnd, PeriodRecommendationContext context) {
 		int duration = (int) segmentStart.until(segmentEnd, ChronoUnit.DAYS) + 1;
-		
-		if(duration >= context.getMinDays()) {
-			//후보 생성 정책 작성
+
+		if (duration < context.getMinDays()) {
+			return;
 		}
+
+		/**
+		 * A. 가장 긴 기간: maxDays를 넘지 않는 선에서 최대 길이 
+		 * B. 가장 빠른 시작 후보: segmentStart부터 시작해서 minDays를 충족하는 기간 
+		 * C. 주말을 가장 많이 포함하는 연속기간
+		 */
+
+		// A 후보 갱신
+		int candidateLength = Math.min(duration, context.getMaxDays());
+		LocalDate candidateStart = segmentStart;
+		LocalDate candidateEnd = candidateStart.plusDays(candidateLength - 1);
+
+		if (longestCandidate == null || longestCandidate.getDurationDays() < candidateLength) {
+			longestCandidate = new PeriodCandidate(candidateStart, candidateEnd, candidateLength,
+					CandidateType.LONGEST);
+		}
+
+		// B 후보 갱신
+		if (fastestCandidate == null || fastestCandidate.getStartDate().isAfter(segmentStart)) {
+			LocalDate end = segmentStart.plusDays(context.getMinDays()).minusDays(1);
+			fastestCandidate = new PeriodCandidate(segmentStart, end, context.getMinDays(), CandidateType.FASTEST);
+		}
+
+		// C 후보 갱신
+		LocalDate bestStartDate = null;
+		int bestWeekendCount = -1;
+
+		// C-1. 현재 free 구간에서 주말이 가장 많은 기간을 찾음 (최적 window 탐색)
+		for (LocalDate start = segmentStart; !start.plusDays(context.getMinDays() - 1)
+				.isAfter(segmentEnd); start = start.plusDays(1)) {
+			
+			LocalDate end = start.plusDays(context.getMinDays()).minusDays(1);
+			int weekendCount = countWeekend(start, end);
+
+			if (weekendCount > bestWeekendCount) {
+				bestWeekendCount = weekendCount;
+				bestStartDate = start;
+			} else if (weekendCount == bestWeekendCount) {
+				if (bestStartDate == null || start.isBefore(bestStartDate)) {
+					bestStartDate = start;
+				}
+			}
+		}
+		
+		if(bestStartDate == null) {
+			return;
+		}
+		LocalDate bestEndDate = bestStartDate.plusDays(context.getMinDays() - 1);
+		
+		// C-2. weekendCandidate랑 비교해서 갱신
+		if(weekendCandidate == null) {
+			weekendCandidate = new PeriodCandidate(bestStartDate, bestEndDate, context.getMinDays(), CandidateType.WEEKEND_OPTIMAL);
+			return;
+		}
+		
+		int currentWeekend = countWeekend(weekendCandidate.getStartDate(), weekendCandidate.getEndDate());
+		if (currentWeekend < bestWeekendCount || (currentWeekend == bestWeekendCount && weekendCandidate.getStartDate().isAfter(bestStartDate))) {
+			weekendCandidate = new PeriodCandidate(bestStartDate, bestStartDate.plusDays(context.getMinDays() - 1), 
+												context.getMinDays(), CandidateType.WEEKEND_OPTIMAL);
+		}
+	}
+
+	private int countWeekend(LocalDate start, LocalDate end) {
+		int count = 0;
+		for(LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+			DayOfWeek day = d.getDayOfWeek();
+			if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+				count++;
+			}
+		}
+		
+		return count;
 	}
 }
