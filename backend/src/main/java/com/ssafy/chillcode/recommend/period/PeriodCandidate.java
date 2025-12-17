@@ -2,6 +2,8 @@ package com.ssafy.chillcode.recommend.period;
 
 import java.time.LocalDate;
 
+/**
+ * 엔진 내부 도메인 객체*/
 public class PeriodCandidate {
 	
 	LocalDate startDate;

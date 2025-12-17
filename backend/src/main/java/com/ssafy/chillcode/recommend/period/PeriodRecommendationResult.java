@@ -2,6 +2,8 @@ package com.ssafy.chillcode.recommend.period;
 
 import java.util.List;
 
+/**
+ * 엔진 최종 산출물*/
 public class PeriodRecommendationResult {
 
 	PeriodCandidate primary; // TOP1

@@ -14,7 +14,7 @@ public class PeriodRecommendationContext {
 
 	// Busy/Free 판정에 영향을 주는 사용자 옵션
 	boolean remoteWorkAllowed;
-	boolean allowLightPersonal;
+	boolean allowLightPersonal; //true default 값
 
 	// 추천 기준 시점
 	LocalDate today;
