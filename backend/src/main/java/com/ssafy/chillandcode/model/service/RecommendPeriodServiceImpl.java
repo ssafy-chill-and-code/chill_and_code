@@ -87,8 +87,8 @@ public class RecommendPeriodServiceImpl implements RecommendPeriodService {
 		LocalDate searchStart = window.getStart();
 		LocalDate searchEnd = window.getEnd();
 		
-		int minDays = req.getMinDays() != null ? req.getMinDays() : 3;
-		int maxDays = req.getMaxDays() != null ? req.getMaxDays() : style.getLengthCap();
+		int minDays = (req.getMinDays() == null || req.getMinDays() <= 0) ? 3 : req.getMinDays();
+		int maxDays = (req.getMaxDays() == null || req.getMaxDays() <= 0) ? style.getLengthCap() : req.getMaxDays();
 		
 		// MVP 정책: 개인 일정은 기본적으로 free로 간주. (추후 allowLightPersonal 옵션 UI 노출 가능)
 		boolean remoteWorkAllowed = req.isRemoteWorkAllowed();
