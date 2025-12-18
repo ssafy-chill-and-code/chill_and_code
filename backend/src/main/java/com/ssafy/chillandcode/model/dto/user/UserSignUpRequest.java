@@ -1,7 +1,5 @@
 package com.ssafy.chillandcode.model.dto.user;
 
-import com.ssafy.chillandcode.model.dto.user.User;
-
 public class UserSignUpRequest {
 
 	private String email; // 로그인 아이디
