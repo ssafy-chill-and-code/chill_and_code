@@ -2,29 +2,28 @@ package com.ssafy.chillandcode.recommend.place;
 
 public class PlaceFeature {
 
+	// 식별/표시용 
+	private Long placeId;
 	private String name;
+	private String sido;
 
-	/**
-	 * 계산 대상
-	 */
+	// 계산 대상
 	private int workspaceCount;
 	private double natureScore;
 	private double activityScore;
 
-	/**
-	 * 판단 대상(필터용)
-	 */
+	// 필터용
 	private int priceLevel;
-	private String sido;
 
 	public PlaceFeature(String name, int workspaceCount, double natureScore, double activityScore, int priceLevel,
-			String sido) {
+			String sido, Long placeId) {
 		this.name = name;
 		this.workspaceCount = workspaceCount;
 		this.natureScore = natureScore;
 		this.activityScore = activityScore;
 		this.priceLevel = priceLevel;
 		this.sido = sido;
+		this.placeId = placeId;
 	}
 
 	public String getName() {
@@ -49,6 +48,10 @@ public class PlaceFeature {
 
 	public String getSido() {
 		return sido;
+	}
+
+	public Long getPlaceId() {
+		return placeId;
 	}
 
 }

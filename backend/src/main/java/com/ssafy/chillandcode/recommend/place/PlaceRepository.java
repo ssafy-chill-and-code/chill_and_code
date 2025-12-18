@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface PlaceRepository {
 
-	List<PlaceFeature> findByRegionAndBudget(
+	List<PlaceFeatureView> findByRegionAndBudget(
 			@Param("sido") String sido,
 			@Param("minPriceLevel") int minPriceLevel,
 			@Param("maxPriceLevel") int maxPriceLevel

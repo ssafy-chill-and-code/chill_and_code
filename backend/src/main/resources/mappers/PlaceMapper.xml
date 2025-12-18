@@ -7,18 +7,20 @@
 
 
 	<select id="findByRegionAndBudget"
-		resultType="com.ssafy.chillandcode.recommend.place.PlaceFeature">
-		SELECT
-		name,
-		workspace_count,
-		nature_score,
-		activity_score,
-		price_level,
-		sido
-		FROM place
-		WHERE sido = #{sido}
-		AND price_level BETWEEN
-		#{minPriceLevel} AND #{maxPriceLevel}
-	</select>
+    resultType="com.ssafy.chillandcode.recommend.place.PlaceFeatureView">
+    SELECT
+        place_id        AS placeId,
+        name,
+        workspace_count AS workspaceCount,
+        nature_score    AS natureScore,
+        activity_score  AS activityScore,
+        price_level     AS priceLevel,
+        sido,
+        img_url         AS imageUrl
+    FROM place
+    WHERE sido = #{sido}
+      AND price_level BETWEEN #{minPriceLevel} AND #{maxPriceLevel}
+</select>
+
 
 </mapper>
