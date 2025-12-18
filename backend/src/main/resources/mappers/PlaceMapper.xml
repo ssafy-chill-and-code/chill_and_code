@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ssafy.chillandcode.recommend.place.PlaceRepository">
+
+
+	<select id="findByRegionAndBudget"
+		resultType="com.ssafy.chillandcode.recommend.place.PlaceFeature">
+		SELECT
+		name,
+		workspace_count,
+		nature_score,
+		activity_score,
+		price_level,
+		sido
+		FROM place
+		WHERE sido = #{sido}
+		AND price_level BETWEEN
+		#{minPriceLevel} AND #{maxPriceLevel}
+	</select>
+
+</mapper>
