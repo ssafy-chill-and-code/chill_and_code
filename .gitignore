@@ -515,6 +515,7 @@ pip-wheel-metadata/
 .coverage.*
 coverage.xml
 htmlcov/
-
+**/venv/
+**/.venv/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,git,java,maven,eclipse,visualstudiocode,intellij,gradle,node,vue
