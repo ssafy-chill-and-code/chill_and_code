@@ -3,6 +3,7 @@ package com.ssafy.chillandcode.recommend.place;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
  * 아직 실제 LLM 연동이 설정되지 않았을 때도
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@ConditionalOnProperty(value = "llm.enabled", havingValue = "false", matchIfMissing = true)
 public class NoopLlmClient implements LlmClient {
 
     @Override
