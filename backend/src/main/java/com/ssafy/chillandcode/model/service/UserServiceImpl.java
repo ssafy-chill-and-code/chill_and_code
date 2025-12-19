@@ -1,6 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.exception.ApiException;
@@ -17,6 +18,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDao userDao;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	//회원 가입 (등록)
 	@Override
@@ -42,6 +46,10 @@ public class UserServiceImpl implements UserService {
 		
 		
 		User user = req.toEntity();
+		
+		// BCrypt 적용
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
 		int rows = userDao.insertUser(user);
 		if(rows != 1) {
 			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
@@ -85,7 +93,8 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		// 비밀번호 불일치 시 동일 에러 코드로 처리 (사용자 정보 유추 방지)
-		if(!user.getPassword().equals(req.getPassword())) {
+		boolean ok = passwordEncoder.matches(req.getPassword(), user.getPassword());
+		if(!ok) {
 			throw new ApiException(ErrorCode.INVALID_LOGIN);
 		}
 		
