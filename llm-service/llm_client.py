@@ -55,11 +55,13 @@ def call_llm(prompt: str, places: List) -> dict:
     }
 
     try:
+        # 외부 LLM 호출 타임아웃: 기본 4초 (환경변수 GMS_TIMEOUT_SEC로 조정 가능)
+        timeout_sec = int(os.getenv("GMS_TIMEOUT_SEC", "4"))
         res = requests.post(
             GMS_URL,
             headers=headers,
             json=body,
-            timeout=10
+            timeout=timeout_sec
         )
         content = res.json()["choices"][0]["message"]["content"]
         return json.loads(content)   # ✅ LLM 정상 응답
