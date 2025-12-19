@@ -37,6 +37,12 @@ def recommend(req: RecommendRequest):
         transport=req.userContext.transport,
         places=req.places  
     )
-    llm_result = call_llm(prompt, req.places)
+    llm_result = call_llm(
+        prompt,
+        req.places,
+        style=req.userContext.style,
+        budget=req.userContext.budget,
+        transport=req.userContext.transport,
+    )
 
     return {"status": "ok", "llmResult": llm_result}
