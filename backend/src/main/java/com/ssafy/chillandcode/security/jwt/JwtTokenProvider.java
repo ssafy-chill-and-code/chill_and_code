@@ -35,18 +35,20 @@ public class JwtTokenProvider {
                 .compact();
     }
     
+    // 토큰 검증 (서명, 만료, 형식)
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJws(token);
+                .parseClaimsJws(token); // 검증
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
     
+    // 토큰에서 userId 추출
     public Long getUserId(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
