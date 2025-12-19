@@ -499,5 +499,22 @@ __pycache__/
 *.py[cod]
 .env
 
+# Additional Python ignores
+.venv/
+*.pyd
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.pytype/
+.ipynb_checkpoints/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+.tox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,git,java,maven,eclipse,visualstudiocode,intellij,gradle,node,vue
