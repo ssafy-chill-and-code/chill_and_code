@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Annotated, List
 from pydantic import Field
+from prompt import build_prompt
+from llm_client import call_llm
 
 app = FastAPI()
 
@@ -23,16 +25,13 @@ class RecommendRequest(BaseModel):
     userContext: UserContext
     places: Places
 
-from prompt import build_prompt
 
 @app.post("/llm/recommend")
 def recommend(req: RecommendRequest):
     prompt = build_prompt(
         style=req.userContext.style,
         budget=req.userContext.budget,
-        places=req.places
+        places=req.places  
     )
-    return {
-        "status": "ok",
-        "promptPreview": prompt  # 테스트용
-    }
+    llm_result = call_llm(prompt)
+    return {"status": "ok", "llmResult": llm_result}
