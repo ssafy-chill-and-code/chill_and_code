@@ -493,4 +493,11 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+### Python ###
+venv/
+__pycache__/
+*.py[cod]
+.env
+
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,git,java,maven,eclipse,visualstudiocode,intellij,gradle,node,vue
