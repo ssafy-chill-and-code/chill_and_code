@@ -15,8 +15,7 @@ public interface PlaceRecommendService {
         String style,
         String budget,
         String region,
-        String transport,
-        Map<Long, LlmResult> llmResultMap
+        String transport
     );
     
 }
