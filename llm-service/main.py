@@ -23,6 +23,16 @@ class RecommendRequest(BaseModel):
     userContext: UserContext
     places: Places
 
+from prompt import build_prompt
+
 @app.post("/llm/recommend")
 def recommend(req: RecommendRequest):
-    return {"status": "ok"}
+    prompt = build_prompt(
+        style=req.userContext.style,
+        budget=req.userContext.budget,
+        places=req.places
+    )
+    return {
+        "status": "ok",
+        "promptPreview": prompt  # 테스트용
+    }
