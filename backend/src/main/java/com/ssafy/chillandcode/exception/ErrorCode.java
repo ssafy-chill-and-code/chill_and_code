@@ -20,10 +20,16 @@ public enum ErrorCode {
     // 🔹 인증(Authentication)
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다."),
-
+    
+    // 인증 / 토큰 관련
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh Token입니다."),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 Refresh Token입니다."),
+    REVOKED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "폐기된 Refresh Token입니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "Refresh Token을 찾을 수 없습니다."),
+    
     // 🔹 인가(Authorization)
     FORBIDDEN_ACTION(HttpStatus.FORBIDDEN, "권한이 없습니다."),
-
+    
     // 🔹 리소스 조회 실패 (Not Found)
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),

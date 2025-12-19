@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.chillandcode.model.dao.RefreshTokenDao">
+	
+	<!--resultMap-->
+	 <resultMap id="RefreshTokenMap" type="com.ssafy.chillandcode.model.dto.auth.RefreshToken">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="tokenHash" column="token_hash"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="revoked" column="revoked"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="revokedAt" column="revoked_at"/>
+    </resultMap>
+    
+	<!--등록-->
+	<insert id="insert" parameterType="RefreshToken">
+		INSERT INTO refresh_token
+			(user_id, token_hash, expires_at, revoked, created_at, revoked_at)
+		VALUES
+			(#{userId}, #{tokenHash}, #{expiresAt}, #{revoked}, NOW(), NULL)
+	</insert>
+	
+	<!--조회-->
+	<select id="findByTokenHash" resultMap="RefreshTokenMap">
+		SELECT
+			id, user_id, token_hash, expires_at, revoked, created_at, revoked_at
+        FROM refresh_token
+        WHERE token_hash = #{tokenHash}
+        LIMIT 1
+	</select>
+	
+	<!--회수(수정)-->
+	<update id="revokeByTokenHash">
+		UPDATE refresh_token
+        SET revoked = 1,
+            revoked_at = NOW()
+        WHERE token_hash = #{tokenHash}
+          AND revoked = 0
+	</update>
+	
+	<!--id로 회수(수정)-->
+	<update id="revokeAllByUserId">
+        UPDATE refresh_token
+        SET revoked = 1,
+            revoked_at = NOW()
+        WHERE user_id = #{userId}
+          AND revoked = 0
+    </update>
+</mapper>

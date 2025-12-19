@@ -38,7 +38,9 @@ public class SecurityConfig {
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
 				// 요청별 접근 권한 설정
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
 
 						// 게시글 조회: 내 글 이외에는 누구나 접근 가능

@@ -2,6 +2,7 @@ package com.ssafy.chillandcode.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +19,9 @@ import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
+import com.ssafy.chillandcode.model.service.RefreshTokenService;
 import com.ssafy.chillandcode.model.service.UserService;
+import com.ssafy.chillandcode.security.jwt.JwtTokenProvider;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -28,6 +31,12 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+	
+	@Autowired
+	private RefreshTokenService refreshTokenService;
 
 	// 회원 가입 (등록)
 	@PostMapping
@@ -75,17 +84,22 @@ public class UserController {
 	@PostMapping("/login")
 	@Operation(summary = "로그인", description = "이메일과 비밀번호를 입력받아 사용자를 인증합니다.")
     public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest req) {
+		
 		LoginResponse result = userService.login(req);
-
-        return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", result));
-	}
-
-	// 로그아웃
-	@PostMapping("/logout")
-	@Operation(summary = "로그아웃", description = "JWT 기반 로그아웃 (클라이언트에서 토큰 폐기)")
-    public ResponseEntity<ApiResponse<?>> logout() {
-		//서버에서 할 일 없음
-		return ResponseEntity.ok(ApiResponse.success("로그아웃이 완료되었습니다.", null));
+		
+		String refreshToken = jwtTokenProvider.createRefreshToken(result.getUserId());
+		
+		refreshTokenService.store(result.getUserId(), refreshToken);
+		
+		ResponseCookie cookie = ResponseCookie.from("rt", refreshToken)
+				.httpOnly(true)
+				.path("/api")
+				.maxAge(60 * 60 * 24 * 14) // 14일
+				.build();
+		
+        return ResponseEntity.ok()
+        		.header("Set-Cookie", cookie.toString())
+        		.body(ApiResponse.success("로그인이 완료되었습니다.", result));
 	}
 
 }
