@@ -10,12 +10,16 @@ public class Schedule {
 	private LocalDateTime startDateTime; // 일정 시작일
 	private LocalDateTime endDateTime; // 일정 종료일
 	private String createdAt; // 일정 생성일
-	private String autoTag;
-	private String userTag; // 사용자 태그
+	private Tag autoTag; // 시스템이 추론한 성격(override)
+	private Tag userTag; // 사용자 태그
 	private String updatedAt;
 
 	public static enum ScheduleType {
 		PERSONAL, WORK, WORKATION;
+	}
+
+	public static enum Tag {
+		HIGH_PRIORITY, REMOTE_POSSIBLE, PERSONAL_FLEX, ALL_DAY_EVENT, UNKNOWN;
 	}
 
 	public Schedule() {
@@ -23,7 +27,7 @@ public class Schedule {
 	}
 
 	public Schedule(long scheduleId, long userId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
-			LocalDateTime endDateTime, String createdAt, String autoTag, String userTag, String updatedAt) {
+			LocalDateTime endDateTime, String createdAt, Tag autoTag, Tag userTag, String updatedAt) {
 		super();
 		this.scheduleId = scheduleId;
 		this.userId = userId;
@@ -93,19 +97,19 @@ public class Schedule {
 		this.createdAt = createdAt;
 	}
 
-	public String getAutoTag() {
+	public Tag getAutoTag() {
 		return autoTag;
 	}
 
-	public void setAutoTag(String autoTag) {
+	public void setAutoTag(Tag autoTag) {
 		this.autoTag = autoTag;
 	}
 
-	public String getUserTag() {
+	public Tag getUserTag() {
 		return userTag;
 	}
 
-	public void setUserTag(String userTag) {
+	public void setUserTag(Tag userTag) {
 		this.userTag = userTag;
 	}
 

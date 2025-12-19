@@ -3,6 +3,7 @@ package com.ssafy.chillandcode.model.dto.schedule;
 import java.time.LocalDateTime;
 
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule.Tag;
 
 public class ScheduleUpdateRequest {
 	private long scheduleId; // 수정할 일정
@@ -11,25 +12,14 @@ public class ScheduleUpdateRequest {
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
 	private ScheduleType scheduleType;
-	private String userTag;
+	private Tag userTag;
 
 	public ScheduleUpdateRequest() {
 
 	}
 
-	public ScheduleUpdateRequest(long scheduleId, String title, LocalDateTime startDateTime, LocalDateTime endDateTime,
-			ScheduleType scheduleType, String userTag) {
-		super();
-		this.scheduleId = scheduleId;
-		this.title = title;
-		this.startDateTime = startDateTime;
-		this.endDateTime = endDateTime;
-		this.scheduleType = scheduleType;
-		this.userTag = userTag;
-	}
-
-	public ScheduleUpdateRequest(long scheduleId, long userId, String title, LocalDateTime startDateTime, LocalDateTime endDateTime,
-			ScheduleType scheduleType, String userTag) {
+	public ScheduleUpdateRequest(long scheduleId, long userId, String title, LocalDateTime startDateTime,
+			LocalDateTime endDateTime, ScheduleType scheduleType, Tag userTag) {
 		super();
 		this.scheduleId = scheduleId;
 		this.userId = userId;
@@ -88,11 +78,11 @@ public class ScheduleUpdateRequest {
 		this.scheduleType = scheduleType;
 	}
 
-	public String getUserTag() {
+	public Tag getUserTag() {
 		return userTag;
 	}
 
-	public void setUserTag(String userTag) {
+	public void setUserTag(Tag userTag) {
 		this.userTag = userTag;
 	}
 
