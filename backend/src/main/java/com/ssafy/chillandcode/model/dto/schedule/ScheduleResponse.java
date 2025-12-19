@@ -7,7 +7,7 @@ import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 
 //프론트 캘린더/목록 화면에 내려주는 DTO
 public class ScheduleResponse {
-	private long scheduleId;
+	private Long scheduleId;
 	private String title;
 	private ScheduleType scheduleType;
 
@@ -21,7 +21,7 @@ public class ScheduleResponse {
 
 	}
 
-	public ScheduleResponse(long scheduleId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
+	public ScheduleResponse(Long scheduleId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
 			LocalDateTime endDateTime) {
 		super();
 		this.scheduleId = scheduleId;
@@ -31,11 +31,11 @@ public class ScheduleResponse {
 		this.endDateTime = endDateTime;
 	}
 
-	public long getScheduleId() {
+	public Long getScheduleId() {
 		return scheduleId;
 	}
 
-	public void setScheduleId(long scheduleId) {
+	public void setScheduleId(Long scheduleId) {
 		this.scheduleId = scheduleId;
 	}
 

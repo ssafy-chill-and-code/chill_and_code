@@ -40,12 +40,7 @@ public class ScheduleController {
 
 		req.setUserId(userId);
 
-		boolean result = scheduleService.insertSchedule(req);
-
-        if (!result) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("일정 등록에 실패했습니다."));
-        }
+		scheduleService.insertSchedule(req);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("일정이 등록되었습니다.", null));
@@ -69,32 +64,22 @@ public class ScheduleController {
 	@Operation(summary = "일정 수정", description = "scheduleId에 해당하는 일정을 수정합니다. 해당 일정의 소유자인지 userId로 확인합니다.")
     public ResponseEntity<ApiResponse<?>> updateSchedule(
     		@AuthenticationPrincipal Long userId,
-    		@PathVariable long scheduleId, 
+    		@PathVariable Long scheduleId, 
     		@RequestBody ScheduleUpdateRequest req) {
 
 		req.setScheduleId(scheduleId);
-		req.setUserId(userId);
 		
-		boolean result = scheduleService.updateSchedule(req);
+		scheduleService.updateSchedule(userId, req);
 
-        if (!result) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("일정 수정에 실패했습니다."));
-        }
 
         return ResponseEntity.ok(ApiResponse.success("일정이 수정되었습니다.", null));
 	}
 
 	@DeleteMapping("/{scheduleId}")
 	@Operation(summary = "일정 삭제", description = "scheduleId에 해당하는 일정을 삭제합니다. 로그인한 사용자 본인의 일정만 삭제 가능합니다.")
-    public ResponseEntity<ApiResponse<?>> deleteSchedule(@AuthenticationPrincipal Long userId, @PathVariable long scheduleId) {
+    public ResponseEntity<ApiResponse<?>> deleteSchedule(@AuthenticationPrincipal Long userId, @PathVariable Long scheduleId) {
 
-		boolean result = scheduleService.deleteSchedule(userId, scheduleId);
-
-        if (!result) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("일정 삭제에 실패했습니다."));
-        }
+		scheduleService.deleteSchedule(userId, scheduleId);
 
         return ResponseEntity.ok(ApiResponse.success("일정이 삭제되었습니다.", null));
 	}

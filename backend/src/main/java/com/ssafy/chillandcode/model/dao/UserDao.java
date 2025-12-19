@@ -14,13 +14,13 @@ public interface UserDao {
 	int insertUser(User user);
 	
 	//회원 정보 조회
-	User selectUser(long userId);
+    User selectUser(Long userId);
 	
 	//회원 정보 수정
 	int updateUser(UserUpdateRequest req);
 	
 	//회원 정보 삭제(탈퇴)
-	int softDelete(long userId);
+    int softDelete(Long userId);
 	
 	//이메일 중복 검사
 	int existsByEmail(String email);

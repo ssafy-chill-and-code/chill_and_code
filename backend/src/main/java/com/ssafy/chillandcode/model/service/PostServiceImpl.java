@@ -18,26 +18,41 @@ public class PostServiceImpl implements PostService {
 	@Autowired
 	private PostDao postDao;
 
+	// 게시글 등록
 	@Override
-	public int insert(Post post) {
-		return postDao.insert(post);
+	public void insert(Post post) {
+
+		int rows = postDao.insert(post);
+
+		if (rows != 1) {
+			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "게시글 등록에 실패했습니다.");
+		}
 	}
 
+	// 게시글 목록 조회
 	@Override
 	public List<Post> selectAll(Map<String, Object> params) {
 		return postDao.selectAll(params);
 	}
 
+	// 내가 쓴 게시글 조회
 	@Override
 	public List<Post> findByUserId(Long userId) {
 		return postDao.selectByUserId(userId);
 	}
 
+	// 게시글 상세조회
 	@Override
 	public Post selectById(Long postId) {
-		return postDao.selectById(postId);
+		Post post = postDao.selectById(postId);
+		if (post == null) {
+			throw new ApiException(ErrorCode.POST_NOT_FOUND);
+		}
+
+		return post;
 	}
 
+	// 게시글 수정
 	@Override
 	public void update(Post post, Long userId) {
 		Post original = postDao.selectById(post.getPostId());
@@ -53,6 +68,7 @@ public class PostServiceImpl implements PostService {
 		}
 	}
 
+	// 게시글 삭제
 	@Override
 	public void delete(Long postId, Long userId) {
 		Post original = postDao.selectById(postId);
@@ -68,6 +84,7 @@ public class PostServiceImpl implements PostService {
 		}
 	}
 
+	// 지역별 게시글 수 랭킹 조회 (옵션: 기간, 제한 개수)
 	@Override
 	public List<RegionRank> selectRegionRank(Map<String, Object> params) {
 		return postDao.selectRegionRank(params);

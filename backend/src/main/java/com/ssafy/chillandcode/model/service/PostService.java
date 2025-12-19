@@ -13,7 +13,7 @@ public interface PostService {
 
 	/** 게시글 등록
 	 */
-	int insert(Post post);
+	void insert(Post post);
 
 	/**
 	 * 게시글 목록 조회

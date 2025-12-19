@@ -11,17 +11,17 @@ import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
 
 public interface ScheduleService {
 	// 일정 생성
-	boolean insertSchedule(ScheduleCreateRequest req);
+	void insertSchedule(ScheduleCreateRequest req);
 
 	// 일정 조회
-	List<ScheduleResponse> selectScheduleByMonth(long userId, String month, List<ScheduleType> type);
+    List<ScheduleResponse> selectScheduleByMonth(Long userId, String month, List<ScheduleType> type);
 
 	// 일정 수정
-	boolean updateSchedule(ScheduleUpdateRequest req);
+	void updateSchedule(Long userId, ScheduleUpdateRequest req);
 
 	// 일정 삭제
-	boolean deleteSchedule(long userId, long scheduleId);
+	void deleteSchedule(Long userId, Long scheduleId);
 	
 	// 기간 조회
-	List<Schedule> findScheduleByRange(long userId, LocalDateTime start, LocalDateTime end);
+    List<Schedule> findScheduleByRange(Long userId, LocalDateTime start, LocalDateTime end);
 }

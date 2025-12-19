@@ -11,13 +11,13 @@ public interface UserService {
 	void insertUser(UserSignUpRequest req);
 
 	// 회원 정보 조회
-	User selectUser(long userId);
+    User selectUser(Long userId);
 
 	// 회원 정보 수정
-	boolean updateUser(long userId, UserUpdateRequest req);
+    void updateUser(Long userId, UserUpdateRequest req);
 
 	// 회원 정보 삭제(탈퇴)
-	boolean softDelete(long userId);
+    void softDelete(Long userId);
 
 	// 로그인
 	LoginResponse login(LoginRequest req);

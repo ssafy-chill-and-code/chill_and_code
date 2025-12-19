@@ -5,7 +5,7 @@ package com.ssafy.chillandcode.model.dto.user;
  */
 
 public class User {
-	private long userId; // 회원ID (PK)
+	private Long userId; // 회원ID (PK)
 	private String email; // 회원 식별용 이메일 (로그인ID)
 	private String password; // 로그인 비밀번호
 	private String nickname; // 서비스 내 표시 이름
@@ -17,7 +17,7 @@ public class User {
 	public User() {
 	}
 
-	public User(int userId, String email, String password, String nickname, String region, String createdAt,
+	public User(Long userId, String email, String password, String nickname, String region, String createdAt,
 			int isDeleted, String deletedAt) {
 		super();
 		this.userId = userId;
@@ -31,11 +31,11 @@ public class User {
 	}
 	
 	// Getters and setters
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

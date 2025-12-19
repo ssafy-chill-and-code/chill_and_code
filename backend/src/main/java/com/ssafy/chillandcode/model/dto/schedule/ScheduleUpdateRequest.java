@@ -6,8 +6,7 @@ import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.Tag;
 
 public class ScheduleUpdateRequest {
-	private long scheduleId; // 수정할 일정
-	private long userId;
+	private Long scheduleId; // 수정할 일정
 	private String title;
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
@@ -18,11 +17,10 @@ public class ScheduleUpdateRequest {
 
 	}
 
-	public ScheduleUpdateRequest(long scheduleId, long userId, String title, LocalDateTime startDateTime,
+	public ScheduleUpdateRequest(Long scheduleId, String title, LocalDateTime startDateTime,
 			LocalDateTime endDateTime, ScheduleType scheduleType, Tag userTag) {
 		super();
 		this.scheduleId = scheduleId;
-		this.userId = userId;
 		this.title = title;
 		this.startDateTime = startDateTime;
 		this.endDateTime = endDateTime;
@@ -30,20 +28,12 @@ public class ScheduleUpdateRequest {
 		this.userTag = userTag;
 	}
 
-	public long getScheduleId() {
+	public Long getScheduleId() {
 		return scheduleId;
 	}
 
-	public void setScheduleId(long scheduleId) {
+	public void setScheduleId(Long scheduleId) {
 		this.scheduleId = scheduleId;
-	}
-
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
 	}
 
 	public String getTitle() {
@@ -88,7 +78,7 @@ public class ScheduleUpdateRequest {
 
 	@Override
 	public String toString() {
-		return "ScheduleUpdateRequest [scheduleId=" + scheduleId + ", userId=" + userId + ", title=" + title
+		return "ScheduleUpdateRequest [scheduleId=" + scheduleId + ", title=" + title
 				+ ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", scheduleType=" + scheduleType
 				+ ", userTag=" + userTag + "]";
 	}
