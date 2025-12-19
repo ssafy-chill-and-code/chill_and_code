@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,7 +23,6 @@ import com.ssafy.chillandcode.model.dto.comment.CommentUpdateRequest;
 import com.ssafy.chillandcode.model.service.CommentService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api")
@@ -34,16 +34,8 @@ public class CommentController {
 	// 댓글 작성
 	@Operation(summary = "댓글 등록", description = "특정 게시글(postId)에 댓글을 등록합니다.")
 	@PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentCreateRequest req,
-            HttpSession session) {
-
-		// 로그인 사용자 확인
-		Long userId = (Long) session.getAttribute("userId");
-
-		// Swagger 테스트용 fallback
-		if (userId == null) {
-			userId = 1L;
-		}
+    public ResponseEntity<?> createComment(
+    		@AuthenticationPrincipal Long userId, @PathVariable Long postId, @RequestBody CommentCreateRequest req) {
 
 		// 댓글 내용 검증
         if (req.getContent() == null || req.getContent().trim().isEmpty()) {
@@ -79,14 +71,7 @@ public class CommentController {
 	// 내가 쓴 댓글 목록 조회
 	@Operation(summary = "내가 쓴 댓글 조회", description = "현재 로그인한 사용자가 작성한 모든 댓글을 조회합니다.")
 	@GetMapping("/comments/my")
-    public ResponseEntity<?> myComments(HttpSession session) {
-
-		Long userId = (Long) session.getAttribute("userId");
-
-		// Swagger 테스트용 fallback
-		if (userId == null) {
-			userId = 1L;
-		}
+    public ResponseEntity<?> myComments(@AuthenticationPrincipal Long userId) {
 
         return ResponseEntity.ok(ApiResponse.success(Map.of("comments", commentService.findByUserId(userId))));
 	}
@@ -94,15 +79,7 @@ public class CommentController {
 	// 댓글 수정
 	@Operation(summary = "댓글 수정", description = "특정 댓글(commentId)을 수정합니다. 작성자 본인만 수정할 수 있습니다.")
 	@PatchMapping("/comments/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentUpdateRequest req,
-            HttpSession session) {
-
-		Long userId = (Long) session.getAttribute("userId");
-
-		// Swagger fallback
-		if (userId == null) {
-			userId = 1L;
-		}
+    public ResponseEntity<?> updateComment(@AuthenticationPrincipal Long userId, @PathVariable Long commentId, @RequestBody CommentUpdateRequest req) {
 
 		// 내용 검증
         if (req.getContent() == null || req.getContent().trim().isEmpty()) {
@@ -122,14 +99,7 @@ public class CommentController {
 	// 댓글 삭제
 	@Operation(summary = "댓글 삭제", description = "특정 댓글(commentId)을 삭제합니다. 작성자 본인만 삭제할 수 있습니다.")
 	@DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, HttpSession session) {
-
-		Long userId = (Long) session.getAttribute("userId");
-
-		// Swagger fallback
-		if (userId == null) {
-			userId = 1L;
-		}
+    public ResponseEntity<?> deleteComment(@AuthenticationPrincipal Long userId, @PathVariable Long commentId) {
 
 		// 작성자 검증은 service 내부에서 처리됨
 		boolean success = commentService.deleteComment(commentId, userId);
