@@ -27,12 +27,12 @@ public interface CommentService {
 	/**
 	 * 댓글 수정
 	 */
-	boolean updateComment(Long commentId, Long userId, String content);
+	void updateComment(Long commentId, Long userId, String content);
 
 	/**
 	 * 댓글 삭제
 	 */
-	boolean deleteComment(Long commentId, Long userId);
+	void deleteComment(Long commentId, Long userId);
 
 
 }

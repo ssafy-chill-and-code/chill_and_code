@@ -48,11 +48,6 @@ public class UserController {
 
 		User result = userService.selectUser(userId);
 		
-		if (result == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("프로필 조회에 실패했습니다."));
-		}
-
         return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
@@ -61,12 +56,7 @@ public class UserController {
 	@Operation(summary = "회원 정보 수정", description = "로그인된 사용자의 수정 정보를 입력받아 사용자 프로필을 변경합니다.")
     public ResponseEntity<ApiResponse<?>> updateUser(@AuthenticationPrincipal Long userId, @RequestBody UserUpdateRequest req) {
 		
-		boolean result = userService.updateUser(userId, req);
-
-		if (!result) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("프로필 수정에 실패했습니다."));
-		}
+		userService.updateUser(userId, req);
 
         return ResponseEntity.ok(ApiResponse.success("프로필 수정이 완료되었습니다.", null));
 	}
@@ -76,13 +66,8 @@ public class UserController {
 	@Operation(summary = "회원 탈퇴", description = "로그인된 사용자를 소프트 삭제 처리합니다. 실제 데이터는 삭제되지 않습니다.")
     public ResponseEntity<ApiResponse<?>> deleteUser(@AuthenticationPrincipal Long userId) {
 		
-		boolean result = userService.softDelete(userId);
+		userService.softDelete(userId);
 
-		if (!result) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.failure("회원 탈퇴에 실패했습니다."));
-		}
-		
         return ResponseEntity.ok(ApiResponse.success("회원 탈퇴가 완료되었습니다.", null));
 	}
 
@@ -92,11 +77,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest req) {
 		LoginResponse result = userService.login(req);
 
-		if (result == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure("로그인에 실패했습니다."));
-		}
-
         return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", result));
 	}
 
@@ -104,9 +84,7 @@ public class UserController {
 	@PostMapping("/logout")
 	@Operation(summary = "로그아웃", description = "JWT 기반 로그아웃 (클라이언트에서 토큰 폐기)")
     public ResponseEntity<ApiResponse<?>> logout() {
-		
 		//서버에서 할 일 없음
-		
 		return ResponseEntity.ok(ApiResponse.success("로그아웃이 완료되었습니다.", null));
 	}
 

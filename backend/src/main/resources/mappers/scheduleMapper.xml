@@ -24,6 +24,13 @@
 				)
 	</insert>
 	
+	<!--일정 단건 조회-->
+	<select id="selectById" resultType="Schedule">
+		SELECT *
+		FROM schedule
+		WHERE schedule_id = #{scheduleId}
+	</select>
+	
 	<!--월별 일정 조회-->
 	<select id="selectScheduleByMonth" resultType="Schedule">
 		SELECT *

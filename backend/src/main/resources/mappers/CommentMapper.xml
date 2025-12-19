@@ -24,7 +24,7 @@
 	</select>
 
 	<!-- 내가 쓴 댓글 조회 -->
-	<select id="selectByUserId" parameterType="long"
+	<select id="selectByUserId" parameterType="Long"
 		resultType="Comment">
 		SELECT
 		c.comment_id,

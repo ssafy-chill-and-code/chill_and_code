@@ -3,8 +3,8 @@ package com.ssafy.chillandcode.model.dto.schedule;
 import java.time.LocalDateTime;
 
 public class Schedule {
-	private long scheduleId; // 일정 ID (PK)
-	private long userId; // 사용자 ID (일정 소유자)
+	private Long scheduleId; // 일정 ID (PK)
+	private Long userId; // 사용자 ID (일정 소유자)
 	private String title; // 일정 제목
 	private ScheduleType scheduleType; // 일정 분류 (enum)
 	private LocalDateTime startDateTime; // 일정 시작일
@@ -26,7 +26,7 @@ public class Schedule {
 
 	}
 
-	public Schedule(long scheduleId, long userId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
+	public Schedule(Long scheduleId, Long userId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
 			LocalDateTime endDateTime, String createdAt, Tag autoTag, Tag userTag, String updatedAt) {
 		super();
 		this.scheduleId = scheduleId;
@@ -41,19 +41,19 @@ public class Schedule {
 		this.updatedAt = updatedAt;
 	}
 
-	public long getScheduleId() {
+	public Long getScheduleId() {
 		return scheduleId;
 	}
 
-	public void setScheduleId(long scheduleId) {
+	public void setScheduleId(Long scheduleId) {
 		this.scheduleId = scheduleId;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

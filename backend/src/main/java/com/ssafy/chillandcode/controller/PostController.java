@@ -37,24 +37,17 @@ public class PostController {
 	@Operation(summary = "게시글 등록", description = "새 게시글을 작성합니다.")
     public ResponseEntity<?> write(@AuthenticationPrincipal Long userId, @RequestBody Post post) {
 
-		// 1. 작성자 정보 설정
 		post.setUserId(userId);
 
-		// 2. DB 저장
-        int result = postService.insert(post);
-
-        if (result != 1) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("게시글 등록에 실패했습니다."));
-        }
+        postService.insert(post);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("게시글이 성공적으로 등록되었습니다.", Map.of("postId", post.getPostId())));
 	}
 
 	// 게시글 목록 조회
-	@Operation(summary = "게시글 목록 조회", description = "지역/검색/정렬/페이징 기반 게시글 목록 조회")
 	@GetMapping("/posts")
+	@Operation(summary = "게시글 목록 조회", description = "지역/검색/정렬/페이징 기반 게시글 목록 조회")
     public ResponseEntity<?> list(@RequestParam(required = false) String region,
             @RequestParam(defaultValue = "latest") String sort, @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
@@ -86,8 +79,8 @@ public class PostController {
 	}
 
 	// 내가 쓴 게시글 조회
-	@Operation(summary = "내가 쓴 게시글 조회", description = "현재 로그인한 사용자가 작성한 모든 게시글을 조회합니다.")
 	@GetMapping("/posts/my")
+	@Operation(summary = "내가 쓴 게시글 조회", description = "현재 로그인한 사용자가 작성한 모든 게시글을 조회합니다.")
     public ResponseEntity<?> myPosts(@AuthenticationPrincipal Long userId) {
 
 		List<Post> posts = postService.findByUserId(userId);
@@ -96,23 +89,18 @@ public class PostController {
 	}
 
 	// 게시글 상세 조회
-	@Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 정보를 조회합니다.")
 	@GetMapping("/posts/{postId}")
+	@Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 정보를 조회합니다.")
     public ResponseEntity<?> detail(@PathVariable Long postId) {
 
 		Post post = postService.selectById(postId);
-
-        if (post == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.failure("해당 게시글을 찾을 수 없습니다."));
-        }
 
         return ResponseEntity.ok(ApiResponse.success(post));
 	}
 
 	// 게시글 수정
-	@Operation(summary = "게시글 수정", description = "특정 게시글의 제목/내용/지역을 수정합니다.")
 	@PatchMapping("/posts/{postId}")
+	@Operation(summary = "게시글 수정", description = "특정 게시글의 제목/내용/지역을 수정합니다.")
     public ResponseEntity<?> updatePost(@AuthenticationPrincipal Long userId, @PathVariable Long postId, @RequestBody Post post) {
 
 		post.setPostId(postId);
@@ -122,8 +110,8 @@ public class PostController {
 	}
 
 	// 게시글 삭제
-	@Operation(summary = "게시글 삭제", description = "특정 게시글을 삭제합니다. (작성자 본인만 가능)")
 	@DeleteMapping("/posts/{postId}")
+	@Operation(summary = "게시글 삭제", description = "특정 게시글을 삭제합니다. (작성자 본인만 가능)")
     public ResponseEntity<?> deletePost(@AuthenticationPrincipal Long userId, @PathVariable Long postId) {
 
 		postService.delete(postId, userId);

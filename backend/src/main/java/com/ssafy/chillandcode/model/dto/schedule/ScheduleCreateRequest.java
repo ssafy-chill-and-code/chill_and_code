@@ -6,7 +6,7 @@ import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.Tag;
 
 public class ScheduleCreateRequest {
-	private long userId; // 일정 소유자 (Security 도입 시 제거 가능)
+	private Long userId; // 일정 소유자 (Security 도입 시 제거 가능)
 	private String title; // 일정 제목
 	private ScheduleType scheduleType; // 일정 분류 (enum)
 	private LocalDateTime startDateTime; // 일정 시작일
@@ -17,7 +17,7 @@ public class ScheduleCreateRequest {
 
 	}
 
-	public ScheduleCreateRequest(long userId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
+	public ScheduleCreateRequest(Long userId, String title, ScheduleType scheduleType, LocalDateTime startDateTime,
 			LocalDateTime endDateTime, Tag userTag) {
 		super();
 		this.userId = userId;
@@ -39,11 +39,11 @@ public class ScheduleCreateRequest {
 		return schedule;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

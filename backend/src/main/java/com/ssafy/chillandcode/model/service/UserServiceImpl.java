@@ -59,26 +59,38 @@ public class UserServiceImpl implements UserService {
 			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
 		}
 		
-		return;
 	}
 	
 	//회원 정보 조회
 	@Override
-	public User selectUser(long userId) {
-		return userDao.selectUser(userId);
+    public User selectUser(Long userId) {
+		
+		User user = userDao.selectUser(userId);
+		if(user == null) {
+			throw new ApiException(ErrorCode.USER_NOT_FOUND);
+		}
+		
+		return user;
 	}
 	
 	//회원 정보 수정
 	@Override
-	public boolean updateUser(long userId, UserUpdateRequest req) {
+    public void updateUser(Long userId, UserUpdateRequest req) {
 		req.setUserId(userId);
-		return userDao.updateUser(req) == 1;
+		
+		int rows = userDao.updateUser(req);
+		if(rows != 1) {
+			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "프로필 수정에 실패했습니다.");
+		}
 	}
 	
 	//회원 정보 삭제(탈퇴)
 	@Override
-	public boolean softDelete(long userId) {
-		return userDao.softDelete(userId) == 1;
+    public void softDelete(Long userId) {
+		int rows = userDao.softDelete(userId);
+		if(rows != 1) {
+			throw new ApiException(ErrorCode.USER_NOT_FOUND);
+		}
 	}
 	
 	//로그인
