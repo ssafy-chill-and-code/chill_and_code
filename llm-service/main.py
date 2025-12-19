@@ -33,5 +33,5 @@ def recommend(req: RecommendRequest):
         budget=req.userContext.budget,
         places=req.places  
     )
-    llm_result = call_llm(prompt)
+    llm_result = call_llm(prompt, req.places)
     return {"status": "ok", "llmResult": llm_result}
