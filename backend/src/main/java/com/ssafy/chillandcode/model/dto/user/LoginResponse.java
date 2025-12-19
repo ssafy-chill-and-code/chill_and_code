@@ -2,55 +2,32 @@ package com.ssafy.chillandcode.model.dto.user;
 
 public class LoginResponse {
 	private Long userId;
-	private String nickname;
-	private String region;
+	private String accessToken;
 
 	public LoginResponse() {
 	
 	}
 
-	public LoginResponse(Long userId, String nickname, String region) {
+	public LoginResponse(Long userId, String accessToken) {
 		super();
 		this.userId = userId;
-		this.nickname = nickname;
-		this.region = region;
+		this.accessToken = accessToken;
 	}
 	
-	public static LoginResponse from(User user) {
-		LoginResponse res = new LoginResponse();
-		res.setUserId(user.getUserId());
-		res.setNickname(user.getNickname());
-		res.setRegion(user.getRegion());
-		return res;
+	public static LoginResponse from(User user, String accessToken) {
+		return new LoginResponse(user.getUserId(), accessToken);
 	}
-
 	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
+	public String getAccessToken() {
+		return accessToken;
 	}
 
 	@Override
 	public String toString() {
-		return "LoginResponse [userId=" + userId + ", nickname=" + nickname + ", region=" + region + "]";
+		return "LoginResponse [userId=" + userId + ", accessToken=" + accessToken + "]";
 	}
 
 }

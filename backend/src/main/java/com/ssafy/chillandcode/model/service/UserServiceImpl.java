@@ -12,6 +12,7 @@ import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
+import com.ssafy.chillandcode.security.jwt.JwtTokenProvider;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,6 +22,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 	
 	//회원 가입 (등록)
 	@Override
@@ -92,13 +96,15 @@ public class UserServiceImpl implements UserService {
 			throw new ApiException(ErrorCode.DELETED_USER);
 		}
 		
-		// 비밀번호 불일치 시 동일 에러 코드로 처리 (사용자 정보 유추 방지)
+		// BCrypt 검증 - 비밀번호 불일치 시 동일 에러 코드로 처리 (사용자 정보 유추 방지)
 		boolean ok = passwordEncoder.matches(req.getPassword(), user.getPassword());
 		if(!ok) {
 			throw new ApiException(ErrorCode.INVALID_LOGIN);
 		}
 		
-		LoginResponse response = LoginResponse.from(user);
+		// access token 발급
+		String accessToken = jwtTokenProvider.createAccessToken(user.getUserId());
+		LoginResponse response = LoginResponse.from(user, accessToken);
 		
 		return response;
 	}
