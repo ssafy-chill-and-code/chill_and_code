@@ -3,6 +3,7 @@ package com.ssafy.chillandcode.recommend.place;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -14,12 +15,16 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 
 	private final PlaceRepository placeRepository;
 
+	// 요청 단위로 세팅되는 LLM 결과
+	private Map<Long, LlmResult> llmResultMap = Map.of();
+
 	public PlaceRecommendServiceImpl(PlaceRepository placeRepository) {
 		this.placeRepository = placeRepository;
 	}
 
 	@Override
-	public List<PlaceRecommendCard> recommendCards(String style, String budget, String region, String transport) {
+	public List<PlaceRecommendCard> recommendCards(String style, String budget, String region, String transport,
+			Map<Long, LlmResult> llmResultMap) {
 
 		// 1) budget → priceLevel
 		int minPrice, maxPrice;
@@ -41,10 +46,14 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 		WeightStrategy weight = StyleWeightStrategy.byStyle(style);
 
 		// 4) 점수 계산 + 카드 변환
-		return views.stream().map(v -> new ScoredView(v, toFeature(v), weight)) // View + Feature + score
+		return views.stream().map(v -> new ScoredView(v, toFeature(v), weight))
 				.sorted(Comparator.comparingDouble(ScoredView::score).reversed())
-				.map(sv -> toCard(sv.view(), sv.score(), style, budget, transport)).collect(Collectors.toList());
+				.map(sv -> toCard(sv.view(), sv.score(), style, budget, transport, llmResultMap 
+				)).collect(Collectors.toList());
+	}
 
+	public void applyLlmResults(Map<Long, LlmResult> llmResultMap) {
+		this.llmResultMap = llmResultMap != null ? llmResultMap : Map.of();
 	}
 
 	/**
@@ -58,12 +67,16 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 	/**
 	 * Feature → UI Card
 	 */
-	private PlaceRecommendCard toCard(PlaceFeatureView v, double score, String style, String budget, String transport) {
+	private PlaceRecommendCard toCard(PlaceFeatureView v, double score, String style, String budget, String transport,Map<Long, LlmResult> llmResultMap) {
 
 		String imageUrl = NO_IMAGE.equalsIgnoreCase(v.getImageStatus()) ? NO_IMAGE : safeImageUrl(v.getImageUrl());
 
-		List<String> tags = buildTags(v, style, budget);
-		String reasonText = ReasonTextBuilder.build(style, budget, transport, tags);
+		LlmResult llm = llmResultMap.get(v.getPlaceId());
+
+		List<String> tags = (llm != null) ? llm.getTags() : buildTags(v, style, budget);
+
+		String reasonText = (llm != null) ? llm.getReasonText()
+				: ReasonTextBuilder.build(style, budget, transport, tags);
 
 		return new PlaceRecommendCard(v.getPlaceId(), v.getName(), v.getSido(), score, imageUrl, tags, reasonText);
 	}
@@ -78,15 +91,19 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 	}
 
 	private List<String> buildTags(PlaceFeatureView v, String style, String budget) {
-	    List<String> tags = new ArrayList<>();
-	    if (style != null && !style.isBlank()) tags.add("#" + style);
-	    if ("LOW".equalsIgnoreCase(budget)) tags.add("#가성비");
-	    if ("MID".equalsIgnoreCase(budget)) tags.add("#적당한가격");
-	    if ("HIGH".equalsIgnoreCase(budget)) tags.add("#프리미엄");
-	    if (v.getWorkspaceCount() > 0) tags.add("#작업가능");
-	    return tags;
+		List<String> tags = new ArrayList<>();
+		if (style != null && !style.isBlank())
+			tags.add("#" + style);
+		if ("LOW".equalsIgnoreCase(budget))
+			tags.add("#가성비");
+		if ("MID".equalsIgnoreCase(budget))
+			tags.add("#적당한가격");
+		if ("HIGH".equalsIgnoreCase(budget))
+			tags.add("#프리미엄");
+		if (v.getWorkspaceCount() > 0)
+			tags.add("#작업가능");
+		return tags;
 	}
-
 
 	private static class ScoredView {
 
