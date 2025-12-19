@@ -40,15 +40,28 @@ public class SecurityConfig {
 			
 			// 요청별 접근 권한 설정
 			.authorizeHttpRequests(auth -> auth
-					//인증 없이 허용할 API
-					.requestMatchers(HttpMethod.POST, "/api/users").permitAll()	//회원가입
-					.requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()	//로그인
-					.requestMatchers(HttpMethod.GET, "/api/posts").permitAll()	//게시글 조회
-					.requestMatchers(HttpMethod.GET, "/api/posts/{postId}").permitAll()
-					.requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments").permitAll() // 댓글 조회
 					.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+					.requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
 					
-					//나머지는 모두 인증 필요
+					// 게시글 조회: 내 글 이외에는 누구나 접근 가능
+					.requestMatchers(HttpMethod.GET, "/api/posts/my").authenticated()
+					.requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/*", "/api/posts/*/comments").permitAll()
+					
+					// 게시글 및 댓글 쓰기/수정/삭제
+					.requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
+					.requestMatchers(HttpMethod.PATCH, "/api/posts/*").authenticated()
+					.requestMatchers(HttpMethod.DELETE, "/api/posts/*").authenticated()
+					.requestMatchers(HttpMethod.POST, "/api/posts/*/comments").authenticated()
+					.requestMatchers(HttpMethod.GET, "/api/comments/my").authenticated()
+					.requestMatchers(HttpMethod.PATCH, "/api/comments/*").authenticated()
+					.requestMatchers(HttpMethod.DELETE, "/api/comments/*").authenticated()
+					
+					// 일정, 추천, 사용자 정보 등 민감 API
+					.requestMatchers("/api/schedules/**").authenticated()
+					.requestMatchers("/api/recommend/**").authenticated()
+					.requestMatchers("/api/users/me").authenticated()
+					.requestMatchers(HttpMethod.POST, "/api/users/logout").authenticated()
+					
 					.anyRequest().authenticated()
 			)
 			

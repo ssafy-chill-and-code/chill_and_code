@@ -33,12 +33,12 @@ public interface PostService {
 	/**
 	 * 게시글 수정
 	 */
-	int update(Post post);
+	void update(Post post, Long userId);
 	
 	/**
 	 * 게시글 삭제
 	 */
-	int delete(Long postId);
+	void delete(Long postId, Long userId);
 
 	/**
 	 * 지역별 게시글 수 랭킹 조회 (옵션: 기간, 제한 개수)

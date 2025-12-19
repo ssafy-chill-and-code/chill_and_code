@@ -115,28 +115,9 @@ public class PostController {
 	@PatchMapping("/posts/{postId}")
     public ResponseEntity<?> updatePost(@AuthenticationPrincipal Long userId, @PathVariable Long postId, @RequestBody Post post) {
 
-		// 기존 게시글 조회
-		Post original = postService.selectById(postId);
-
-        if (original == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.failure("해당 게시글을 찾을 수 없습니다."));
-        }
-
-		// 작성자 여부 체크
-        if (!original.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(ApiResponse.failure("게시글 작성자만 수정할 수 있습니다."));
-        }
-
-		// 수정 실행
 		post.setPostId(postId);
-		int result = postService.update(post);
+		postService.update(post, userId);
 
-        if (result != 1) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.failure("게시글 수정에 실패했습니다."));
-        }
         return ResponseEntity.ok(ApiResponse.success("게시글이 성공적으로 수정되었습니다.", null));
 	}
 
@@ -145,27 +126,9 @@ public class PostController {
 	@DeleteMapping("/posts/{postId}")
     public ResponseEntity<?> deletePost(@AuthenticationPrincipal Long userId, @PathVariable Long postId) {
 
-		Post original = postService.selectById(postId);
+		postService.delete(postId, userId);
 
-        if (original == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.failure("해당 게시글을 찾을 수 없습니다."));
-        }
-
-		// 작성자 여부 체크
-        if (!original.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(ApiResponse.failure("게시글 작성자만 삭제할 수 있습니다."));
-        }
-
-		int result = postService.delete(postId);
-
-        if (result == 1) {
-            return ResponseEntity.ok(ApiResponse.success("게시글이 삭제되었습니다.", null));
-        }
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.failure("게시글 삭제에 실패했습니다."));
+        return ResponseEntity.ok(ApiResponse.success("게시글이 삭제되었습니다.", null));
 	}
 
 }
