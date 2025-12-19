@@ -19,8 +19,7 @@ public class PlaceFeatureView {
     // 필터용
     private int priceLevel;
 
-    // 이미지 판단용
-    private String imageStatus; // REAL / NO_IMAGE
+    // 이미지 URL
     private String imageUrl;
 
     public Long getPlaceId() { return placeId; }
@@ -30,6 +29,5 @@ public class PlaceFeatureView {
     public double getNatureScore() { return natureScore; }
     public double getActivityScore() { return activityScore; }
     public int getPriceLevel() { return priceLevel; }
-    public String getImageStatus() { return imageStatus; }
     public String getImageUrl() { return imageUrl; }
 }

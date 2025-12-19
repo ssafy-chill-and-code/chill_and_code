@@ -93,7 +93,7 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
     /** Feature/점수 → UI 카드 변환(LLM 결과 적용, 없으면 로컬 규칙) */
     private PlaceRecommendCard toCard(PlaceFeatureView v, double score, String style, String budget, String transport, Map<Long, LlmResult> llmResultMap) {
 
-		String imageUrl = NO_IMAGE.equalsIgnoreCase(v.getImageStatus()) ? NO_IMAGE : safeImageUrl(v.getImageUrl());
+		String imageUrl = safeImageUrl(v.getImageUrl());
 
 		LlmResult llm = llmResultMap.get(v.getPlaceId());
 
@@ -102,7 +102,7 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 
             // LLM 추천이유가 있으면 적용, 없으면 로컬 규칙으로 생성
             String reasonText = (llm != null) ? llm.getReasonText()
-                    : ReasonTextBuilder.build(style, budget, transport, tags);
+                    : ReasonTextBuilder.build(style, budget, transport);
 
 		return new PlaceRecommendCard(v.getPlaceId(), v.getName(), v.getSido(), score, imageUrl, tags, reasonText);
 	}

@@ -1,10 +1,8 @@
 package com.ssafy.chillandcode.recommend.place;
 
-import java.util.List;
-
 public class ReasonTextBuilder {
 
-    public static String build(String style, String budget, String transport, List<String> tags) {
+    public static String build(String style, String budget, String transport) {
 
         StringBuilder sb = new StringBuilder();
 

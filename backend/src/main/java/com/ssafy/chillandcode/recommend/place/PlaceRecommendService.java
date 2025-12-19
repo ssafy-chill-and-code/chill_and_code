@@ -1,7 +1,6 @@
 package com.ssafy.chillandcode.recommend.place;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 사용자 입력을 받아 장소 추천 카드 결과를 제공하는 서비스

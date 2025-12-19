@@ -1,6 +1,5 @@
 package com.ssafy.chillandcode.recommend.place;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
