@@ -1,5 +1,8 @@
 package com.ssafy.chillandcode.recommend.place;
 
+/**
+ * ScoreEngine 입력값 역할
+ */
 public class PlaceFeature {
 
 	// 식별/표시용 
