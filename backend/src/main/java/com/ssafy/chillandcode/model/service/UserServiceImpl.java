@@ -1,6 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.exception.ApiException;
@@ -11,12 +12,19 @@ import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
+import com.ssafy.chillandcode.security.jwt.JwtTokenProvider;
 
 @Service
 public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDao userDao;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 	
 	//회원 가입 (등록)
 	@Override
@@ -42,6 +50,10 @@ public class UserServiceImpl implements UserService {
 		
 		
 		User user = req.toEntity();
+		
+		// BCrypt 적용
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
 		int rows = userDao.insertUser(user);
 		if(rows != 1) {
 			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
@@ -84,12 +96,15 @@ public class UserServiceImpl implements UserService {
 			throw new ApiException(ErrorCode.DELETED_USER);
 		}
 		
-		// 비밀번호 불일치 시 동일 에러 코드로 처리 (사용자 정보 유추 방지)
-		if(!user.getPassword().equals(req.getPassword())) {
+		// BCrypt 검증 - 비밀번호 불일치 시 동일 에러 코드로 처리 (사용자 정보 유추 방지)
+		boolean ok = passwordEncoder.matches(req.getPassword(), user.getPassword());
+		if(!ok) {
 			throw new ApiException(ErrorCode.INVALID_LOGIN);
 		}
 		
-		LoginResponse response = LoginResponse.from(user);
+		// access token 발급
+		String accessToken = jwtTokenProvider.createAccessToken(user.getUserId());
+		LoginResponse response = LoginResponse.from(user, accessToken);
 		
 		return response;
 	}
