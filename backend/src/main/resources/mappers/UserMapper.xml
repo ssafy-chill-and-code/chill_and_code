@@ -3,10 +3,16 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.chillandcode.model.dao.UserDao">
-	<!-- 회원 가입(등록) -->
-	<insert id="insertUser" parameterType="User">
-		INSERT INTO users (email, password, nickname, region)
-		VALUES (#{email}, #{password}, #{nickname}, #{region})
+	<!-- 회원 가입(일반 등록) -->
+	<insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
+		INSERT INTO users (email, password, nickname, region, provider, provider_id)
+		VALUES (#{email}, #{password}, #{nickname}, #{region}, #{provider}, #{providerId})
+	</insert>
+	
+	<!-- 회원 가입(OAuth) -->
+	<insert id="insertOAuthUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
+		INSERT INTO users (email, provider, provider_id, password, nickname)
+		VALUES (#{email}, #{provider}, #{providerId}, #{password}, #{nickname})
 	</insert>
 	
 	<!-- 회원 정보 조회 (프로필 조회) -->
@@ -51,11 +57,20 @@
 		WHERE email = #{email}
 	</select>
 	
-	<!--회원 1명 조회-->
+	<!--회원 단건 조회 (일반 로그인)-->
 	<select id="findByEmail" parameterType="String" resultType="User">
 		SELECT *
 		FROM users
 		WHERE email = #{email}
+			AND provider IS NULL
+	</select>
+	
+	<!--회원 단건 조회 (OAuth) -->
+	<select id="findByProvider" parameterType="map" resultType="User">
+		SELECT *
+		FROM users
+		WHERE provider = #{provider}
+			AND provider_id = #{providerId}
 	</select>
 	
 </mapper>

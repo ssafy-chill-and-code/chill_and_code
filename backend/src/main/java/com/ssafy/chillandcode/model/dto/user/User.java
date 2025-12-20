@@ -13,12 +13,14 @@ public class User {
 	private String createdAt; // 가입 일자
 	private int isDeleted; // 회원 탈퇴 여부 (0=정상, 1=탈퇴)
 	private String deletedAt; // 탈퇴 처리 시각
+	private String provider;	//OAuth 제공자
+	private String providerId;	//OAuth 제공 고유 사용자 ID
 	
 	public User() {
 	}
 
 	public User(Long userId, String email, String password, String nickname, String region, String createdAt,
-			int isDeleted, String deletedAt) {
+			int isDeleted, String deletedAt, String provider, String providerId) {
 		super();
 		this.userId = userId;
 		this.email = email;
@@ -28,9 +30,10 @@ public class User {
 		this.createdAt = createdAt;
 		this.isDeleted = isDeleted;
 		this.deletedAt = deletedAt;
+		this.provider = provider;
+		this.providerId = providerId;
 	}
-	
-	// Getters and setters
+
 	public Long getUserId() {
 		return userId;
 	}
@@ -95,11 +98,27 @@ public class User {
 		this.deletedAt = deletedAt;
 	}
 
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
+	public String getProviderId() {
+		return providerId;
+	}
+
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
+	}
+
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", email=" + email + ", password=" + password + ", nickname=" + nickname
 				+ ", region=" + region + ", createdAt=" + createdAt + ", isDeleted=" + isDeleted + ", deletedAt="
-				+ deletedAt + "]";
+				+ deletedAt + ", provider=" + provider + ", providerId=" + providerId + "]";
 	}
-	
+
 }
