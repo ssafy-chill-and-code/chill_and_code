@@ -11,6 +11,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.ssafy.chillandcode.security.handler.CustomAccessDeniedHandler;
 import com.ssafy.chillandcode.security.handler.CustomAuthenticationEntryPoint;
+import com.ssafy.chillandcode.security.handler.OAuth2FailureHandler;
+import com.ssafy.chillandcode.security.handler.OAuth2SuccessHandler;
 import com.ssafy.chillandcode.security.jwt.JwtAuthenticationFilter;
 import com.ssafy.chillandcode.security.jwt.JwtTokenProvider;
 
@@ -19,10 +21,12 @@ public class SecurityConfig {
 
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
-
-	public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
-		this.jwtTokenProvider = jwtTokenProvider;
-	}
+	
+	@Autowired
+	private OAuth2SuccessHandler oAuth2SuccessHandler;
+	
+	@Autowired
+	private OAuth2FailureHandler oAuth2FailureHandler;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,6 +44,11 @@ public class SecurityConfig {
 				// 요청별 접근 권한 설정
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+						
+						// OAuth2
+						.requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+						
+						// 인증, 회원
 						.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
 
@@ -72,7 +81,12 @@ public class SecurityConfig {
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
 				// 기본 로그인 인증 비활성화
-				.formLogin(form -> form.disable()).httpBasic(basic -> basic.disable());
+				.formLogin(form -> form.disable()).httpBasic(basic -> basic.disable())
+				
+				// Oauth2
+		 		.oauth2Login(oauth -> oauth
+		 				.successHandler(oAuth2SuccessHandler)
+		 				);
 
 		return http.build();
 	}

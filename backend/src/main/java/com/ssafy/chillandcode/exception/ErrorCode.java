@@ -37,12 +37,13 @@ public enum ErrorCode {
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다."),
     
     INVALID_SCHEDULE_TIME(HttpStatus.BAD_REQUEST, "시작 시간은 종료 시간보다 늦을 수 없습니다."),
-
-
-    /* =========================
-     * 5xx - Server Error
-     * ========================= */
-
+    
+    // 🔹 OAuth 인증 / 가입
+    OAUTH_EMAIL_DUPLICATED(HttpStatus.CONFLICT, "이미 가입된 이메일로 OAuth 가입을 할 수 없습니다."),
+    OAUTH_USER_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "OAuth 사용자 생성에 실패했습니다."),
+    OAUTH_PROVIDER_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth 제공자입니다."),
+    
+    //
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
 	USER_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "회원 정보 수정에 실패했습니다."),
 	USER_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "회원 탈퇴 처리에 실패했습니다.");

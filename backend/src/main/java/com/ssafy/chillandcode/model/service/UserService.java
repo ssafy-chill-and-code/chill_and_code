@@ -1,5 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
 import com.ssafy.chillandcode.model.dto.user.LoginRequest;
 import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
@@ -21,4 +23,7 @@ public interface UserService {
 
 	// 로그인
 	LoginResponse login(LoginRequest req);
+	
+	//OAuth 사용자 조회 또는 생성
+	User findOrCreateOAuthUser(OAuth2User oAuth2User);
 }
