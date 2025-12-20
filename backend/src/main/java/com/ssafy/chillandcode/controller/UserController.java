@@ -2,7 +2,6 @@ package com.ssafy.chillandcode.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,9 +20,11 @@ import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 import com.ssafy.chillandcode.model.service.RefreshTokenService;
 import com.ssafy.chillandcode.model.service.UserService;
+import com.ssafy.chillandcode.security.auth.AuthTokenService;
 import com.ssafy.chillandcode.security.jwt.JwtTokenProvider;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/users")
@@ -37,6 +38,9 @@ public class UserController {
 	
 	@Autowired
 	private RefreshTokenService refreshTokenService;
+	
+	@Autowired
+	private AuthTokenService authTokenService;
 
 	// 회원 가입 (등록)
 	@PostMapping
@@ -83,23 +87,13 @@ public class UserController {
 	// 로그인
 	@PostMapping("/login")
 	@Operation(summary = "로그인", description = "이메일과 비밀번호를 입력받아 사용자를 인증합니다.")
-    public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest req, HttpServletResponse response) {
 		
 		LoginResponse result = userService.login(req);
 		
-		String refreshToken = jwtTokenProvider.createRefreshToken(result.getUserId());
+		authTokenService.issueTokens(result.getUserId(), response);
 		
-		refreshTokenService.store(result.getUserId(), refreshToken);
-		
-		ResponseCookie cookie = ResponseCookie.from("rt", refreshToken)
-				.httpOnly(true)
-				.path("/api")
-				.maxAge(60 * 60 * 24 * 14) // 14일
-				.build();
-		
-        return ResponseEntity.ok()
-        		.header("Set-Cookie", cookie.toString())
-        		.body(ApiResponse.success("로그인이 완료되었습니다.", result));
+        return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", result));
 	}
 
 }

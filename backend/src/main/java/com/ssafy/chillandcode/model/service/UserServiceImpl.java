@@ -1,7 +1,10 @@
 package com.ssafy.chillandcode.model.service;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.exception.ApiException;
@@ -121,7 +124,54 @@ public class UserServiceImpl implements UserService {
 		return response;
 	}
 	
-	
+	// OAuth 사용자 조회 또는 생성
+	@Override
+	public User findOrCreateOAuthUser(OAuth2User oAuth2User) {
+		
+		System.out.println("🔥 OAuth UserService 진입");
+
+		
+		// 정보 추출
+		Map<String, Object> attributes = oAuth2User.getAttributes();
+		
+		String email = (String) attributes.get("email");
+		String provider = "google"; // 현재는 google 고정
+		String providerId = (String) attributes.get("sub");
+		
+		System.out.println("provider=google, providerId=" + providerId);
+		
+		// 기존 OAuth 사용자 조회
+		User existingOAuthUser = userDao.findByProvider(provider, providerId);
+		if(existingOAuthUser != null) {
+			return existingOAuthUser;
+		}
+		
+		// 이메일 중복 (일반 회원과 충돌 방지)
+		User existingEmailUser = userDao.findByEmail(email);
+		if(existingEmailUser != null) {
+			throw new ApiException(ErrorCode.OAUTH_EMAIL_DUPLICATED, "OAuth 가입 실패: 이미 사용 중인 이메일입니다.");
+		}
+		
+		User newUser = new User();
+		newUser.setEmail(email);
+		newUser.setProvider(provider);
+		newUser.setProviderId(providerId);
+		newUser.setPassword(null);
+		
+		// 필수 필드 기본값 설정
+		newUser.setNickname("google_" + providerId.substring(0, 6));
+		newUser.setRegion(null);
+		
+		// 저장
+		int rows = userDao.insertUser(newUser);
+		
+		if(rows != 1) {
+			throw new ApiException(ErrorCode.OAUTH_USER_CREATE_FAILED, "OAuth 사용자 생성 중 오류가 발생했습니다.");
+		}
+		
+		return newUser;
+	}
+
 	
 	/**
 		검증로직
@@ -142,4 +192,5 @@ public class UserServiceImpl implements UserService {
 		return nickname.length() >= 2 && nickname.length() <= 20;
 	}
 
+	
 }
