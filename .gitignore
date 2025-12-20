@@ -518,4 +518,10 @@ htmlcov/
 **/venv/
 **/.venv/
 
+# llm-service local Python environment (explicit)
+llm-service/.venv/
+llm-service/venv/
+llm-service/__pycache__/
+llm-service/.python-version
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,git,java,maven,eclipse,visualstudiocode,intellij,gradle,node,vue
