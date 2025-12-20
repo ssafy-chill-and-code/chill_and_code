@@ -14,12 +14,14 @@ public class PlaceFeature {
 	private int workspaceCount;
 	private double natureScore;
 	private double activityScore;
+    // 트렌드 점수(0~100 정규화, 배치 산출)
+    private double trendScore;
 
 	// 필터용
 	private int priceLevel;
 
 	public PlaceFeature(String name, int workspaceCount, double natureScore, double activityScore, int priceLevel,
-			String sido, Long placeId) {
+			String sido, Long placeId, double trendScore) {
 		this.name = name;
 		this.workspaceCount = workspaceCount;
 		this.natureScore = natureScore;
@@ -27,6 +29,7 @@ public class PlaceFeature {
 		this.priceLevel = priceLevel;
 		this.sido = sido;
 		this.placeId = placeId;
+        this.trendScore = trendScore;
 	}
 
 	public String getName() {
@@ -44,6 +47,10 @@ public class PlaceFeature {
 	public double getActivityScore() {
 		return activityScore;
 	}
+
+    public double getTrendScore() {
+        return trendScore;
+    }
 
 	public int getPriceLevel() {
 		return priceLevel;

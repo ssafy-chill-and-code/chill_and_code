@@ -86,8 +86,16 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 
     /** Projection → 점수 엔진용 Feature로 변환 */
     private PlaceFeature toFeature(PlaceFeatureView v) {
-		return new PlaceFeature(v.getName(), v.getWorkspaceCount(), v.getNatureScore(), v.getActivityScore(),
-				v.getPriceLevel(), v.getSido(), v.getPlaceId());
+		return new PlaceFeature(
+                v.getName(),
+                v.getWorkspaceCount(),
+                v.getNatureScore(),
+                v.getActivityScore(),
+                v.getPriceLevel(),
+                v.getSido(),
+                v.getPlaceId(),
+                v.getTrendScore()
+        );
 	}
 
     /** Feature/점수 → UI 카드 변환(LLM 결과 적용, 없으면 로컬 규칙) */
@@ -104,7 +112,16 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
             String reasonText = (llm != null) ? llm.getReasonText()
                     : ReasonTextBuilder.build(style, budget, transport);
 
-		return new PlaceRecommendCard(v.getPlaceId(), v.getName(), v.getSido(), score, imageUrl, tags, reasonText);
+		return new PlaceRecommendCard(
+                v.getPlaceId(),
+                v.getName(),
+                v.getSido(),
+                score,
+                v.getTrendScore(), // 프론트 좌상단 % 표기용
+                imageUrl,
+                tags,
+                reasonText
+        );
 	}
 
 	// ---------- helpers ----------

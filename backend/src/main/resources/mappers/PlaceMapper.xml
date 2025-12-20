@@ -8,12 +8,14 @@
 
 	<select id="findByRegionAndBudget"
     resultType="com.ssafy.chillandcode.recommend.place.PlaceFeatureView">
+    <!-- trend_score는 0~100 정규화 전제로 사용됨. 스케일 변경 시 Wt 또는 정규화만 조정. -->
     SELECT
         place_id        AS placeId,
         name,
         workspace_count AS workspaceCount,
         nature_score    AS natureScore,
         activity_score  AS activityScore,
+        trend_score     AS trendScore,
         price_level     AS priceLevel,
         sido,
         img_url         AS imageUrl
