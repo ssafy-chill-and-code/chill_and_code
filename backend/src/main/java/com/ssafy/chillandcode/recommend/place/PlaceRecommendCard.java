@@ -11,17 +11,20 @@ public class PlaceRecommendCard {
 	private String name;
 	private String region;
 	private double score;
+	// 프론트 좌상단 % 표기용 (0~100 정규화 전제)
+	private double trendScore;
 	private String imageUrl;
 	private List<String> tags;
 	private String reasonText;
 
-	public PlaceRecommendCard(Long placeId, String name, String region, double score, String imageUrl,
+	public PlaceRecommendCard(Long placeId, String name, String region, double score, double trendScore, String imageUrl,
 			List<String> tags, String reasonText) {
 		super();
 		this.placeId = placeId;
 		this.name = name;
 		this.region = region;
 		this.score = score;
+		this.trendScore = trendScore;
 		this.imageUrl = imageUrl;
 		this.tags = tags;
 		this.reasonText = reasonText;
@@ -41,6 +44,10 @@ public class PlaceRecommendCard {
 
 	public double getScore() {
 		return score;
+	}
+
+	public double getTrendScore() {
+		return trendScore;
 	}
 
 	public String getImageUrl() {

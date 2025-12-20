@@ -15,6 +15,8 @@ public class PlaceFeatureView {
     private int workspaceCount;
     private double natureScore;
     private double activityScore;
+    // 트렌드 점수(0~100 정규화, 배치 산출)
+    private double trendScore;
 
     // 필터용
     private int priceLevel;
@@ -28,6 +30,7 @@ public class PlaceFeatureView {
     public int getWorkspaceCount() { return workspaceCount; }
     public double getNatureScore() { return natureScore; }
     public double getActivityScore() { return activityScore; }
+    public double getTrendScore() { return trendScore; }
     public int getPriceLevel() { return priceLevel; }
     public String getImageUrl() { return imageUrl; }
 }
