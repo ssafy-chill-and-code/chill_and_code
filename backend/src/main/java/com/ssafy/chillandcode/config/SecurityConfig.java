@@ -86,6 +86,7 @@ public class SecurityConfig {
 				// Oauth2
 		 		.oauth2Login(oauth -> oauth
 		 				.successHandler(oAuth2SuccessHandler)
+		 				.failureHandler(oAuth2FailureHandler)
 		 				);
 
 		return http.build();
