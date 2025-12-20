@@ -2,9 +2,8 @@ package com.ssafy.chillandcode.model.dao;
 
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
-import com.ssafy.chillandcode.model.dto.user.LoginRequest;
-import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 
@@ -25,6 +24,10 @@ public interface UserDao {
 	//이메일 중복 검사
 	int existsByEmail(String email);
 	
-	//회원 1명 조회
+	//회원 단건 조회 (일반 로그인)
 	User findByEmail(String email);
+	
+	//회원 단건 조회 (OAuth)
+	User findByProvider(@Param("provider") String provider,
+						@Param("providerId") String providerId);
 }
