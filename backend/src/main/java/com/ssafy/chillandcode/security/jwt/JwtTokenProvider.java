@@ -22,6 +22,9 @@ public class JwtTokenProvider {
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpirationMs;
     
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpirationMs;
+    
     //Access Token 생성
     public String createAccessToken(Long userId) {
         Date now = new Date();
@@ -62,6 +65,31 @@ public class JwtTokenProvider {
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
+    
+    // Refresh Token 생성
+    public String createRefreshToken(Long userId) {
+    	Date now = new Date();
+    	Date expiry = new Date(now.getTime() + refreshTokenExpirationMs);
+    	
+    	return Jwts.builder()
+    			.setSubject(String.valueOf(userId))
+    			.setIssuedAt(now)
+    			.setExpiration(expiry)
+    			.signWith(getSigningKey(), SignatureAlgorithm.HS256)
+    			.compact();
+    }
+    
+    // Refresh Token에서 userId 추출
+    public Long getUserIdFromRefreshToken(String token) {
+    	Claims claims = Jwts.parserBuilder()
+    			.setSigningKey(getSigningKey())
+    			.build()
+    			.parseClaimsJws(token)
+    			.getBody();
+    	
+    	return Long.valueOf(claims.getSubject());
+    }
+    
 
 }
 
