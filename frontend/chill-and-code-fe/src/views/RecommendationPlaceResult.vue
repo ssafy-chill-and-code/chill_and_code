@@ -61,7 +61,8 @@
 
             <!-- 추천 이유 박스 -->
             <div class="reason-box small mb-3">
-              <span class="fw-semibold">추천 이유</span> — 당신의 예산과 일정에 완벽하게 맞습니다
+              <div class="fw-semibold ">추천이유</div>
+              <div>당신의 예산과 일정에 완벽하게 맞습니다</div>
             </div>
 
             <!-- CTA -->
