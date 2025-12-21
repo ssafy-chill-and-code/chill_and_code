@@ -1,6 +1,10 @@
 <template>
   <!-- 문서 전제: 정적 UI + 라우팅만 허용 -->
   <div class="container py-4">
+    <!-- 상단 좌측: 이전으로 -->
+    <div class="mb-2">
+      <button type="button" class="btn btn-link btn-sm px-0" @click="goBack"> ← 이전으로</button>
+    </div>
     <!-- 헤더 -->
     <header class="mb-3">
       <h1 class="h5 mb-1">당신의 선호도를 알려주세요</h1>
@@ -76,7 +80,6 @@
     <!-- CTA 영역 -->
     <section class="mb-2">
       <CButton block @click="goResult">장소 추천받기</CButton>
-      <button type="button" class="btn btn-link btn-sm mt-2 px-0" @click="goBack">이전으로</button>
     </section>
   </div>
   
