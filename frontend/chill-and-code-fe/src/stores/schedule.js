@@ -10,8 +10,12 @@ export const useScheduleStore = defineStore('schedule', {
       const { data } = await axios.post('/schedules', payload)
       return data
     },
-    async fetchSchedules(monthString) {
-      const { data } = await axios.get('/schedules', { params: { month: monthString } })
+    async fetchSchedules(monthString, types = null) {
+      const params = { month: monthString }
+      if (types && types.length > 0) {
+        params.type = types
+      }
+      const { data } = await axios.get('/schedules', { params })
       this.schedules = data?.data?.schedules || []
     },
     async updateSchedule(id, payload) {
