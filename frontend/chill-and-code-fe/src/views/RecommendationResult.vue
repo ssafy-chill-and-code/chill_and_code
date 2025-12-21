@@ -3,7 +3,7 @@
   <div class="period-bg">
     <div class="container py-4">
       <!-- 문서 4-2: 페이지 타이틀 영역 -->
-      <header class="mb-4">
+      <header class="mb-4 text-center">
         <h1 class="h4 mb-0">추천 기간</h1>
       </header>
 
