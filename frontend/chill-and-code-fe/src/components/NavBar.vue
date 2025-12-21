@@ -12,36 +12,36 @@
         </RouterLink>
 
         <!-- 중앙: 전역 메뉴 (데스크톱) -->
-        <div class="hidden md:flex items-center gap-8">
+        <div class="hidden md:flex items-center gap-2">
           <RouterLink 
             to="/" 
-            class="text-gray-700 hover:text-slate-900 font-medium transition-colors px-3 py-2"
-            active-class="text-slate-900 font-semibold"
+            class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
+            active-class="text-slate-900 font-semibold bg-slate-100"
           >
             홈
           </RouterLink>
           <RouterLink 
             to="/schedule" 
-            class="text-gray-700 hover:text-slate-900 font-medium transition-colors px-3 py-2"
-            active-class="text-slate-900 font-semibold"
+            class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
+            active-class="text-slate-900 font-semibold bg-slate-100"
           >
             일정
           </RouterLink>
           <RouterLink 
             to="/posts" 
-            class="text-gray-700 hover:text-slate-900 font-medium transition-colors px-3 py-2"
-            active-class="text-slate-900 font-semibold"
+            class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
+            active-class="text-slate-900 font-semibold bg-slate-100"
           >
             커뮤니티
           </RouterLink>
         </div>
 
         <!-- 우측: 닉네임 + 로그아웃 (데스크톱) -->
-        <div class="hidden md:flex items-center gap-4">
-          <div v-if="isLoggedIn" class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-3">
+          <div v-if="isLoggedIn" class="flex items-center gap-3">
             <RouterLink 
               to="/mypage"
-              class="flex items-center gap-2 text-gray-700 hover:text-slate-900 transition-colors"
+              class="flex items-center gap-2 text-gray-700 hover:text-slate-900 hover:bg-slate-50 transition-all px-3 py-2 rounded-lg"
             >
               <div class="w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center text-white text-sm font-bold">
                 {{ nickname?.charAt(0) || 'U' }}
@@ -50,7 +50,7 @@
             </RouterLink>
             <button
               @click="onLogout"
-              class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-slate-900 border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-slate-900 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-all"
             >
               로그아웃
             </button>
@@ -58,13 +58,13 @@
           <div v-else class="flex items-center gap-2">
             <RouterLink
               to="/login"
-              class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-slate-900 border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-slate-900 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-all"
             >
               로그인
             </RouterLink>
             <RouterLink
               to="/signup"
-              class="px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded-lg hover:bg-slate-900 active:bg-slate-950 transition-colors"
+              class="px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded-lg hover:bg-slate-900 hover:shadow-md active:bg-slate-950 transition-all"
             >
               회원가입
             </RouterLink>
@@ -74,7 +74,7 @@
         <!-- 모바일: 햄버거 메뉴 버튼 -->
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
-          class="md:hidden p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
+          class="md:hidden p-2 rounded-lg hover:bg-slate-100 active:bg-slate-200 transition-all"
         >
           <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -109,24 +109,24 @@
         <!-- 메뉴 링크 -->
         <RouterLink 
           to="/" 
-          class="block px-4 py-3 text-gray-700 hover:bg-gray-50 active:bg-gray-100 rounded-lg font-medium transition-colors"
-          active-class="bg-slate-50 text-slate-900 font-semibold"
+          class="block px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
+          active-class="bg-slate-100 text-slate-900 font-semibold"
           @click="mobileMenuOpen = false"
         >
           홈
         </RouterLink>
         <RouterLink 
           to="/schedule" 
-          class="block px-4 py-3 text-gray-700 hover:bg-gray-50 active:bg-gray-100 rounded-lg font-medium transition-colors"
-          active-class="bg-slate-50 text-slate-900 font-semibold"
+          class="block px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
+          active-class="bg-slate-100 text-slate-900 font-semibold"
           @click="mobileMenuOpen = false"
         >
           일정
         </RouterLink>
         <RouterLink 
           to="/posts" 
-          class="block px-4 py-3 text-gray-700 hover:bg-gray-50 active:bg-gray-100 rounded-lg font-medium transition-colors"
-          active-class="bg-slate-50 text-slate-900 font-semibold"
+          class="block px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
+          active-class="bg-slate-100 text-slate-900 font-semibold"
           @click="mobileMenuOpen = false"
         >
           커뮤니티
@@ -137,7 +137,7 @@
           <div v-if="isLoggedIn">
             <button
               @click="onLogout"
-              class="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 active:bg-gray-100 rounded-lg font-medium transition-colors"
+              class="w-full px-4 py-3 text-left text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
             >
               로그아웃
             </button>
@@ -145,14 +145,14 @@
           <div v-else class="space-y-2">
             <RouterLink
               to="/login"
-              class="block w-full px-4 py-3 text-center text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 font-medium transition-colors"
+              class="block w-full px-4 py-3 text-center text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 font-medium transition-all"
               @click="mobileMenuOpen = false"
             >
               로그인
             </RouterLink>
             <RouterLink
               to="/signup"
-              class="block w-full px-4 py-3 text-center text-white bg-slate-800 rounded-lg hover:bg-slate-900 active:bg-slate-950 font-medium transition-colors"
+              class="block w-full px-4 py-3 text-center text-white bg-slate-800 rounded-lg hover:bg-slate-900 hover:shadow-md active:bg-slate-950 font-medium transition-all"
               @click="mobileMenuOpen = false"
             >
               회원가입
