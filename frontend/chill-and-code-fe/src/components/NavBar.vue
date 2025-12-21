@@ -24,7 +24,7 @@
             class="text-gray-700 hover:text-teal-600 font-medium transition-all px-4 py-2"
             active-class="text-teal-600 font-semibold"
           >
-            워케이션 추천
+            추천
           </RouterLink>
           <RouterLink 
             to="/schedule" 
@@ -127,7 +127,7 @@
           active-class="text-teal-600 font-semibold"
           @click="mobileMenuOpen = false"
         >
-          워케이션 추천
+          추천
         </RouterLink>
         <RouterLink 
           to="/schedule" 
