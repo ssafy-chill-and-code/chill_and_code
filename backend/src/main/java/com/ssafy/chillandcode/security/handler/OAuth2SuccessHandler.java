@@ -41,8 +41,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 			// 토큰 발급 (일반 로그인과 동일)
 			authTokenService.issueTokens(user.getUserId(), response);
 			
-			// OAuth는 redirect 기반
-			response.sendRedirect("/oauth/callback");
+			// OAuth는 redirect 기반 (프론트엔드로) - 추후 환경변수로 URL 관리
+			response.sendRedirect("http://localhost:5173/oauth/callback");
 			
 		}catch (ApiException e){
 			throw new OAuth2AuthenticationException(

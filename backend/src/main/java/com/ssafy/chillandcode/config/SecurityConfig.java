@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 import com.ssafy.chillandcode.security.handler.CustomAccessDeniedHandler;
 import com.ssafy.chillandcode.security.handler.CustomAuthenticationEntryPoint;
@@ -15,6 +16,7 @@ import com.ssafy.chillandcode.security.handler.OAuth2FailureHandler;
 import com.ssafy.chillandcode.security.handler.OAuth2SuccessHandler;
 import com.ssafy.chillandcode.security.jwt.JwtAuthenticationFilter;
 import com.ssafy.chillandcode.security.jwt.JwtTokenProvider;
+
 
 @Configuration
 public class SecurityConfig {
@@ -35,6 +37,9 @@ public class SecurityConfig {
 		JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtTokenProvider);
 
 		http
+				// CORS 활성화 (CorsConfig 사용)
+				.cors(cors -> {})
+				
 				// CSRF 비활성화
 				.csrf(csrf -> csrf.disable())
 
@@ -43,6 +48,9 @@ public class SecurityConfig {
 
 				// 요청별 접근 권한 설정
 				.authorizeHttpRequests(auth -> auth
+						// CORS Preflight(OPTIONS) 요청 허용
+						.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+							
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 						
 						// OAuth2

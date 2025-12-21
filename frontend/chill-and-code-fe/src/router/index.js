@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import SignupView from '../views/SignupView.vue'
+import OAuthCallbackView from '../views/OAuthCallbackView.vue'
 import MyPageView from '../views/MyPageView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
 import ScheduleCreateView from '../views/ScheduleCreateView.vue'
@@ -18,6 +19,7 @@ const router = createRouter({
     { path: '/', name: 'home', component: HomeView },
     { path: '/login', name: 'login', component: LoginView },
     { path: '/signup', name: 'signup', component: SignupView },
+    { path: '/oauth/callback', name: 'oauth-callback', component: OAuthCallbackView },
     { path: '/mypage', name: 'mypage', component: MyPageView },
     { path: '/schedule', name: 'schedule', component: ScheduleView },
     { path: '/schedule/create', name: 'schedule-create', component: ScheduleCreateView },

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '@/router'
 
 // Central axios instance for session-based auth
 const api = axios.create({
@@ -9,10 +10,75 @@ const api = axios.create({
   },
 })
 
-// Minimal interceptors (optional): log response errors
+// Request interceptor: JWT 토큰 자동 첨부
+api.interceptors.request.use(
+  (config) => {
+    // 회원가입, 로그인, 토큰 재발급은 토큰 불필요
+    const publicEndpoints = ['/users', '/users/login', '/auth/refresh']
+    const isPublicEndpoint = publicEndpoints.some(endpoint => 
+      config.url?.includes(endpoint) && config.method === 'post'
+    )
+    
+    if (!isPublicEndpoint) {
+      const token = sessionStorage.getItem('accessToken')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    }
+    
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor: 401 에러 처리 (토큰 재발급)
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
+  async (err) => {
+    const originalRequest = err.config
+    
+    // 401 Unauthorized: refresh 시도
+    if (err?.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+      
+      try {
+        // /api/auth/refresh 호출 (withCredentials로 RT 쿠키 전송)
+        const refreshRes = await api.post('/auth/refresh', null, { 
+          withCredentials: true 
+        })
+        
+        const newToken = refreshRes.data.data.accessToken
+        
+        if (!newToken) {
+          throw new Error('Access Token을 받지 못했습니다.')
+        }
+        
+        // sessionStorage에 새 토큰 저장
+        sessionStorage.setItem('accessToken', newToken)
+        
+        // 원래 요청에 새 토큰 적용
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        
+        // 원래 요청 재시도
+        return api(originalRequest)
+        
+      } catch (refreshError) {
+        // refresh 실패: 로그아웃 처리
+        console.error('Token refresh failed:', refreshError)
+        sessionStorage.removeItem('accessToken')
+        
+        // 로그인/회원가입 페이지에서는 리다이렉트하지 않음
+        const currentPath = router.currentRoute.value.path
+        if (currentPath !== '/login' && currentPath !== '/signup') {
+          router.push('/login')
+        }
+        
+        return Promise.reject(refreshError)
+      }
+    }
+    
     // simple error logging without mutation
     // eslint-disable-next-line no-console
     console.error('API error:', err?.response?.data || err.message)
