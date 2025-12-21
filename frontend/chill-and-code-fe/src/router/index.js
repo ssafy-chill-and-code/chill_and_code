@@ -9,6 +9,7 @@ import ScheduleDetailView from '../views/ScheduleDetailView.vue'
 import HomeView from '../views/HomeView.vue'
 import RecommendationSelect from '../views/RecommendationSelect.vue'
 import RecommendationResult from '../views/RecommendationResult.vue'
+import RecommendationPlaceSelect from '../views/RecommendationPlaceSelect.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,7 @@ const router = createRouter({
     { path: '/posts/:postId/edit', name: 'post-edit', component: () => import('../views/PostEditView.vue'), props: true },
     { path: '/recommend', name: 'recommend-period-select', component: RecommendationSelect },
     { path: '/recommend/result', name: 'recommend-period-result', component: RecommendationResult },
+    { path: '/recommend/place', name: 'recommend-place-select', component: RecommendationPlaceSelect },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
