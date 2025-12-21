@@ -155,7 +155,7 @@ function deriveCategoryForPost(p) {
               type="button"
               class="px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
               :class="selectedCategory === c 
-                ? 'bg-slate-800 text-white' 
+                ? 'bg-indigo-600 text-white shadow-md' 
                 : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50'"
               @click="selectedCategory = c"
             >
@@ -169,7 +169,7 @@ function deriveCategoryForPost(p) {
               <div class="md:col-span-5">
                 <input 
                   type="text"
-                  class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all" 
+                  class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" 
                   v-model="search" 
                   placeholder="검색어를 입력하세요" 
                   @keydown.enter="load" 
@@ -203,7 +203,7 @@ function deriveCategoryForPost(p) {
               </div>
               <div class="md:col-span-2">
                 <select 
-                  class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all appearance-none bg-white" 
+                  class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none bg-white" 
                   v-model="sort" 
                   @change="load"
                 >
@@ -312,7 +312,7 @@ function deriveCategoryForPost(p) {
 
             <!-- Loading State -->
             <div v-if="postStore.loading" class="flex flex-col items-center justify-center gap-4 py-16">
-              <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-800"></div>
+              <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
               <span class="text-gray-600 font-medium">불러오는 중...</span>
             </div>
 
@@ -355,10 +355,10 @@ function deriveCategoryForPost(p) {
                 <div class="flex items-center gap-3">
                   <span 
                     class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                    :class="idx === 0 ? 'bg-yellow-100 text-yellow-700' : 
+                    :class="idx === 0 ? 'bg-indigo-100 text-indigo-700' : 
                             idx === 1 ? 'bg-gray-100 text-gray-700' : 
-                            idx === 2 ? 'bg-orange-100 text-orange-700' : 
-                            'bg-slate-50 text-slate-600'"
+                            idx === 2 ? 'bg-gray-100 text-gray-600' : 
+                            'bg-gray-50 text-gray-600'"
                   >
                     {{ idx + 1 }}
                   </span>

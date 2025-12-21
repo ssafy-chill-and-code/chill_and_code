@@ -263,7 +263,7 @@ onMounted(async () => {
         <!-- Home Tab -->
         <section v-show="activeTab === 'home'" class="p-8 lg:p-12">
           <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
             <span class="text-gray-600 font-medium">불러오는 중...</span>
           </div>
 
@@ -273,7 +273,7 @@ onMounted(async () => {
               <h2 class="text-2xl font-bold text-gray-900 mb-6">프로필</h2>
               
               <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 mb-6">
-                <div class="w-20 h-20 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg flex-shrink-0">
+                <div class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg flex-shrink-0">
                   {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
                 </div>
                 <div class="flex-1 text-center lg:text-left">
@@ -316,14 +316,14 @@ onMounted(async () => {
               <h2 class="text-3xl font-bold text-gray-900">내 게시글</h2>
               <button
                 @click="$router.push('/posts')"
-                class="w-full lg:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+                class="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all font-semibold shadow-sm hover:shadow-md"
               >
                 커뮤니티 둘러보기
               </button>
             </div>
 
             <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
               <span class="text-gray-600 font-medium">불러오는 중...</span>
             </div>
 
@@ -332,7 +332,7 @@ onMounted(async () => {
               <p class="text-gray-600 mb-8 text-lg">첫 게시글을 작성해보세요!</p>
               <button
                 @click="$router.push('/posts')"
-                class="px-8 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+                class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg transition-all font-semibold"
               >
                 게시판 둘러보기
               </button>
@@ -373,7 +373,7 @@ onMounted(async () => {
             <h2 class="text-3xl font-bold text-gray-900 mb-8">내 댓글</h2>
 
             <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
               <span class="text-gray-600 font-medium">불러오는 중...</span>
             </div>
 
@@ -419,7 +419,7 @@ onMounted(async () => {
               <h2 class="text-3xl font-bold text-gray-900">내 일정</h2>
               <button
                 @click="$router.push('/schedule')"
-                class="w-full lg:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+                class="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all font-semibold shadow-sm hover:shadow-md"
               >
                 일정 캘린더로 이동
               </button>
@@ -454,7 +454,7 @@ onMounted(async () => {
             </div>
 
             <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
               <span class="text-gray-600 font-medium">불러오는 중...</span>
             </div>
 
@@ -463,7 +463,7 @@ onMounted(async () => {
               <p class="text-gray-600 mb-8 text-lg">새로운 일정을 추가해보세요!</p>
               <button
                 @click="$router.push('/schedule')"
-                class="px-8 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+                class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg transition-all font-semibold"
               >
                 일정 추가하기
               </button>
