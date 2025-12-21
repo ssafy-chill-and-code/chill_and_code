@@ -6,13 +6,12 @@
       <header class="mb-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <RouterLink class="text-decoration-none small" to="/recommend">← 스타일 다시 선택</RouterLink>
-          <div class="h5 mb-0">추천받기</div>
           <span class="opacity-0">placeholder</span>
         </div>
       </header>
 
       <!-- 질문 문구 -->
-      <section class="mb-3">
+      <section class="mb-3 text-center">
         <div class="fw-semibold mb-1">이번 워케이션 희망 기간은?</div>
         <div class="text-muted small">최소 기간과 최대 기간을 설정해주세요</div>
       </section>
