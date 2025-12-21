@@ -6,13 +6,12 @@
       <header class="mb-4">
         <div class="d-flex align-items-center justify-content-between">
           <RouterLink class="text-decoration-none small" to="/">← 돌아가기</RouterLink>
-          <div class="h5 mb-0">추천받기</div>
           <span class="opacity-0">placeholder</span>
         </div>
       </header>
 
       <!-- 메인 질문: 스타일 선택 -->
-      <section class="mb-2">
+      <section class="mb-2 text-center">
         <div class="fw-semibold mb-1">이번 워케이션 스타일은?</div>
         <div class="text-muted small">당신의 워케이션 목표를 선택해주세요</div>
       </section>
@@ -75,11 +74,12 @@ function goPeriod() {
   background: #fff;
   border-radius: 12px;
   padding: 20px 16px;
-  text-align: left;
-  transition: border-color .15s ease;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
 }
 .style-card:focus-visible { outline: 2px solid #80bdff; outline-offset: 2px; }
-.style-card:hover { border-color: #d1d5db; }
+.style-card:hover { border-color: #d1d5db; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
 .style-card .icon { font-size: 28px; margin-bottom: 8px; }
 .style-card .pill {
   display: inline-block;
@@ -89,6 +89,6 @@ function goPeriod() {
   font-weight: 600;
   margin-bottom: 8px;
 }
-.style-card .desc { padding-left: 18px; margin: 0; color: #6b7280; font-size: 0.9rem; }
+.style-card .desc { list-style: none; padding-left: 0; margin: 0; color: #6b7280; font-size: 0.9rem; text-align: center; }
 .style-card .desc li { margin-bottom: 4px; }
 </style>

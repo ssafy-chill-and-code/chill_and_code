@@ -5,12 +5,9 @@
       <!-- 상단 영역: 돌아가기 + 스타일 다시 선택 -->
       <header class="mb-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
-          <RouterLink class="text-decoration-none small" to="/">← 돌아가기</RouterLink>
+          <RouterLink class="text-decoration-none small" to="/recommend">← 스타일 다시 선택</RouterLink>
           <div class="h5 mb-0">추천받기</div>
           <span class="opacity-0">placeholder</span>
-        </div>
-        <div>
-          <RouterLink to="/recommend" class="small text-muted text-decoration-none">← 스타일 다시 선택</RouterLink>
         </div>
       </header>
 
