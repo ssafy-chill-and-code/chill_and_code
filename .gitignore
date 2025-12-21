@@ -524,4 +524,9 @@ llm-service/venv/
 llm-service/__pycache__/
 llm-service/.python-version
 
+# local development environment
+AGENTS.md
+/localDocs
+
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,git,java,maven,eclipse,visualstudiocode,intellij,gradle,node,vue
