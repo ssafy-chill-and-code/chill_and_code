@@ -7,6 +7,7 @@ import ScheduleCreateView from '../views/ScheduleCreateView.vue'
 import ScheduleEditView from '../views/ScheduleEditView.vue'
 import ScheduleDetailView from '../views/ScheduleDetailView.vue'
 import HomeView from '../views/HomeView.vue'
+import RecommendationSelect from '../views/RecommendationSelect.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,7 @@ const router = createRouter({
     { path: '/posts/create', name: 'post-create', component: () => import('../views/PostCreateView.vue') },
     { path: '/posts/:postId', name: 'post-detail', component: () => import('../views/PostDetailView.vue'), props: true },
     { path: '/posts/:postId/edit', name: 'post-edit', component: () => import('../views/PostEditView.vue'), props: true },
+    { path: '/recommend', name: 'recommend-period-select', component: RecommendationSelect },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
