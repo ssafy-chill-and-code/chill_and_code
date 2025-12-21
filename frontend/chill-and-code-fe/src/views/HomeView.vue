@@ -15,13 +15,13 @@
       <div class="col-12 col-md-6">
         <div class="collage" aria-hidden="true">
           <div class="img-card main">
-            <div class="img-fill">💻</div>
+            <img class="img-ph" :src="heroMain" alt="" role="presentation" fetchpriority="high" decoding="async" />
           </div>
           <div class="img-card sub left">
-            <div class="img-fill">🌿</div>
+            <img class="img-ph" :src="heroSubLeft" alt="" role="presentation" loading="lazy" decoding="async" />
           </div>
           <div class="img-card sub right">
-            <div class="img-fill">☕️</div>
+            <img class="img-ph" :src="heroSubRight" alt="" role="presentation" loading="lazy" decoding="async" />
           </div>
         </div>
       </div>
@@ -32,6 +32,9 @@
 
 <script setup>
 // 정적 배치만 반영. 문서 기준: API/동적 데이터/CTA 강조 없음.
+import heroMain from '@/assets/hero/hero-main.webp'
+import heroSubLeft from '@/assets/hero/hero-sub-left.webp'
+import heroSubRight from '@/assets/hero/hero-sub-right.webp'
 </script>
 
 <style scoped>
@@ -39,11 +42,8 @@
 .collage {
   position: relative;
   width: 100%;
-  height: 340px;
-}
-
-@media (max-width: 576px) {
-  .collage { height: 300px; }
+  /* 비율 기반 컨테이너: px 고정 높이 지양 (문서 4-3) */
+  aspect-ratio: 16 / 10;
 }
 
 .img-card {
@@ -77,10 +77,5 @@
   bottom: 6%;
 }
 
-.img-fill {
-  height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem;
-  background: linear-gradient(135deg, #f6f7f9, #ffffff);
-}
+.img-ph { width: 100%; height: 100%; object-fit: cover; display: block; }
 </style>
