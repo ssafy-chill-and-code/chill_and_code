@@ -17,6 +17,10 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <!-- 추천: 단일 링크로 기간 추천으로 이동 -->
+          <li class="nav-item">
+            <RouterLink class="nav-link" to="/recommend">추천</RouterLink>
+          </li>
           <li class="nav-item">
             <RouterLink class="nav-link" to="/schedule">스케줄</RouterLink>
           </li>

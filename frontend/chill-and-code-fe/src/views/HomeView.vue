@@ -42,8 +42,11 @@ import heroSubRight from '@/assets/hero/hero-sub-right.webp'
 .collage {
   position: relative;
   width: 100%;
-  /* 비율 기반 컨테이너: px 고정 높이 지양 (문서 4-3) */
-  aspect-ratio: 16 / 10;
+  height: 340px;
+}
+
+@media (max-width: 576px) {
+  .collage { height: 300px; }
 }
 
 .img-card {
