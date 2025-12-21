@@ -31,6 +31,37 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     selection.value = { ...selection.value, ...patch }
   }
 
+  // 결과 조회(API 확정 전: 구조만 유지)
+  async function fetchResult(params = {}) {
+    loading.value.result = true
+    error.value = ''
+    try {
+      // API 명세 확정 전: 호출하지 않음. 화면에서 ReadyBadge로 처리.
+      result.value = null
+      return result.value
+    } catch (e) {
+      error.value = e?.response?.data?.message || e.message
+      throw e
+    } finally {
+      loading.value.result = false
+    }
+  }
+
+  // 선택 제출 (API 확정 전: no-op)
+  async function submitSelection() {
+    loading.value.submit = true
+    error.value = ''
+    try {
+      // 명세 확정 전에는 아무 동작도 하지 않음
+      return { ok: false }
+    } catch (e) {
+      error.value = e?.response?.data?.message || e.message
+      throw e
+    } finally {
+      loading.value.submit = false
+    }
+  }
+
   const isReadyForSubmit = computed(() => {
     // 제출 활성 조건은 API/스키마에 의존 — 현재는 항상 false
     return false
@@ -52,8 +83,9 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     error,
     fetchOptions,
     updateSelection,
+    fetchResult,
+    submitSelection,
     isReadyForSubmit,
     reset,
   }
 })
-
