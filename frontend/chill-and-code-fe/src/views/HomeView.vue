@@ -1,28 +1,86 @@
 <template>
   <div class="container py-5">
-    <!-- Hero: 컨셉 전달만, 기능·CTA 강조 금지 -->
-    <section class="text-center mb-5">
-      <h1 class="display-6 fw-semibold mb-3">일과 휴식을 함께 고려하는 추천 서비스</h1>
-      <p class="lead text-muted mb-0">Chill & Code는 여행 정보 나열이 아닌, 추천과 선택을 돕는 서비스입니다.</p>
-    </section>
+    <!-- Hero: 좌 텍스트 / 우 이미지 콜라주 (문서 4-2) -->
+    <section class="row g-4 align-items-center">
+      <!-- 좌측 텍스트 영역 -->
+      <div class="col-12 col-md-6">
+        <div class="mb-3 small text-uppercase text-muted">Chill & Code</div>
+        <h1 class="display-6 fw-semibold mb-3">일과 휴식을 함께 고려하는 워케이션 추천</h1>
+        <p class="lead text-muted mb-0">
+          이 서비스는 여행 정보를 나열하는 곳이 아닙니다. 추천과 선택을 돕는, 컨셉 중심의 워케이션 가이드입니다.
+        </p>
+      </div>
 
-    <!-- What First: 사용자가 먼저 이해해야 할 것 -->
-    <section class="mb-5">
-      <h2 class="h5 mb-3">우리가 먼저 전하는 것</h2>
-      <ul class="list-unstyled small text-muted mb-0">
-        <li class="mb-2">• 일(work)과 휴식(chill)을 함께 고려합니다.</li>
-        <li class="mb-2">• 여행 정보를 나열하지 않습니다.</li>
-        <li class="mb-2">• 추천과 결정을 돕는 것이 목적입니다.</li>
-      </ul>
-    </section>
-
-    <!-- So What: 탐색의 시작점(텍스트 링크 수준) -->
-    <section>
-      <h2 class="h6 mb-2">탐색을 시작해 보세요</h2>
-      <p class="mb-0">
-        <RouterLink class="link-primary me-3" to="/recommend">기간 추천 보기</RouterLink>
-        <RouterLink class="link-primary" to="/recommend/place">장소 추천 보기</RouterLink>
-      </p>
+      <!-- 우측 이미지 콜라주 영역 -->
+      <div class="col-12 col-md-6">
+        <div class="collage" aria-hidden="true">
+          <div class="img-card main">
+            <div class="img-fill">💻</div>
+          </div>
+          <div class="img-card sub left">
+            <div class="img-fill">🌿</div>
+          </div>
+          <div class="img-card sub right">
+            <div class="img-fill">☕️</div>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
+  
 </template>
+
+<script setup>
+// 정적 배치만 반영. 문서 기준: API/동적 데이터/CTA 강조 없음.
+</script>
+
+<style scoped>
+/* 콜라주 컨테이너: 비율 고정, 내부 절대 배치 */
+.collage {
+  position: relative;
+  width: 100%;
+  height: 340px;
+}
+
+@media (max-width: 576px) {
+  .collage { height: 300px; }
+}
+
+.img-card {
+  position: absolute;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f9fa;
+  border: 1px solid #eee;
+}
+
+/* 메인 이미지: 중앙 배치 */
+.img-card.main {
+  width: 56%;
+  height: 70%;
+  left: 22%;
+  top: 5%;
+}
+
+/* 보조 이미지: 좌하단 / 우하단 배치 */
+.img-card.sub.left {
+  width: 38%;
+  height: 48%;
+  left: 4%;
+  bottom: 4%;
+}
+
+.img-card.sub.right {
+  width: 38%;
+  height: 48%;
+  right: 4%;
+  bottom: 6%;
+}
+
+.img-fill {
+  height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #f6f7f9, #ffffff);
+}
+</style>
