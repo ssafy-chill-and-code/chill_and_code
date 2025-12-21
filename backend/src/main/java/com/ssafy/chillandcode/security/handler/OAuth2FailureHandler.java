@@ -30,8 +30,8 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 			message = apiException.getMessage();
 		}
 		
-		//errorCode만 전달(직접 메시지 노출X)
-		String redirectUrl = "/oauth/callback" + "?errorCode=" + errorCode.name();
+		//errorCode만 전달(직접 메시지 노출X) - 추후 환경변수로 프론트URL 관리
+		String redirectUrl = "http://localhost:5173/oauth/callback" + "?errorCode=" + errorCode.name();
 		
 		response.sendRedirect(redirectUrl);
 	}
