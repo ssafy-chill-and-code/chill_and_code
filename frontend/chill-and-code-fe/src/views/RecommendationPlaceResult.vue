@@ -1,150 +1,110 @@
 <template>
+  <!-- 문서 전제: 정적 결과 화면 + UI 배치 검증용 -->
   <div class="container py-4">
-    <!-- 헤더 요약: 추천 장소 정보 우선 -->
-    <section class="mb-3">
-      <CCard>
-        <template #header>
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="fw-semibold">장소 추천 결과 요약</div>
-            <CTag variant="success">추천</CTag>
-          </div>
-        </template>
-        <div class="row g-3 align-items-center">
-          <div class="col-12 col-md-7">
-            <div class="d-flex align-items-center gap-3">
-              <div class="ratio ratio-1x1" style="width:64px;">
-                <div class="bg-light d-flex align-items-center justify-content-center rounded">📍</div>
-              </div>
-              <div>
-                <div class="h5 mb-1">—</div>
-                <div class="text-muted small">추천 장소명/지역은 API 확정 시 표시 <ReadyBadge /></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-5 d-flex flex-wrap align-items-center gap-3">
-            <div>
-              <div class="small text-muted">적합도</div>
-              <CBadge color="primary">—</CBadge>
-            </div>
-            <div>
-              <div class="small text-muted">핵심 태그</div>
-              <div class="d-flex flex-wrap gap-1">
-                <CTag variant="info">와이파이</CTag>
-                <CTag variant="info">조용함</CTag>
-                <ReadyBadge />
-              </div>
-            </div>
-          </div>
-        </div>
-      </CCard>
-    </section>
+    <!-- 상단 타이틀/서브 -->
+    <header class="mb-3">
+      <h1 class="h4 mb-1">당신을 위한 워케이션 장소</h1>
+      <p class="text-muted small mb-0">12월 15일 ~ 12월 22일에 추천하는 최고의 워케이션 장소들입니다.</p>
+    </header>
 
-    <!-- 로딩/에러 분기 -->
-    <CLoading v-if="loading.result" full>결과를 준비 중…</CLoading>
-    <CError v-else-if="error" :message="error">
-      <template #actions>
-        <CButton variant="outline-primary" size="sm" @click="retry">다시 조회</CButton>
-      </template>
-    </CError>
-
-    <!-- 핵심 이유 섹션: 그룹화 -->
-    <section class="mb-3">
-      <h2 class="h6 mb-2">선정 이유</h2>
-      <div class="row g-3">
-        <div class="col-12 col-md-4" v-for="i in 3" :key="i">
-          <CCard>
-            <div class="d-flex align-items-start gap-2">
-              <div>💡</div>
-              <div>
-                <div class="fw-semibold">이유 {{ i }}</div>
-                <div class="small text-muted">구체 근거는 API 확정 시 표시 <ReadyBadge /></div>
-              </div>
-            </div>
-          </CCard>
-        </div>
-      </div>
-    </section>
-
-    <!-- 대안 장소 섹션 -->
+    <!-- 선택 요약 바 -->
     <section class="mb-4">
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <h2 class="h6 mb-0">대안 장소</h2>
-        <div class="d-flex align-items-center gap-2">
-          <CTag variant="secondary">정렬/필터 <ReadyBadge /></CTag>
+      <div class="summary-box p-3 border rounded bg-white d-flex flex-wrap gap-4">
+        <div>
+          <div class="small text-muted">기간</div>
+          <div class="fw-semibold">12월 15일 ~ 12월 22일</div>
         </div>
-      </div>
-      <div v-if="hasAlternatives" class="row g-3">
-        <div v-for="n in 3" :key="n" class="col-12 col-md-6 col-lg-4">
-          <CCard clickable>
-            <div class="fw-semibold">대안 {{ n }}</div>
-            <div class="small text-muted mb-2">요약 정보 <ReadyBadge /></div>
-            <div class="d-flex gap-1">
-              <CTag variant="info">접근성</CTag>
-              <CTag variant="info">가성비</CTag>
-            </div>
-          </CCard>
+        <div>
+          <div class="small text-muted">스타일</div>
+          <div class="fw-semibold">관광</div>
         </div>
-      </div>
-      <div v-else>
-        <CEmpty>대안 정보가 아직 제공되지 않았습니다. <ReadyBadge /></CEmpty>
+        <div>
+          <div class="small text-muted">예산</div>
+          <div class="fw-semibold">150만원</div>
+        </div>
+        <div>
+          <div class="small text-muted">추천 수</div>
+          <div class="fw-semibold">6곳</div>
+        </div>
       </div>
     </section>
 
-    <!-- 하단 CTA 바 -->
-    <div class="cta-bar">
-      <div class="container d-flex align-items-center gap-2">
-        <CButton variant="outline-primary" @click="goBack">다시 선택하기</CButton>
-        <div class="ms-auto d-flex align-items-center gap-2">
-          <CButton variant="outline-primary" disabled>
-            저장 <ReadyBadge />
-          </CButton>
-          <CButton variant="primary" disabled>
-            공유 <ReadyBadge />
-          </CButton>
+    <!-- 장소 카드 6개 (3열 x 2행) -->
+    <section class="mb-4">
+      <div class="row g-3">
+        <div v-for="n in 6" :key="n" class="col-12 col-md-6 col-lg-4">
+          <CCard class="place-card">
+            <!-- 카드 상단: 대표 이미지 + 배지/아이콘 -->
+            <div class="thumb position-relative rounded overflow-hidden mb-2">
+              <div class="thumb-inner d-flex align-items-center justify-content-center">🏖️</div>
+              <div class="match-badge">⭐ 98%</div>
+              <div class="top-icons">
+                <button type="button" class="icon-btn" aria-label="찜">♡</button>
+                <button type="button" class="icon-btn" aria-label="공유">⤴︎</button>
+              </div>
+            </div>
+
+            <!-- 카드 본문 -->
+            <div class="fw-semibold">제주 애월 카페거리</div>
+            <div class="text-muted small mb-2">제주</div>
+            <div class="small text-muted mb-2">바다와 인접한 카페들이 밀집해 있고, 조용한 분위기에서 일과 휴식을 모두 즐길 수 있습니다.</div>
+
+            <!-- 태그 영역 -->
+            <div class="d-flex flex-wrap gap-1 mb-2">
+              <span class="hash">#카페</span>
+              <span class="hash">#오션뷰</span>
+              <span class="hash">#힐링</span>
+            </div>
+
+            <!-- 가격 정보 -->
+            <div class="fw-semibold mb-2">월 150만원</div>
+
+            <!-- 추천 이유 박스 -->
+            <div class="reason-box small mb-3">
+              <span class="fw-semibold">추천 이유</span> — 당신의 예산과 일정에 완벽하게 맞습니다
+            </div>
+
+            <!-- CTA -->
+            <CButton block @click="goSchedule">이 장소로 일정 만들기</CButton>
+          </CCard>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
-
+// 정적 UI만, API/상태/바인딩 없음
 import CButton from '@/components/common/CButton.vue'
 import CCard from '@/components/common/CCard.vue'
-import CTag from '@/components/common/CTag.vue'
-import CBadge from '@/components/common/CBadge.vue'
-import CLoading from '@/components/common/CLoading.vue'
-import CError from '@/components/common/CError.vue'
-import CEmpty from '@/components/common/CEmpty.vue'
-import ReadyBadge from '@/components/common/ReadyBadge.vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const store = usePlaceRecommendationStore()
-const { result, loading, error } = storeToRefs(store)
-
-const hasAlternatives = computed(() => Array.isArray(result.value?.alternatives) && result.value.alternatives.length > 0)
-
-function retry() { store.fetchResult() }
-function goBack() { router.push('/recommend/place') }
-
-onMounted(() => {
-  store.fetchResult()
-})
+function goSchedule() {
+  // 라우팅만 수행 (placeholder)
+  router.push('/schedule/create')
+}
 </script>
 
 <style scoped>
-.cta-bar {
-  position: sticky;
-  bottom: 0;
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(6px);
-  border-top: 1px solid #eee;
-  padding: .75rem 0;
-  margin-top: 1rem;
-}
-</style>
+.summary-box { background: #fff; }
 
+.place-card { background: #fff; }
+.thumb { aspect-ratio: 16/9; background: #f3f4f6; }
+.thumb-inner { width: 100%; height: 100%; font-size: 32px; }
+.match-badge {
+  position: absolute; left: 8px; top: 8px;
+  background: rgba(0,0,0,.7); color: #fff; font-size: .85rem;
+  padding: 4px 8px; border-radius: 8px;
+}
+.top-icons { position: absolute; right: 8px; top: 8px; display: flex; gap: 6px; }
+.icon-btn {
+  appearance: none; border: 1px solid rgba(255,255,255,.7); color: #fff; background: rgba(0,0,0,.35);
+  border-radius: 999px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+}
+
+.hash {
+  display: inline-block; background: #f3f4f6; color: #374151; border-radius: 999px; padding: 2px 8px; font-size: .8rem;
+}
+.reason-box { background: #f8f9fb; border: 1px solid #eef0f4; border-radius: 8px; padding: 8px 10px; }
+</style>

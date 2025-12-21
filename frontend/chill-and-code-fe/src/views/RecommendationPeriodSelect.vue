@@ -60,12 +60,11 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 function goResult() {
-  // /recommend/result 로 라우팅만 수행
-  router.push('/recommend/result')
+  // /recommend/period-result 로 라우팅만 수행
+  router.push('/recommend/period-result')
 }
 </script>
 
 <style scoped>
 .period-opt-bg { background: #f5f6f8; }
 </style>
-

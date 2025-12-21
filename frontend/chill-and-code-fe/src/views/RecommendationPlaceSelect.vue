@@ -1,94 +1,125 @@
 <template>
+  <!-- 문서 전제: 정적 UI + 라우팅만 허용 -->
   <div class="container py-4">
+    <!-- 헤더 -->
     <header class="mb-3">
-      <h1 class="h4 mb-1">장소 추천 — 옵션 선택</h1>
-      <p class="text-muted mb-0">추천 장소를 고도화하기 위한 선호/조건을 선택해 주세요. 각 항목에 이유 설명을 제공합니다.</p>
+      <h1 class="h5 mb-1">당신의 선호도를 알려주세요</h1>
+      <p class="text-muted small mb-0">12월 15일 ~ 12월 22일의 워케이션을 위한 옵션을 선택하세요.</p>
     </header>
 
-    <CLoading v-if="loading.options" full>옵션을 불러오는 중…</CLoading>
-    <CError v-else-if="error" :message="error">
-      <template #actions>
-        <CButton variant="outline-primary" size="sm" @click="retry">다시 시도</CButton>
-      </template>
-    </CError>
-
-    <template v-else>
-      <section v-if="options.length > 0" class="row g-3">
-        <div v-for="(opt, idx) in options" :key="idx" class="col-12 col-md-6 col-lg-4">
-          <CCard>
-            <template #header>
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="fw-semibold">{{ opt.title }}</div>
-                <CTag variant="info">필수</CTag>
-              </div>
-            </template>
-            <div class="small text-muted mb-2">{{ opt.description }}</div>
-            <ReadyBadge />
-          </CCard>
+    <!-- 섹션 1: 워케이션 스타일 선택 -->
+    <section class="mb-4">
+      <div class="fw-semibold mb-2">⚡ 워케이션 스타일 <span class="text-danger">*</span></div>
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <button type="button" class="option-card w-100" aria-pressed="false">
+            <div class="icon">🌿</div>
+            <div class="title">힐링</div>
+            <div class="desc small text-muted">자연 속에서 마음을 편안하게 하며 일하는 스타일</div>
+          </button>
         </div>
-      </section>
-
-      <section v-else>
-        <CCard>
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="fw-semibold mb-1">장소 옵션 정보 준비 중</div>
-              <div class="text-muted">백엔드 API 명세가 확정되면 자동으로 표시됩니다.</div>
-            </div>
-            <ReadyBadge />
-          </div>
-          <CEmpty class="mb-0">
-            옵션 목록이 아직 제공되지 않았습니다.
-            <template #cta>
-              <CButton variant="outline-primary" size="sm" @click="retry">새로고침</CButton>
-            </template>
-          </CEmpty>
-        </CCard>
-      </section>
-    </template>
-
-    <div class="cta-bar">
-      <div class="container d-flex align-items-center gap-2">
-        <div class="flex-grow-1 small text-muted">
-          선택 요약은 API 스키마 확정 시 표시됩니다. <ReadyBadge />
+        <div class="col-12 col-md-4">
+          <button type="button" class="option-card w-100" aria-pressed="false">
+            <div class="icon">💻</div>
+            <div class="title">작업몰입</div>
+            <div class="desc small text-muted">집중력 있는 업무 환경에서 생산성을 높이는 스타일</div>
+          </button>
         </div>
-        <CButton :disabled="!isReadyForSubmit" :loading="false">다음</CButton>
+        <div class="col-12 col-md-4">
+          <button type="button" class="option-card w-100" aria-pressed="false">
+            <div class="icon">🏃‍♂️</div>
+            <div class="title">액티비티</div>
+            <div class="desc small text-muted">다양한 활동과 경험을 즐기며 일하는 스타일</div>
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- 섹션 2: 월간 예산 선택 -->
+    <section class="mb-4">
+      <div class="fw-semibold mb-2">💲 월간 예산</div>
+      <div class="p-3 border rounded bg-white">
+        <div class="h6 mb-2">150만원</div>
+        <input type="range" class="form-range" min="0" max="100" value="50" aria-label="월간 예산 슬라이더" />
+        <div class="d-flex align-items-center justify-content-between small text-muted mt-1">
+          <span>50만원</span>
+          <span>500만원</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 섹션 3: 이동수단 선택 (선택) -->
+    <section class="mb-4">
+      <div class="fw-semibold mb-2">🚗 이동수단 (선택)</div>
+      <select class="form-select" aria-label="이동수단 선택">
+        <option selected disabled>선호하는 이동수단을 선택하세요</option>
+      </select>
+    </section>
+
+    <!-- 섹션 4: 선호 지역 선택 (선택) -->
+    <section class="mb-4">
+      <div class="fw-semibold mb-2">📍 선호 지역 (선택)</div>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="tag">제주</button>
+        <button type="button" class="tag">강릉</button>
+        <button type="button" class="tag">부산</button>
+        <button type="button" class="tag">경주</button>
+        <button type="button" class="tag">속초</button>
+        <button type="button" class="tag">전주</button>
+        <button type="button" class="tag">여수</button>
+        <button type="button" class="tag">춘천</button>
+        <button type="button" class="tag">남해</button>
+        <button type="button" class="tag">통영</button>
+      </div>
+    </section>
+
+    <!-- CTA 영역 -->
+    <section class="mb-2">
+      <CButton block @click="goResult">장소 추천받기</CButton>
+      <button type="button" class="btn btn-link btn-sm mt-2 px-0" @click="goBack">이전으로</button>
+    </section>
   </div>
+  
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
-
+// 정적 UI + 라우팅만 허용 — 상태/바인딩/계산 로직 없음
 import CButton from '@/components/common/CButton.vue'
-import CCard from '@/components/common/CCard.vue'
-import CTag from '@/components/common/CTag.vue'
-import CLoading from '@/components/common/CLoading.vue'
-import CEmpty from '@/components/common/CEmpty.vue'
-import CError from '@/components/common/CError.vue'
-import ReadyBadge from '@/components/common/ReadyBadge.vue'
+import { useRouter } from 'vue-router'
 
-const store = usePlaceRecommendationStore()
-const { options, loading, error, isReadyForSubmit } = storeToRefs(store)
-
-function retry() { store.fetchOptions() }
-
-onMounted(() => {
-  store.fetchOptions()
-})
+const router = useRouter()
+function goResult() {
+  // 장소 추천 결과 화면으로 라우팅만 수행
+  router.push('/recommend/place/result')
+}
+function goBack() {
+  router.back()
+}
 </script>
 
 <style scoped>
-.cta-bar {
-  position: sticky;
-  bottom: 0;
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(6px);
-  border-top: 1px solid #eee;
-  padding: .75rem 0;
-  margin-top: 1rem;
+.option-card {
+  appearance: none;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
+.option-card:focus-visible { outline: 2px solid #80bdff; outline-offset: 2px; }
+.option-card:hover { border-color: #d1d5db; }
+.option-card .icon { font-size: 24px; margin-bottom: 6px; }
+.option-card .title { font-weight: 600; margin-bottom: 4px; }
+
+.tag {
+  appearance: none;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: .9rem;
+}
+.tag:focus-visible { outline: 2px solid #80bdff; outline-offset: 2px; }
+.tag:hover { border-color: #d1d5db; }
 </style>

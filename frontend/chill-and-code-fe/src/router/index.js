@@ -32,7 +32,7 @@ const router = createRouter({
     { path: '/posts/:postId/edit', name: 'post-edit', component: () => import('../views/PostEditView.vue'), props: true },
     { path: '/recommend', name: 'recommend-style-select', component: RecommendationSelect },
     { path: '/recommend/period', name: 'recommend-period-select', component: RecommendationPeriodSelect },
-    { path: '/recommend/result', name: 'recommend-period-result', component: RecommendationResult },
+    { path: '/recommend/period-result', name: 'recommend-period-result', component: RecommendationResult },
     { path: '/recommend/place', name: 'recommend-place-select', component: RecommendationPlaceSelect },
     { path: '/recommend/place/result', name: 'recommend-place-result', component: RecommendationPlaceResult },
     { path: '/:pathMatch(.*)*', redirect: '/' },
