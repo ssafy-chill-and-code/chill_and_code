@@ -29,18 +29,25 @@ export const usePlaceRecommendationStore = defineStore('placeRecommendation', ()
         budget: selection.value.budget
       }
       
-      if (selection.value.region) {
+      // region과 transport는 값이 있을 때만 추가
+      if (selection.value.region && selection.value.region.trim()) {
         params.region = selection.value.region
       }
       
-      if (selection.value.transport) {
+      if (selection.value.transport && selection.value.transport.trim()) {
         params.transport = selection.value.transport
       }
       
+      console.log('🔍 장소 추천 API 호출 파라미터:', params)
+      
       const response = await api.get('/recommend/places', { params })
+      
+      console.log('✅ 장소 추천 API 응답:', response.data)
+      
       result.value = response.data
       return result.value
     } catch (e) {
+      console.error('❌ 장소 추천 API 에러:', e?.response?.data || e.message)
       error.value = e?.response?.data?.message || e.message
       throw e
     } finally {
