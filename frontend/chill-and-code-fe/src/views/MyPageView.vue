@@ -36,12 +36,12 @@ const schedules = computed(() => {
 })
 
 const tabs = [
-  { id: 'home', label: '홈', icon: '🏠' },
-  { id: 'posts', label: '내 게시글', icon: '📝' },
-  { id: 'comments', label: '내 댓글', icon: '💬' },
-  { id: 'schedules', label: '내 일정', icon: '📅' },
-  { id: 'settings', label: '계정 설정', icon: '⚙️' },
-  { id: 'withdrawal', label: '회원 탈퇴', icon: '🚪' },
+  { id: 'home', label: '홈' },
+  { id: 'posts', label: '내 게시글' },
+  { id: 'comments', label: '내 댓글' },
+  { id: 'schedules', label: '내 일정' },
+  { id: 'settings', label: '계정 설정' },
+  { id: 'withdrawal', label: '회원 탈퇴' },
 ]
 
 const regions = [
@@ -177,414 +177,386 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- Full-width layout (Global NavBar rendered by App.vue) -->
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-white">
     <div class="flex">
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:block w-64 bg-white fixed left-0 top-16 bottom-0 overflow-y-auto z-10 border-r border-gray-200">
-        <div class="p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-6">마이페이지</h2>
-          <nav class="space-y-1">
+      <aside class="hidden lg:block w-80 border-r border-gray-200 fixed left-0 top-16 bottom-0 overflow-y-auto bg-white">
+        <div class="p-10">
+          <h2 class="text-2xl font-bold text-gray-900 mb-10">마이페이지</h2>
+          <nav class="space-y-3">
             <button
               v-for="tab in tabs"
               :key="tab.id"
               @click="changeTab(tab.id)"
               :class="[
-                'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left',
+                'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium',
                 activeTab === tab.id
-                  ? 'bg-slate-800 text-white font-semibold shadow-sm'
-                  : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
+                  ? 'bg-slate-800 text-white shadow-lg'
+                  : 'text-gray-700 hover:bg-gray-100'
               ]"
             >
-              <span class="text-lg">{{ tab.icon }}</span>
-              <span>{{ tab.label }}</span>
+              {{ tab.label }}
             </button>
           </nav>
         </div>
       </aside>
 
-      <!-- Mobile Floating Menu Button -->
+      <!-- Mobile Menu Button -->
       <button
         @click="mobileMenuOpen = !mobileMenuOpen"
-        class="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center z-30 hover:bg-slate-900 active:bg-slate-950 transition-colors"
+        class="lg:hidden fixed bottom-8 right-8 w-16 h-16 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center z-30 hover:bg-slate-900 transition-all"
       >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
 
-      <!-- Mobile Drawer Overlay -->
+      <!-- Mobile Drawer -->
       <div 
         v-if="mobileMenuOpen" 
         class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
         @click="mobileMenuOpen = false"
       ></div>
-
-      <!-- Mobile Drawer -->
       <div 
         :class="[
-          'fixed top-0 left-0 bottom-0 w-72 bg-white shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
+          'fixed top-0 left-0 bottom-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         ]"
       >
-        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 class="text-lg font-bold text-gray-900">마이페이지 메뉴</h2>
+        <div class="p-8 border-b border-gray-200 flex items-center justify-between">
+          <h2 class="text-xl font-bold text-gray-900">마이페이지</h2>
           <button 
             @click="mobileMenuOpen = false"
-            class="p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
+            class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
         </div>
-        <nav class="p-4 space-y-1">
+        <nav class="p-8 space-y-3">
           <button
             v-for="tab in tabs"
             :key="tab.id"
             @click="changeTab(tab.id)"
             :class="[
-              'w-full flex items-center gap-3 px-4 py-4 rounded-lg transition-all text-left',
+              'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium',
               activeTab === tab.id
-                ? 'bg-slate-800 text-white font-semibold'
-                : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
+                ? 'bg-slate-800 text-white shadow-lg'
+                : 'text-gray-700 hover:bg-gray-100'
             ]"
           >
-            <span class="text-xl">{{ tab.icon }}</span>
-            <span>{{ tab.label }}</span>
+            {{ tab.label }}
           </button>
         </nav>
       </div>
 
-      <!-- Main Content Area -->
-      <main class="flex-1 lg:ml-64 min-h-screen">
+      <!-- Main Content -->
+      <main class="flex-1 lg:ml-80">
         <!-- Error Message -->
-        <div v-if="error" class="px-8 lg:px-12 py-8">
-          <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div v-if="error" class="p-8 lg:p-12">
+          <div class="max-w-4xl mx-auto p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
             {{ error }}
           </div>
         </div>
 
-        <!-- Content Sections -->
-            <!-- Home Tab -->
-            <section v-show="activeTab === 'home'" class="min-h-screen">
-              <!-- Loading State -->
-              <div v-if="loading" class="flex items-center justify-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
-              </div>
-
-              <div v-else class="px-8 lg:px-12 py-10 lg:py-12">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 lg:mb-10">내 프로필</h2>
-                
-                <!-- Profile Section -->
-                <div class="mb-10 lg:mb-12">
-                  <!-- Profile Card -->
-                  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 lg:p-10">
-                    <div class="flex flex-col lg:flex-row lg:items-start gap-6">
-                      <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center text-white text-3xl lg:text-4xl font-bold mx-auto lg:mx-0 flex-shrink-0">
-                        {{ user?.nickname?.charAt(0) || 'U' }}
-                      </div>
-                      <div class="flex-1 text-center lg:text-left">
-                        <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">{{ user?.nickname || '사용자' }}</h3>
-                        <p class="text-gray-600 mb-1">{{ user?.email }}</p>
-                        <p class="text-gray-500 text-sm">📍 {{ user?.region || '지역 정보 없음' }}</p>
-                      </div>
-                    </div>
-
-                    <!-- Edit Button -->
-                    <div class="mt-6 lg:mt-4">
-                      <button
-                        @click="openProfileEdit"
-                        class="w-full lg:w-auto px-6 py-3 lg:py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 active:bg-slate-950 transition-colors font-semibold"
-                      >
-                        프로필 수정
-                      </button>
+        <!-- Home Tab -->
+        <section v-show="activeTab === 'home'" class="p-8 lg:p-12">
+          <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+            <span class="text-gray-600 font-medium">불러오는 중...</span>
           </div>
-        </div>
-      </div>
 
-                <!-- Stats Section -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-                  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center opacity-60">
-                    <div class="text-4xl mb-2">📊</div>
-                    <div class="text-sm text-gray-500 mb-1">워케이션 생성</div>
-                    <div class="text-lg font-bold text-gray-400">COMING SOON</div>
-                  </div>
-                  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center opacity-60">
-                    <div class="text-4xl mb-2">💡</div>
-                    <div class="text-sm text-gray-500 mb-1">추천 이용</div>
-                    <div class="text-lg font-bold text-gray-400">COMING SOON</div>
-                  </div>
-                  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center opacity-60">
-                    <div class="text-4xl mb-2">🎨</div>
-                    <div class="text-sm text-gray-500 mb-1">워케이션 스타일</div>
-                    <div class="text-lg font-bold text-gray-400">COMING SOON</div>
-                  </div>
+          <div v-else class="max-w-4xl mx-auto space-y-6">
+            <!-- Profile Card -->
+            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 lg:p-8">
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">프로필</h2>
+              
+              <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 mb-6">
+                <div class="w-20 h-20 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg flex-shrink-0">
+                  {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+                </div>
+                <div class="flex-1 text-center lg:text-left">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ user?.nickname || '사용자' }}</h3>
+                  <p class="text-gray-600 mb-1">{{ user?.email }}</p>
+                  <p class="text-gray-500 text-sm">{{ user?.region || '지역 정보 없음' }}</p>
                 </div>
               </div>
-            </section>
 
-            <!-- My Posts Tab -->
-            <section v-show="activeTab === 'posts'" class="min-h-screen px-8 lg:px-12 py-10 lg:py-12">
-              <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8 lg:mb-10">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">내 게시글</h2>
-                <button
-                  @click="$router.push('/posts')"
-                  class="w-full lg:w-auto px-6 py-3 lg:py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors font-medium"
-                >
-                  커뮤니티 둘러보기
-                </button>
+              <button
+                @click="openProfileEdit"
+                class="w-full lg:w-auto px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+              >
+                프로필 수정
+              </button>
+            </div>
+
+            <!-- Stats (Coming Soon) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 text-center opacity-40">
+                <div class="text-xs text-gray-500 mb-1 font-medium">워케이션 생성</div>
+                <div class="text-lg font-bold text-gray-400">준비중</div>
               </div>
-
-              <div v-if="loading" class="flex items-center justify-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+              <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 text-center opacity-40">
+                <div class="text-xs text-gray-500 mb-1 font-medium">추천 이용</div>
+                <div class="text-lg font-bold text-gray-400">준비중</div>
               </div>
-
-              <div v-else-if="myPosts.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center">
-                <div class="text-6xl mb-4">📝</div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">작성한 게시글이 없습니다</h3>
-                <p class="text-gray-600 mb-6">첫 게시글을 작성해보세요!</p>
-                <button
-                  @click="$router.push('/posts')"
-                  class="px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 active:bg-slate-950 transition-colors font-semibold"
-                >
-                  게시판 둘러보기
-                </button>
+              <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 text-center opacity-40">
+                <div class="text-xs text-gray-500 mb-1 font-medium">워케이션 스타일</div>
+                <div class="text-lg font-bold text-gray-400">준비중</div>
               </div>
+            </div>
+          </div>
+        </section>
 
-              <div v-else class="space-y-4">
-                <div
-                  v-for="post in myPosts"
-                  :key="post.postId"
-                  class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8 hover:shadow-md transition-shadow"
-                >
-                  <div class="flex flex-col lg:flex-row gap-4">
-                    <div class="flex-1 cursor-pointer" @click="$router.push(`/posts/${post.postId}`)">
-                      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ post.title }}</h3>
-                      <p class="text-gray-600 mb-3 line-clamp-2">{{ post.content }}</p>
-                      <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
-                        <span>{{ post.region || '지역 미지정' }}</span>
-                        <span>•</span>
-                        <span>조회 {{ post.viewCount || 0 }}</span>
-                        <span>•</span>
-                        <span>{{ new Date(post.createdAt).toLocaleDateString() }}</span>
-                      </div>
-                    </div>
+        <!-- My Posts Tab -->
+        <section v-show="activeTab === 'posts'" class="p-8 lg:p-12">
+          <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+              <h2 class="text-3xl font-bold text-gray-900">내 게시글</h2>
+              <button
+                @click="$router.push('/posts')"
+                class="w-full lg:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+              >
+                커뮤니티 둘러보기
+              </button>
+            </div>
+
+            <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+              <span class="text-gray-600 font-medium">불러오는 중...</span>
+            </div>
+
+            <div v-else-if="myPosts.length === 0" class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-16 text-center">
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">작성한 게시글이 없습니다</h3>
+              <p class="text-gray-600 mb-8 text-lg">첫 게시글을 작성해보세요!</p>
+              <button
+                @click="$router.push('/posts')"
+                class="px-8 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+              >
+                게시판 둘러보기
+              </button>
+            </div>
+
+            <div v-else class="space-y-3">
+              <div
+                v-for="post in myPosts"
+                :key="post.postId"
+                class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 hover:shadow-xl transition-all cursor-pointer"
+                @click="$router.push(`/posts/${post.postId}`)"
+              >
+                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ post.title }}</h3>
+                <p class="text-gray-600 mb-3 line-clamp-2 leading-relaxed text-sm">{{ post.content }}</p>
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                  <div class="flex items-center gap-3 text-xs text-gray-500">
+                    <span>{{ post.region || '지역 미지정' }}</span>
+                    <span>•</span>
+                    <span>조회 {{ post.viewCount || 0 }}</span>
+                    <span>•</span>
+                    <span>{{ new Date(post.createdAt).toLocaleDateString() }}</span>
+                  </div>
+                  <button
+                    @click.stop="deletePost(post.postId)"
+                    class="px-4 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-semibold text-sm"
+                  >
+                    삭제
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- My Comments Tab -->
+        <section v-show="activeTab === 'comments'" class="p-8 lg:p-12">
+          <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">내 댓글</h2>
+
+            <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+              <span class="text-gray-600 font-medium">불러오는 중...</span>
+            </div>
+
+            <div v-else-if="myComments.length === 0" class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-16 text-center">
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">작성한 댓글이 없습니다</h3>
+              <p class="text-gray-600 text-lg">커뮤니티에서 활동해보세요!</p>
+            </div>
+
+            <div v-else class="space-y-3">
+              <div
+                v-for="comment in myComments"
+                :key="comment.commentId"
+                class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 hover:shadow-xl transition-all"
+              >
+                <p class="text-gray-900 mb-3 leading-relaxed">{{ comment.content }}</p>
+                <div class="flex items-center justify-between gap-4">
+                  <span class="text-xs text-gray-500">{{ new Date(comment.createdAt).toLocaleDateString() }}</span>
+                  <div class="flex items-center gap-3">
                     <button
-                      @click.stop="deletePost(post.postId)"
-                      class="px-4 py-2 text-red-600 hover:bg-red-50 active:bg-red-100 rounded-lg transition-colors font-medium whitespace-nowrap self-start"
+                      v-if="comment.postId"
+                      @click="$router.push(`/posts/${comment.postId}`)"
+                      class="text-xs text-slate-700 hover:text-slate-900 font-semibold transition-colors"
                     >
-                      삭제
+                      원문 보기 →
                     </button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- My Comments Tab -->
-            <section v-show="activeTab === 'comments'" class="min-h-screen px-8 lg:px-12 py-10 lg:py-12">
-              <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 lg:mb-10">내 댓글</h2>
-
-              <div v-if="loading" class="flex items-center justify-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
-              </div>
-
-              <div v-else-if="myComments.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center">
-                <div class="text-6xl mb-4">💬</div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">작성한 댓글이 없습니다</h3>
-                <p class="text-gray-600">커뮤니티에서 활동해보세요!</p>
-              </div>
-
-              <div v-else class="space-y-4">
-                <div
-                  v-for="comment in myComments"
-                  :key="comment.commentId"
-                  class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8 hover:shadow-md transition-shadow"
-                >
-                  <div class="flex flex-col lg:flex-row gap-4">
-                    <div class="flex-1">
-                      <p class="text-gray-900 mb-3">{{ comment.content }}</p>
-                      <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-2">
-                        <span>{{ new Date(comment.createdAt).toLocaleDateString() }}</span>
-                      </div>
-                      <button
-                        v-if="comment.postId"
-                        @click="$router.push(`/posts/${comment.postId}`)"
-                        class="text-sm text-slate-700 hover:text-slate-900 font-medium py-2"
-                      >
-                        원문 게시글 보기 →
-                      </button>
-                    </div>
                     <button
                       @click="deleteComment(comment.commentId)"
-                      class="px-4 py-2 text-red-600 hover:bg-red-50 active:bg-red-100 rounded-lg transition-colors font-medium whitespace-nowrap self-start"
+                      class="px-4 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-semibold text-sm"
                     >
                       삭제
                     </button>
                   </div>
                 </div>
               </div>
-            </section>
-
-            <!-- My Schedules Tab -->
-            <section v-show="activeTab === 'schedules'" class="min-h-screen px-8 lg:px-12 py-10 lg:py-12">
-              <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8 lg:mb-10">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">내 일정</h2>
-                <button
-                  @click="$router.push('/schedule')"
-                  class="w-full lg:w-auto px-6 py-3 lg:py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors font-medium"
-                >
-                  일정 캘린더로 이동
-                </button>
-              </div>
-
-              <!-- Type Filter -->
-              <div class="mb-6 flex gap-2 flex-wrap">
-                <button
-                  @click="scheduleTypeFilter = null"
-                  :class="[
-                    'px-4 py-2 rounded-lg font-medium transition-colors',
-                    scheduleTypeFilter === null
-                      ? 'bg-slate-800 text-white'
-                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100'
-                  ]"
-                >
-                  전체
-                </button>
-                <button
-                  v-for="type in scheduleTypes"
-                  :key="type.value"
-                  @click="scheduleTypeFilter = type.value"
-                  :class="[
-                    'px-4 py-2 rounded-lg font-medium transition-colors',
-                    scheduleTypeFilter === type.value
-                      ? 'bg-slate-800 text-white'
-                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100'
-                  ]"
-                >
-                  {{ type.label }}
-                </button>
-              </div>
-
-              <div v-if="loading" class="flex items-center justify-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+            </div>
           </div>
+        </section>
 
-              <div v-else-if="schedules.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center">
-                <div class="text-6xl mb-4">📅</div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">등록된 일정이 없습니다</h3>
-                <p class="text-gray-600 mb-6">새로운 일정을 추가해보세요!</p>
-                <button
-                  @click="$router.push('/schedule')"
-                  class="px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 active:bg-slate-950 transition-colors font-semibold"
-                >
-                  일정 추가하기
-                </button>
-          </div>
+        <!-- My Schedules Tab -->
+        <section v-show="activeTab === 'schedules'" class="p-8 lg:p-12">
+          <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+              <h2 class="text-3xl font-bold text-gray-900">내 일정</h2>
+              <button
+                @click="$router.push('/schedule')"
+                class="w-full lg:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+              >
+                일정 캘린더로 이동
+              </button>
+            </div>
 
-              <div v-else class="space-y-4">
-                <div
-                  v-for="schedule in schedules"
-                  :key="schedule.scheduleId"
-                  class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8 hover:shadow-md transition-shadow"
-                >
-                  <div class="flex items-start gap-4">
-                    <div 
+            <!-- Filter -->
+            <div class="mb-6 flex gap-2 flex-wrap">
+              <button
+                @click="scheduleTypeFilter = null"
+                :class="[
+                  'px-5 py-2 rounded-xl font-semibold transition-all text-sm',
+                  scheduleTypeFilter === null
+                    ? 'bg-slate-800 text-white shadow-lg'
+                    : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
+                ]"
+              >
+                전체
+              </button>
+              <button
+                v-for="type in scheduleTypes"
+                :key="type.value"
+                @click="scheduleTypeFilter = type.value"
+                :class="[
+                  'px-5 py-2 rounded-xl font-semibold transition-all text-sm',
+                  scheduleTypeFilter === type.value
+                    ? 'bg-slate-800 text-white shadow-lg'
+                    : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
+                ]"
+              >
+                {{ type.label }}
+              </button>
+            </div>
+
+            <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+              <span class="text-gray-600 font-medium">불러오는 중...</span>
+            </div>
+
+            <div v-else-if="schedules.length === 0" class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-16 text-center">
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">등록된 일정이 없습니다</h3>
+              <p class="text-gray-600 mb-8 text-lg">새로운 일정을 추가해보세요!</p>
+              <button
+                @click="$router.push('/schedule')"
+                class="px-8 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+              >
+                일정 추가하기
+              </button>
+            </div>
+
+            <div v-else class="space-y-3">
+              <div
+                v-for="schedule in schedules"
+                :key="schedule.scheduleId"
+                class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 hover:shadow-xl transition-all"
+              >
+                <div class="flex items-start gap-5">
+                  <div 
+                    :class="[
+                      'w-1.5 h-16 rounded-full flex-shrink-0',
+                      scheduleTypes.find(t => t.value === schedule.type)?.color || 'bg-gray-400'
+                    ]"
+                  ></div>
+                  <div class="flex-1">
+                    <span 
                       :class="[
-                        'w-2 h-full rounded-full flex-shrink-0',
+                        'inline-block px-3 py-1 rounded-lg text-xs font-semibold text-white mb-2',
                         scheduleTypes.find(t => t.value === schedule.type)?.color || 'bg-gray-400'
                       ]"
-                    ></div>
-                    <div class="flex-1">
-                      <div class="flex items-center gap-2 mb-2">
-                        <span 
-                          :class="[
-                            'px-3 py-1 rounded-lg text-sm font-medium text-white',
-                            scheduleTypes.find(t => t.value === schedule.type)?.color || 'bg-gray-400'
-                          ]"
-                        >
-                          {{ scheduleTypes.find(t => t.value === schedule.type)?.label || schedule.type }}
-                        </span>
-          </div>
-                      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ schedule.title }}</h3>
-                      <p class="text-gray-600 mb-2">{{ schedule.description }}</p>
-                      <div class="text-sm text-gray-500">
-                        📅 {{ schedule.startDate }} ~ {{ schedule.endDate }}
-          </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Account Settings Tab -->
-            <section v-show="activeTab === 'settings'" class="min-h-screen px-8 lg:px-12 py-10 lg:py-12">
-              <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">계정 설정</h2>
-
-              <div class="space-y-4">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div>
-                      <h3 class="text-lg font-semibold text-gray-900 mb-1">비밀번호 변경</h3>
-                      <p class="text-gray-600 text-sm">계정의 비밀번호를 변경합니다</p>
-                    </div>
-                    <div class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm font-medium text-center lg:text-left">
-                      COMING SOON
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Withdrawal Tab -->
-            <section v-show="activeTab === 'withdrawal'" class="min-h-screen px-8 lg:px-12 py-10 lg:py-12">
-              <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">회원 탈퇴</h2>
-
-              <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">
-                <div class="mb-6">
-                  <h3 class="text-xl font-semibold text-red-600 mb-4">⚠️ 회원 탈퇴 안내</h3>
-                  <ul class="space-y-2 text-gray-700">
-                    <li class="flex items-start gap-2">
-                      <span class="text-red-500 mt-1">•</span>
-                      <span>회원 탈퇴 시 모든 개인 정보가 삭제됩니다.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <span class="text-red-500 mt-1">•</span>
-                      <span>작성한 게시글과 댓글은 삭제되지 않을 수 있습니다.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <span class="text-red-500 mt-1">•</span>
-                      <span>탈퇴 후 동일 이메일로 재가입이 제한될 수 있습니다.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <span class="text-red-500 mt-1">•</span>
-                      <span>이 작업은 되돌릴 수 없습니다.</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <label class="flex items-start gap-3 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      v-model="withdrawalConfirm" 
-                      class="mt-1 w-5 h-5 text-red-600 rounded focus:ring-red-500"
-                    />
-                    <span class="text-gray-900 font-medium">
-                      위 내용을 모두 확인했으며, 회원 탈퇴에 동의합니다.
+                    >
+                      {{ scheduleTypes.find(t => t.value === schedule.type)?.label || schedule.type }}
                     </span>
-                  </label>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ schedule.title }}</h3>
+                    <p class="text-gray-600 mb-2 leading-relaxed text-sm">{{ schedule.description }}</p>
+                    <p class="text-xs text-gray-500">{{ schedule.startDate }} ~ {{ schedule.endDate }}</p>
+                  </div>
                 </div>
-
-                <button
-                  @click="showWithdrawalModal = true"
-                  :disabled="!withdrawalConfirm"
-                  class="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 active:bg-red-800 transition-colors font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  회원 탈퇴하기
-                </button>
               </div>
-            </section>
+            </div>
+          </div>
+        </section>
+
+        <!-- Settings Tab -->
+        <section v-show="activeTab === 'settings'" class="p-8 lg:p-12">
+          <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">계정 설정</h2>
+
+            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 lg:p-8">
+              <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">비밀번호 변경</h3>
+                  <p class="text-gray-600">계정의 비밀번호를 변경합니다</p>
+                </div>
+                <div class="px-6 py-3 bg-gray-100 text-gray-500 rounded-xl font-semibold">
+                  준비중
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Withdrawal Tab -->
+        <section v-show="activeTab === 'withdrawal'" class="p-8 lg:p-12">
+          <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">회원 탈퇴</h2>
+
+            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 lg:p-8">
+              <h3 class="text-lg font-bold text-red-600 mb-5">⚠️ 회원 탈퇴 안내</h3>
+              <ul class="space-y-2 text-gray-700 mb-6 text-sm">
+                <li>• 회원 탈퇴 시 모든 개인 정보가 삭제됩니다.</li>
+                <li>• 작성한 게시글과 댓글은 삭제되지 않을 수 있습니다.</li>
+                <li>• 탈퇴 후 동일 이메일로 재가입이 제한될 수 있습니다.</li>
+                <li>• 이 작업은 되돌릴 수 없습니다.</li>
+              </ul>
+
+              <div class="mb-6 p-5 bg-red-50 border-2 border-red-200 rounded-xl">
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    v-model="withdrawalConfirm" 
+                    class="mt-0.5 w-4 h-4 text-red-600 rounded focus:ring-red-500"
+                  />
+                  <span class="text-gray-900 font-semibold text-sm">
+                    위 내용을 모두 확인했으며, 회원 탈퇴에 동의합니다.
+                  </span>
+                </label>
+              </div>
+
+              <button
+                @click="showWithdrawalModal = true"
+                :disabled="!withdrawalConfirm"
+                class="w-full px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 hover:shadow-lg transition-all font-bold disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                회원 탈퇴하기
+              </button>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
 
@@ -594,47 +566,47 @@ onMounted(async () => {
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       @click.self="showProfileEditModal = false"
     >
-      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 lg:p-8">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">프로필 수정</h3>
-        <div class="space-y-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
+        <h3 class="text-3xl font-bold text-gray-900 mb-8">프로필 수정</h3>
+        <div class="space-y-5">
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">이메일 (변경 불가)</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">이메일 (변경 불가)</label>
             <input 
               type="text" 
               :value="user?.email" 
               disabled 
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl bg-gray-50 text-gray-500"
             />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">닉네임</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">닉네임</label>
             <input 
               v-model="profileForm.nickname" 
               type="text" 
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
             />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">지역</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">지역</label>
             <select 
               v-model="profileForm.region" 
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all appearance-none bg-white"
             >
               <option value="">지역 선택</option>
               <option v-for="r in regions" :key="r" :value="r">{{ r }}</option>
             </select>
           </div>
-          <div class="flex gap-3 pt-4">
+          <div class="flex gap-3 pt-6">
             <button
               @click="showProfileEditModal = false"
-              class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors font-semibold"
+              class="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
             >
               취소
             </button>
             <button
               @click="saveProfile"
               :disabled="loading"
-              class="flex-1 px-4 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 active:bg-slate-950 transition-colors font-semibold disabled:bg-gray-300"
+              class="flex-1 px-6 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
             >
               저장
             </button>
@@ -643,27 +615,27 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Withdrawal Confirmation Modal -->
+    <!-- Withdrawal Modal -->
     <div
       v-if="showWithdrawalModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       @click.self="showWithdrawalModal = false"
     >
-      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 lg:p-8">
-        <h3 class="text-2xl font-bold text-gray-900 mb-4">정말로 탈퇴하시겠습니까?</h3>
-        <p class="text-gray-600 mb-6">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
+        <h3 class="text-3xl font-bold text-gray-900 mb-6">정말로 탈퇴하시겠습니까?</h3>
+        <p class="text-gray-600 mb-8 text-base leading-relaxed">
           이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.
         </p>
         <div class="flex gap-3">
           <button
             @click="showWithdrawalModal = false"
-            class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors font-semibold"
+            class="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
           >
             취소
           </button>
           <button
             @click="confirmWithdrawal"
-            class="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 active:bg-red-800 transition-colors font-semibold"
+            class="flex-1 px-6 py-4 bg-red-600 text-white rounded-xl hover:bg-red-700 hover:shadow-lg transition-all font-semibold"
           >
             탈퇴하기
           </button>
