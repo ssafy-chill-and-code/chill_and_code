@@ -24,8 +24,6 @@ onMounted(async () => {
 <template>
   <div>
     <NavBar v-if="showNavBar" />
-    <main :class="showNavBar ? 'container mt-4' : ''">
-      <RouterView />
-    </main>
+    <RouterView />
   </div>
 </template>
