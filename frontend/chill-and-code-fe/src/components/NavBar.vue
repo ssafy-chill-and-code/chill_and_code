@@ -21,6 +21,13 @@
             홈
           </RouterLink>
           <RouterLink 
+            to="/recommend" 
+            class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
+            active-class="text-slate-900 font-semibold bg-slate-100"
+          >
+            추천
+          </RouterLink>
+          <RouterLink 
             to="/schedule" 
             class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
             active-class="text-slate-900 font-semibold bg-slate-100"
@@ -114,6 +121,14 @@
           @click="mobileMenuOpen = false"
         >
           홈
+        </RouterLink>
+        <RouterLink 
+          to="/recommend" 
+          class="block px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
+          active-class="bg-slate-100 text-slate-900 font-semibold"
+          @click="mobileMenuOpen = false"
+        >
+          추천
         </RouterLink>
         <RouterLink 
           to="/schedule" 
