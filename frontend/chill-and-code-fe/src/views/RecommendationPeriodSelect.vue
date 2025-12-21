@@ -16,12 +16,12 @@
         <div class="text-muted small">최소 기간과 최대 기간을 설정해주세요</div>
       </section>
 
-      <!-- 2컬럼 입력 영역: 최소/최대 기간 (정적 UI) -->
+      <!-- 2컬럼 입력 영역: 최소/최대 기간 -->
       <section class="row g-3 mb-3">
         <div class="col-12 col-md-6">
           <div class="mb-1 small">최소 기간</div>
           <div class="d-flex align-items-center gap-2">
-            <input type="number" class="form-control" placeholder="2" aria-label="최소 기간" />
+            <input type="number" v-model.number="minDays" class="form-control" placeholder="2" aria-label="최소 기간" min="1" max="30" />
             <span class="text-muted">일</span>
           </div>
           <div class="small text-muted mt-1">1~30일 범위</div>
@@ -29,35 +29,79 @@
         <div class="col-12 col-md-6">
           <div class="mb-1 small">최대 기간</div>
           <div class="d-flex align-items-center gap-2">
-            <input type="number" class="form-control" placeholder="5" aria-label="최대 기간" />
+            <input type="number" v-model.number="maxDays" class="form-control" placeholder="5" aria-label="최대 기간" min="1" max="30" />
             <span class="text-muted">일</span>
           </div>
           <div class="small text-muted mt-1">1~30일 범위</div>
         </div>
       </section>
 
-      <!-- 안내 배너: 정적 텍스트만 -->
-      <section class="mb-4">
-        <div class="alert alert-light border small mb-0">2 ~ 5일 범위에서 추천받습니다</div>
+      <!-- 안내 배너 -->
+      <section class="mb-3">
+        <div class="alert alert-light border small mb-0">{{ minDays }} ~ {{ maxDays }}일 범위에서 추천받습니다</div>
       </section>
 
-      <!-- CTA: full-width, 라우팅만 수행 -->
+      <!-- 에러 메시지 -->
+      <section v-if="errorMessage" class="mb-3">
+        <div class="alert alert-danger small mb-0">{{ errorMessage }}</div>
+      </section>
+
+      <!-- CTA -->
       <section class="mb-5">
-        <CButton block @click="goResult">추천받기</CButton>
+        <CButton block @click="goResult" :disabled="recommendationStore.loading">
+          {{ recommendationStore.loading ? '추천 중...' : '추천받기' }}
+        </CButton>
       </section>
     </div>
   </div>
 </template>
 
 <script setup>
-// 정적 UI + 라우팅만
+import { ref } from 'vue'
 import CButton from '@/components/common/CButton.vue'
 import { useRouter } from 'vue-router'
+import { useRecommendationStore } from '@/stores/recommendation'
 
 const router = useRouter()
-function goResult() {
-  // /recommend/period-result 로 라우팅만 수행
-  router.push('/recommend/period-result')
+const recommendationStore = useRecommendationStore()
+
+const minDays = ref(2)
+const maxDays = ref(5)
+const errorMessage = ref('')
+
+async function goResult() {
+  // 유효성 검사
+  if (!minDays.value || !maxDays.value) {
+    errorMessage.value = '최소 기간과 최대 기간을 모두 입력해주세요.'
+    return
+  }
+  
+  if (minDays.value < 1 || minDays.value > 30 || maxDays.value < 1 || maxDays.value > 30) {
+    errorMessage.value = '기간은 1~30일 범위 내에서 입력해주세요.'
+    return
+  }
+  
+  if (minDays.value > maxDays.value) {
+    errorMessage.value = '최소 기간은 최대 기간보다 클 수 없습니다.'
+    return
+  }
+  
+  errorMessage.value = ''
+  
+  // 스토어에 선택 저장
+  recommendationStore.updateSelection({
+    minDays: minDays.value,
+    maxDays: maxDays.value
+  })
+  
+  try {
+    // API 호출
+    await recommendationStore.fetchPeriodRecommendation()
+    // 성공 시 결과 페이지로 이동
+    router.push('/recommend/period-result')
+  } catch (e) {
+    errorMessage.value = recommendationStore.error || '기간 추천을 불러오는데 실패했습니다.'
+  }
 }
 </script>
 

@@ -16,10 +16,10 @@
         <div class="text-muted small">당신의 워케이션 목표를 선택해주세요</div>
       </section>
 
-      <!-- 카드 3개: 클릭 시 /recommend/period 로 이동 -->
+      <!-- 카드 3개: 스타일 선택 -->
       <section class="row g-3 mb-4">
         <div class="col-12 col-md-4">
-          <button type="button" class="style-card w-100" @click="goPeriod">
+          <button type="button" class="style-card w-100" @click="goPeriod('RELAX')">
             <div class="icon">🏝️</div>
             <div class="pill">휴양형</div>
             <ul class="desc">
@@ -29,7 +29,7 @@
           </button>
         </div>
         <div class="col-12 col-md-4">
-          <button type="button" class="style-card w-100" @click="goPeriod">
+          <button type="button" class="style-card w-100" @click="goPeriod('WORK')">
             <div class="icon">💻</div>
             <div class="pill">업무형</div>
             <ul class="desc">
@@ -39,7 +39,7 @@
           </button>
         </div>
         <div class="col-12 col-md-4">
-          <button type="button" class="style-card w-100" @click="goPeriod">
+          <button type="button" class="style-card w-100" @click="goPeriod('BALANCE')">
             <div class="icon">⚖️</div>
             <div class="pill">밸런스형</div>
             <ul class="desc">
@@ -55,12 +55,15 @@
 </template>
 
 <script setup>
-// 문서 전제: API/상태/바인딩/검증/로직 없음 — 정적 UI만
 import { useRouter } from 'vue-router'
+import { useRecommendationStore } from '@/stores/recommendation'
 
 const router = useRouter()
-function goPeriod() {
-  // 문서 규칙: /recommend/period로 라우팅만 수행 (데이터 전달/상태 변경 없음)
+const recommendationStore = useRecommendationStore()
+
+function goPeriod(styleType) {
+  // 스타일 선택 후 기간 선택 화면으로 이동
+  recommendationStore.updateSelection({ style: styleType })
   router.push('/recommend/period')
 }
 </script>

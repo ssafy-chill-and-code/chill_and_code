@@ -1,83 +1,77 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import api from '@/api/axios'
 
-// 장소 추천 옵션 선택 전용 스토어 (API 미확정 상태: 호출 금지, 구조만 유지)
+// 장소 추천 스토어 - 백엔드 API 연동
 export const usePlaceRecommendationStore = defineStore('placeRecommendation', () => {
-  const options = ref([]) // 장소 추천 옵션(예: 지역/예산/업무환경 등) — API 확정 전 비움
-  const selection = ref({})
-  const result = ref(null)
-  const loading = ref({ options: false, submit: false, result: false })
+  const selection = ref({
+    style: '', // 워케이션 스타일 (힐링, 작업몰입, 액티비티)
+    budget: '', // 예산 (문자열로 전달)
+    region: '', // 선호 지역 (optional)
+    transport: '' // 이동수단 (optional)
+  })
+  
+  const result = ref([]) // 추천 장소 카드 배열
+  const loading = ref(false)
   const error = ref('')
-
-  async function fetchOptions() {
-    loading.value.options = true
-    error.value = ''
-    try {
-      // API 명세 확정 전: 실제 호출/더미 데이터 금지
-      options.value = []
-      return options.value
-    } catch (e) {
-      error.value = e?.response?.data?.message || e.message
-      throw e
-    } finally {
-      loading.value.options = false
-    }
-  }
 
   function updateSelection(patch) {
     selection.value = { ...selection.value, ...patch }
   }
 
-  const isReadyForSubmit = computed(() => false) // 명세 의존, 현재는 비활성
-
-  async function fetchResult() {
-    loading.value.result = true
+  // 장소 추천 API 호출
+  async function fetchPlaceRecommendation() {
+    loading.value = true
     error.value = ''
     try {
-      // API 명세 확정 전: 실제 호출/더미 데이터 금지
-      result.value = null
+      const params = {
+        style: selection.value.style,
+        budget: selection.value.budget
+      }
+      
+      if (selection.value.region) {
+        params.region = selection.value.region
+      }
+      
+      if (selection.value.transport) {
+        params.transport = selection.value.transport
+      }
+      
+      const response = await api.get('/recommend/places', { params })
+      result.value = response.data
       return result.value
     } catch (e) {
       error.value = e?.response?.data?.message || e.message
       throw e
     } finally {
-      loading.value.result = false
+      loading.value = false
     }
   }
 
-  async function submitSelection() {
-    loading.value.submit = true
-    error.value = ''
-    try {
-      // 명세 확정 전에는 아무 동작도 하지 않음
-      return { ok: false }
-    } catch (e) {
-      error.value = e?.response?.data?.message || e.message
-      throw e
-    } finally {
-      loading.value.submit = false
-    }
-  }
+  const isReadyForSubmit = computed(() => {
+    return selection.value.style && selection.value.budget
+  })
 
   function reset() {
-    options.value = []
-    selection.value = {}
-    result.value = null
-    loading.value = { options: false, submit: false, result: false }
+    selection.value = {
+      style: '',
+      budget: '',
+      region: '',
+      transport: ''
+    }
+    result.value = []
+    loading.value = false
     error.value = ''
   }
 
   return {
-    options,
     selection,
     result,
     loading,
     error,
-    fetchOptions,
     updateSelection,
+    fetchPlaceRecommendation,
     isReadyForSubmit,
-    fetchResult,
-    submitSelection,
     reset,
   }
 })

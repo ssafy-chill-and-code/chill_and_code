@@ -9,8 +9,8 @@ import ScheduleEditView from '../views/ScheduleEditView.vue'
 import ScheduleDetailView from '../views/ScheduleDetailView.vue'
 import HomeView from '../views/HomeView.vue'
 import RecommendationSelect from '../views/RecommendationSelect.vue'
-import RecommendationResult from '../views/RecommendationResult.vue'
 import RecommendationPeriodSelect from '../views/RecommendationPeriodSelect.vue'
+import RecommendationPeriodResult from '../views/RecommendationPeriodResult.vue'
 import RecommendationPlaceSelect from '../views/RecommendationPlaceSelect.vue'
 import RecommendationPlaceResult from '../views/RecommendationPlaceResult.vue'
 
@@ -32,7 +32,7 @@ const router = createRouter({
     { path: '/posts/:postId/edit', name: 'post-edit', component: () => import('../views/PostEditView.vue'), props: true },
     { path: '/recommend', name: 'recommend-style-select', component: RecommendationSelect },
     { path: '/recommend/period', name: 'recommend-period-select', component: RecommendationPeriodSelect },
-    { path: '/recommend/period-result', name: 'recommend-period-result', component: RecommendationResult },
+    { path: '/recommend/period-result', name: 'recommend-period-result', component: RecommendationPeriodResult },
     { path: '/recommend/place', name: 'recommend-place-select', component: RecommendationPlaceSelect },
     { path: '/recommend/place/result', name: 'recommend-place-result', component: RecommendationPlaceResult },
     { path: '/:pathMatch(.*)*', redirect: '/' },
