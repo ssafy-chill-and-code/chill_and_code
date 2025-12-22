@@ -62,8 +62,8 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
                 .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
                 .collect(Collectors.toList());
 
-        // 5) 상위 K개 LLM 전달 (llm-service는 최대 20개 제한)
-        int K = Math.min(20, scored.size());
+        // 5) 상위 K개 LLM 전달 (UI에 최대 6개만 표시)
+        int K = Math.min(6, scored.size());
         List<LlmPlaceInput> inputs = scored.stream().limit(K).map(sv ->
                 new LlmPlaceInput(
                         sv.view().getPlaceId(),

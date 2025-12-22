@@ -5,9 +5,8 @@
         <!-- 좌측: 로고 -->
         <RouterLink 
           to="/" 
-          class="flex items-center gap-2 text-xl font-bold text-gray-900 hover:text-slate-800 transition-colors"
+          class="flex items-center gap-2 text-xl font-bold hover:opacity-80 transition-opacity logo-text"
         >
-          <span class="text-2xl">🌴</span>
           <span>Chill & Code</span>
         </RouterLink>
 
@@ -15,22 +14,29 @@
         <div class="hidden md:flex items-center gap-2">
           <RouterLink 
             to="/" 
-            class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
-            active-class="text-slate-900 font-semibold bg-slate-100"
+            class="text-gray-700 hover:text-teal-600 font-medium transition-all px-4 py-2"
+            active-class="text-teal-600 font-semibold"
           >
             홈
           </RouterLink>
           <RouterLink 
+            to="/recommend" 
+            class="text-gray-700 hover:text-teal-600 font-medium transition-all px-4 py-2"
+            active-class="text-teal-600 font-semibold"
+          >
+            추천
+          </RouterLink>
+          <RouterLink 
             to="/schedule" 
-            class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
-            active-class="text-slate-900 font-semibold bg-slate-100"
+            class="text-gray-700 hover:text-teal-600 font-medium transition-all px-4 py-2"
+            active-class="text-teal-600 font-semibold"
           >
             일정
           </RouterLink>
           <RouterLink 
             to="/posts" 
-            class="text-gray-700 hover:text-slate-900 hover:bg-slate-50 font-medium transition-all px-4 py-2 rounded-lg"
-            active-class="text-slate-900 font-semibold bg-slate-100"
+            class="text-gray-700 hover:text-teal-600 font-medium transition-all px-4 py-2"
+            active-class="text-teal-600 font-semibold"
           >
             커뮤니티
           </RouterLink>
@@ -64,7 +70,7 @@
             </RouterLink>
             <RouterLink
               to="/signup"
-              class="px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded-lg hover:bg-slate-900 hover:shadow-md active:bg-slate-950 transition-all"
+              class="px-4 py-2 text-sm font-medium text-white rounded-lg hover:shadow-md transition-all btn-teal"
             >
               회원가입
             </RouterLink>
@@ -109,24 +115,32 @@
         <!-- 메뉴 링크 -->
         <RouterLink 
           to="/" 
-          class="block px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
-          active-class="bg-slate-100 text-slate-900 font-semibold"
+          class="block px-4 py-3 text-gray-700 hover:text-teal-600 font-medium transition-all"
+          active-class="text-teal-600 font-semibold"
           @click="mobileMenuOpen = false"
         >
           홈
         </RouterLink>
         <RouterLink 
+          to="/recommend" 
+          class="block px-4 py-3 text-gray-700 hover:text-teal-600 font-medium transition-all"
+          active-class="text-teal-600 font-semibold"
+          @click="mobileMenuOpen = false"
+        >
+          추천
+        </RouterLink>
+        <RouterLink 
           to="/schedule" 
-          class="block px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
-          active-class="bg-slate-100 text-slate-900 font-semibold"
+          class="block px-4 py-3 text-gray-700 hover:text-teal-600 font-medium transition-all"
+          active-class="text-teal-600 font-semibold"
           @click="mobileMenuOpen = false"
         >
           일정
         </RouterLink>
         <RouterLink 
           to="/posts" 
-          class="block px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
-          active-class="bg-slate-100 text-slate-900 font-semibold"
+          class="block px-4 py-3 text-gray-700 hover:text-teal-600 font-medium transition-all"
+          active-class="text-teal-600 font-semibold"
           @click="mobileMenuOpen = false"
         >
           커뮤니티
@@ -152,7 +166,7 @@
             </RouterLink>
             <RouterLink
               to="/signup"
-              class="block w-full px-4 py-3 text-center text-white bg-slate-800 rounded-lg hover:bg-slate-900 hover:shadow-md active:bg-slate-950 font-medium transition-all"
+              class="block w-full px-4 py-3 text-center text-white rounded-lg hover:shadow-md font-medium transition-all btn-teal"
               @click="mobileMenuOpen = false"
             >
               회원가입
@@ -198,5 +212,21 @@ const onLogout = async () => {
 </script>
 
 <style scoped>
-/* Active link styles are handled by active-class in template */
+.logo-text {
+  color: #17a2b8;
+  font-weight: 700;
+}
+
+nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.btn-teal {
+  background: #17a2b8;
+}
+
+.btn-teal:hover {
+  background: #138496;
+}
 </style>

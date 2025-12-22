@@ -5,6 +5,11 @@ import OAuthCallbackView from '../views/OAuthCallbackView.vue'
 import MyPageView from '../views/MyPageView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
 import HomeView from '../views/HomeView.vue'
+import RecommendationSelect from '../views/RecommendationSelect.vue'
+import RecommendationPeriodSelect from '../views/RecommendationPeriodSelect.vue'
+import RecommendationPeriodResult from '../views/RecommendationPeriodResult.vue'
+import RecommendationPlaceSelect from '../views/RecommendationPlaceSelect.vue'
+import RecommendationPlaceResult from '../views/RecommendationPlaceResult.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +24,11 @@ const router = createRouter({
     { path: '/posts/create', name: 'post-create', component: () => import('../views/PostCreateView.vue') },
     { path: '/posts/:postId', name: 'post-detail', component: () => import('../views/PostDetailView.vue'), props: true },
     { path: '/posts/:postId/edit', name: 'post-edit', component: () => import('../views/PostEditView.vue'), props: true },
+    { path: '/recommend', name: 'recommend-style-select', component: RecommendationSelect },
+    { path: '/recommend/period', name: 'recommend-period-select', component: RecommendationPeriodSelect },
+    { path: '/recommend/period-result', name: 'recommend-period-result', component: RecommendationPeriodResult },
+    { path: '/recommend/place', name: 'recommend-place-select', component: RecommendationPlaceSelect },
+    { path: '/recommend/place/result', name: 'recommend-place-result', component: RecommendationPlaceResult },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
