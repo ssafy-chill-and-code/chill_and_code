@@ -28,9 +28,9 @@ const calendarRef = ref(null)
 
 // 일정 유형 정의
 const scheduleTypes = [
-  { value: 'PERSONAL', label: '개인 일정', color: '#93c5fd', bgColor: '#dbeafe' },
-  { value: 'WORK', label: '업무 일정', color: '#64748b', bgColor: '#e2e8f0' },
-  { value: 'WORKATION', label: '워케이션 일정', color: '#0ea5e9', bgColor: '#bae6fd' }
+  { value: 'PERSONAL', label: '개인 일정', color: '#eab308', bgColor: '#fef9c3' }, // 노란 계열
+  { value: 'WORK', label: '업무 일정', color: '#dc2626', bgColor: '#fee2e2' }, // 붉은 계열
+  { value: 'WORKATION', label: '워케이션 일정', color: '#2563eb', bgColor: '#dbeafe' } // 푸른 계열
 ]
 
 // 월 포맷
@@ -90,14 +90,28 @@ const calendarEvents = computed(() => {
     .filter(s => selectedTypes.value.includes(s.scheduleType))
     .map(s => {
       const typeInfo = scheduleTypes.find(t => t.value === s.scheduleType)
+      
+      // 하루짜리 일정의 경우 end를 명시적으로 설정
+      let endDate = s.endDateTime
+      if (!endDate || endDate === s.startDateTime) {
+        // 하루짜리 일정: 다음 날 자정으로 설정
+        const start = new Date(s.startDateTime)
+        const nextDay = new Date(start)
+        nextDay.setDate(nextDay.getDate() + 1)
+        nextDay.setHours(0, 0, 0, 0)
+        endDate = nextDay.toISOString()
+      }
+      
       return {
         id: String(s.scheduleId),
         title: s.title,
         start: s.startDateTime,
-        end: s.endDateTime,
+        end: endDate,
         backgroundColor: typeInfo?.bgColor || '#e5e7eb',
         borderColor: typeInfo?.color || '#9ca3af',
+        borderWidth: 2,
         textColor: '#1f2937',
+        classNames: [`schedule-type-${s.scheduleType.toLowerCase()}`],
         extendedProps: {
           scheduleType: s.scheduleType,
           scheduleId: s.scheduleId
@@ -679,9 +693,29 @@ const toggleSidebar = () => {
   margin: 2px;
   font-size: 0.85rem;
   font-weight: 600;
-  border-width: 0;
+  border-width: 2px !important;
+  border-left-width: 4px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.15s ease;
+}
+
+/* 일정 유형별 색상 강제 적용 */
+:deep(.fc-event.schedule-type-personal) {
+  background-color: #fef9c3 !important;
+  border-color: #eab308 !important;
+  border-left-color: #eab308 !important;
+}
+
+:deep(.fc-event.schedule-type-work) {
+  background-color: #fee2e2 !important;
+  border-color: #dc2626 !important;
+  border-left-color: #dc2626 !important;
+}
+
+:deep(.fc-event.schedule-type-workation) {
+  background-color: #dbeafe !important;
+  border-color: #2563eb !important;
+  border-left-color: #2563eb !important;
 }
 
 :deep(.fc-event:hover) {

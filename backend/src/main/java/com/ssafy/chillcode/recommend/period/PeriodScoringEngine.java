@@ -18,7 +18,7 @@ import com.ssafy.chillcode.recommend.UserStyle;
 
 public class PeriodScoringEngine {
 	private static final double EPSILON = 0.5; // score 차이가 이 값보다 작으면 의미없는 차이로 간주
-	private static final double THRESHOLD = 0.5; // 후보 선정 threshold - primary 대비 이 비율 미만이면 대안으로 보여주지 않음
+	private static final double THRESHOLD = 0.25; // 후보 선정 threshold - primary 대비 이 비율 미만이면 대안으로 보여주지 않음
 	
 	private static class ScoredCandidate {
 		PeriodCandidate candidate;
