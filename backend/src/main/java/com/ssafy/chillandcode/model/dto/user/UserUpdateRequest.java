@@ -4,16 +4,18 @@ public class UserUpdateRequest {
 	private Long userId;
 	private String nickname;
 	private String region;
+	private String profileImageUrl;
 
 	public UserUpdateRequest() {
 
 	}
 
-	public UserUpdateRequest(Long userId, String nickname, String region) {
+	public UserUpdateRequest(Long userId, String nickname, String region, String profileImageUrl) {
 		super();
 		this.userId = userId;
 		this.nickname = nickname;
 		this.region = region;
+		this.profileImageUrl = profileImageUrl;
 	}
 
 	public Long getUserId() {
@@ -40,9 +42,18 @@ public class UserUpdateRequest {
 		this.region = region;
 	}
 
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public void setProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
+
 	@Override
 	public String toString() {
-		return "UserUpdateRequest [userId=" + userId + ", nickname=" + nickname + ", region=" + region + "]";
+		return "UserUpdateRequest [userId=" + userId + ", nickname=" + nickname + ", region=" + region
+				+ ", profileImageUrl=" + profileImageUrl + "]";
 	}
 
 }

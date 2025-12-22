@@ -5,14 +5,14 @@
 <mapper namespace="com.ssafy.chillandcode.model.dao.UserDao">
 	<!-- 회원 가입(일반 등록) -->
 	<insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
-		INSERT INTO users (email, password, nickname, region, provider, provider_id)
-		VALUES (#{email}, #{password}, #{nickname}, #{region}, #{provider}, #{providerId})
+		INSERT INTO users (email, password, nickname, region, profile_image_url, provider, provider_id)
+		VALUES (#{email}, #{password}, #{nickname}, #{region}, #{profileImageUrl}, #{provider}, #{providerId})
 	</insert>
 	
 	<!-- 회원 가입(OAuth) -->
 	<insert id="insertOAuthUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
-		INSERT INTO users (email, provider, provider_id, password, nickname)
-		VALUES (#{email}, #{provider}, #{providerId}, #{password}, #{nickname})
+		INSERT INTO users (email, provider, provider_id, password, nickname, profile_image_url)
+		VALUES (#{email}, #{provider}, #{providerId}, #{password}, #{nickname}, #{profileImageUrl})
 	</insert>
 	
 	<!-- 회원 정보 조회 (프로필 조회) -->
@@ -33,6 +33,9 @@
 			<if test="region != null">
 				region = #{region},
 			</if>
+			<if test="profileImageUrl != null">
+		      profile_image_url = #{profileImageUrl},
+		    </if>
 		</set>
 		WHERE user_id=#{userId}
 			AND is_deleted = 0
