@@ -17,9 +17,9 @@ public class StyleWeightStrategy {
     // nature/activity_score가 0~0.5 범위로 작지만 20배 스케일업되므로 가중치 극대화
     public static WeightStrategy byStyle(String style) {
 
-        // 카페·업무 중심 (workspace 최소화, nature/activity 균형)
+        // 카페·업무 중심 (workspace 우선, nature/activity 보조)
         if ("CAFE".equals(style)) {
-            return new WeightStrategy(0.08, 0.45, 0.47, DEFAULT_TREND_WEIGHT);
+            return new WeightStrategy(0.60, 0.20, 0.20, DEFAULT_TREND_WEIGHT);
 
         // 자연·힐링 중심 (workspace 거의 무시, nature 절대 우선)
         } else if ("NATURE".equals(style)) {
