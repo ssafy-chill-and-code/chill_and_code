@@ -81,5 +81,15 @@ export const useUserStore = defineStore('user', {
       const { data } = await axios.patch('/users/me/password', payload)
       return data
     },
+    async uploadFile(file) {
+      const formData = new FormData()
+      formData.append('file', file)
+      const { data } = await axios.post('/files/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return data
+    },
   },
 })

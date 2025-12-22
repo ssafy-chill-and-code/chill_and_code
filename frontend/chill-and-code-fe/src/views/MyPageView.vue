@@ -34,6 +34,12 @@ const showWithdrawalModal = ref(false)
 const withdrawalConfirm = ref(false)
 const scheduleTypeFilter = ref(null)
 
+// 파일 업로드 관련
+const selectedFile = ref(null)
+const previewUrl = ref(null)
+const uploading = ref(false)
+const fileInputRef = ref(null)
+
 const user = computed(() => userStore.user)
 const myPosts = computed(() => postStore.myPosts)
 const myComments = computed(() => commentStore.myComments)
@@ -112,7 +118,9 @@ const loadMySchedules = async () => {
 const openProfileEdit = () => {
   profileForm.value.nickname = user.value?.nickname || ''
   profileForm.value.region = user.value?.region || ''
-  profileForm.value.profileImageUrl = user.value?.profileImageURl || ''
+  profileForm.value.profileImageUrl = user.value?.profileImageUrl || ''
+  selectedFile.value = null
+  previewUrl.value = null
   showProfileEditModal.value = true
 }
 
@@ -123,18 +131,81 @@ const openPasswordChange = () => {
   showPasswordChangeModal.value = true
 }
 
+const handleFileSelect = (event) => {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  // 파일 타입 검증
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+  if (!allowedTypes.includes(file.type)) {
+    alert('이미지 파일만 업로드 가능합니다. (JPEG, PNG, WebP)')
+    return
+  }
+
+  // 파일 크기 검증 (10MB 제한)
+  if (file.size > 10 * 1024 * 1024) {
+    alert('파일 크기는 10MB 이하여야 합니다.')
+    return
+  }
+
+  selectedFile.value = file
+  previewUrl.value = URL.createObjectURL(file)
+}
+
+const uploadFile = async () => {
+  if (!selectedFile.value) return
+
+  uploading.value = true
+  error.value = null
+  try {
+    const response = await userStore.uploadFile(selectedFile.value)
+    if (response?.data?.url) {
+      profileForm.value.profileImageUrl = response.data.url
+      selectedFile.value = null
+      if (previewUrl.value) {
+        URL.revokeObjectURL(previewUrl.value)
+        previewUrl.value = null
+      }
+      alert('이미지가 업로드되었습니다.')
+    } else {
+      throw new Error('업로드된 파일의 URL을 받지 못했습니다.')
+    }
+  } catch (e) {
+    const errorMessage = e?.response?.data?.message || '파일 업로드에 실패했습니다.'
+    error.value = errorMessage
+    alert(errorMessage)
+  } finally {
+    uploading.value = false
+  }
+}
+
 const saveProfile = async () => {
   loading.value = true
   error.value = null
   try {
-    // 빈 문자열은 null로 변환하여 백엔드에 전달하지 않음
+    // 빈 문자열을 trim하고, 빈 문자열이면 null로 변환
     const payload = {
-      nickname: profileForm.value.nickname || null,
-      region: profileForm.value.region || null,
-      profileImageUrl: profileForm.value.profileImageUrl || null,
+      nickname: profileForm.value.nickname?.trim() || null,
+      region: profileForm.value.region?.trim() || null,
+      profileImageUrl: profileForm.value.profileImageUrl?.trim() || null,
     }
+    
+    // 최소한 하나의 필드는 값이 있어야 함
+    if (!payload.nickname && !payload.region && !payload.profileImageUrl) {
+      alert('수정할 정보를 입력해주세요.')
+      loading.value = false
+      return
+    }
+    
     await userStore.updateProfile(payload)
+    
     showProfileEditModal.value = false
+    // 미리보기 URL 정리
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value)
+      previewUrl.value = null
+    }
+    selectedFile.value = null
     alert('프로필이 수정되었습니다.')
   } catch (e) {
     const errorMessage = e?.response?.data?.message || '프로필 수정에 실패했습니다.'
@@ -353,8 +424,8 @@ onMounted(async () => {
               <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 mb-6">
                 <div class="relative flex-shrink-0">
                   <img
-                    v-if="user?.profileImageURl"
-                    :src="user.profileImageURl"
+                    v-if="user?.profileImageUrl"
+                    :src="user.profileImageUrl"
                     :alt="user?.nickname || '프로필'"
                     class="w-20 h-20 rounded-full object-cover shadow-lg border-2 border-gray-200"
                   />
@@ -689,17 +760,79 @@ onMounted(async () => {
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-3">프로필 이미지 URL</label>
-            <input 
-              v-model="profileForm.profileImageUrl" 
-              type="url" 
-              placeholder="https://i.pravatar.cc/150"
-              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
-            />
-            <p class="text-xs text-gray-500 mt-2">
-              프로필 이미지 URL을 입력하세요. 비워두면 기본 아바타가 표시됩니다.<br>
-              예시: https://i.pravatar.cc/150 또는 https://via.placeholder.com/150
-            </p>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">프로필 이미지</label>
+            
+            <!-- 파일 선택 및 미리보기 -->
+            <div class="mb-4">
+              <div class="flex flex-col sm:flex-row gap-4 items-start">
+                <!-- 미리보기 -->
+                <div class="flex-shrink-0">
+                  <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
+                    <img
+                      v-if="previewUrl"
+                      :src="previewUrl"
+                      alt="미리보기"
+                      class="w-full h-full object-cover"
+                    />
+                    <img
+                      v-else-if="profileForm.profileImageUrl"
+                      :src="profileForm.profileImageUrl"
+                      alt="현재 프로필 이미지"
+                      class="w-full h-full object-cover"
+                    />
+                    <div
+                      v-else
+                      class="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-white text-4xl font-bold"
+                    >
+                      {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 파일 선택 버튼 -->
+                <div class="flex-1 space-y-3">
+                  <input
+                    ref="fileInputRef"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    @change="handleFileSelect"
+                    class="hidden"
+                  />
+                  <button
+                    type="button"
+                    @click="fileInputRef?.click()"
+                    :disabled="uploading"
+                    class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    {{ uploading ? '업로드 중...' : '파일 선택' }}
+                  </button>
+                  <button
+                    v-if="selectedFile"
+                    type="button"
+                    @click="uploadFile"
+                    :disabled="uploading"
+                    class="w-full sm:w-auto px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    {{ uploading ? '업로드 중...' : '업로드' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- URL 입력 필드 (기존 기능 유지) -->
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-2">또는 이미지 URL 직접 입력</label>
+              <input 
+                v-model="profileForm.profileImageUrl" 
+                type="url" 
+                placeholder="https://i.pravatar.cc/150"
+                class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+              />
+              <p class="text-xs text-gray-500 mt-2">
+                로컬 파일을 업로드하거나 이미지 URL을 직접 입력할 수 있습니다.<br>
+                비워두면 기본 아바타가 표시됩니다.
+              </p>
+            </div>
           </div>
           <div class="flex gap-3 pt-6">
             <button

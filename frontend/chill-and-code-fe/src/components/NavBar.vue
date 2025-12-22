@@ -221,7 +221,7 @@ const mobileMenuOpen = ref(false)
 
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 const nickname = computed(() => userStore?.user?.nickname || '회원')
-const profileImageUrl = computed(() => userStore?.user?.profileImageURl)
+const profileImageUrl = computed(() => userStore?.user?.profileImageUrl)
 
 const onLogout = async () => {
   try {
