@@ -593,10 +593,6 @@ function selectBudget(budgetLevel) {
   budget.value = budgetLevel
 }
 
-function selectBudget(budgetLevel) {
-  budget.value = budgetLevel
-}
-
 function toggleRegion(region) {
   const index = selectedRegions.value.indexOf(region)
   if (index > -1) {
@@ -619,13 +615,6 @@ function convertStyleToBackend(style) {
   return styleMap[style] || 'ACTIVITY'
 }
 
-function convertBudgetToBackend(budgetText) {
-  const budgetMap = {
-    '가성비': 'LOW',
-    '적당한': 'MID',
-    '프리미엄': 'HIGH'
-  }
-  return budgetMap[budgetText] || 'MID'
 function convertBudgetToBackend(budgetText) {
   const budgetMap = {
     '가성비': 'LOW',
