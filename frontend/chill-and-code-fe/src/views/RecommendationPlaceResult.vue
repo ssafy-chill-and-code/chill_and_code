@@ -1,6 +1,6 @@
 <template>
   <div class="place-result-wrapper">
-    <div class="container py-5">
+    <div class="container-custom py-5">
       <!-- 헤더 -->
       <header class="text-center mb-5">
         <div class="step-indicator">추천 결과</div>
@@ -57,8 +57,8 @@
 
         <!-- 장소 카드 -->
         <section class="places-section">
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <div v-for="place in places" :key="place.placeId" class="col">
+          <div class="places-grid">
+            <div v-for="place in places" :key="place.placeId" class="place-card-wrapper">
               <div class="place-card">
                 <!-- 이미지 -->
                 <div class="place-image">
@@ -169,6 +169,15 @@ function goSchedule(place) {
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
+  width: 100%;
+}
+
+.container-custom {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .step-indicator {
@@ -288,6 +297,8 @@ function goSchedule(place) {
 .results-wrapper {
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
+  padding: 0 1rem;
 }
 
 /* Summary Card */
@@ -333,6 +344,23 @@ function goSchedule(place) {
 /* Places Section */
 .places-section {
   margin-top: 2.5rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.places-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.place-card-wrapper {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .place-card {
@@ -507,6 +535,11 @@ function goSchedule(place) {
   .summary-divider {
     display: none;
   }
+  
+  .places-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -522,6 +555,11 @@ function goSchedule(place) {
   
   .place-image-placeholder {
     font-size: 2rem;
+  }
+  
+  .places-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 </style>
