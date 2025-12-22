@@ -13,21 +13,21 @@ public class StyleWeightStrategy {
     private static final double DEFAULT_TREND_WEIGHT = 0.02; // default Wt
 
     // style 입력값을 받아 가중치 묶음을 반환
-    // workspace_count가 0~513 범위로 매우 크므로 가중치를 대폭 축소
-    // nature/activity_score가 0~0.5 범위로 작지만 20배 스케일업되므로 가중치 증대
+    // workspace_count가 0~513 범위로 매우 크므로 가중치를 극소화
+    // nature/activity_score가 0~0.5 범위로 작지만 20배 스케일업되므로 가중치 극대화
     public static WeightStrategy byStyle(String style) {
 
         // 카페·업무 중심 (workspace 최소화, nature/activity 균형)
         if ("CAFE".equals(style)) {
-            return new WeightStrategy(0.15, 0.4, 0.45, DEFAULT_TREND_WEIGHT);
+            return new WeightStrategy(0.08, 0.45, 0.47, DEFAULT_TREND_WEIGHT);
 
-        // 자연·힐링 중심 (workspace 극소화, nature 극대화)
+        // 자연·힐링 중심 (workspace 거의 무시, nature 절대 우선)
         } else if ("NATURE".equals(style)) {
-            return new WeightStrategy(0.05, 0.7, 0.25, DEFAULT_TREND_WEIGHT);
+            return new WeightStrategy(0.02, 0.75, 0.23, DEFAULT_TREND_WEIGHT);
 
-        // 활동·관광 중심 (workspace 최소화, activity 극대화)
+        // 활동·관광 중심 (workspace 거의 무시, activity 절대 우선)
         } else {
-            return new WeightStrategy(0.1, 0.25, 0.65, DEFAULT_TREND_WEIGHT);
+            return new WeightStrategy(0.03, 0.22, 0.75, DEFAULT_TREND_WEIGHT);
         }
     }
 }
