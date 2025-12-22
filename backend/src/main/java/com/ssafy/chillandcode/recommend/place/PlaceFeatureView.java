@@ -33,4 +33,14 @@ public class PlaceFeatureView {
     public double getTrendScore() { return trendScore; }
     public int getPriceLevel() { return priceLevel; }
     public String getImageUrl() { return imageUrl; }
+
+    public void setPlaceId(Long placeId) { this.placeId = placeId; }
+    public void setName(String name) { this.name = name; }
+    public void setSido(String sido) { this.sido = sido; }
+    public void setWorkspaceCount(int workspaceCount) { this.workspaceCount = workspaceCount; }
+    public void setNatureScore(double natureScore) { this.natureScore = natureScore; }
+    public void setActivityScore(double activityScore) { this.activityScore = activityScore; }
+    public void setTrendScore(double trendScore) { this.trendScore = trendScore; }
+    public void setPriceLevel(int priceLevel) { this.priceLevel = priceLevel; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

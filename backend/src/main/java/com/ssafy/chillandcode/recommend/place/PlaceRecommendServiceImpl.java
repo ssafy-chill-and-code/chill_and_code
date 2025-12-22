@@ -93,9 +93,12 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
             log.info("✅ 선택된 장소 (단일/전체 지역):");
             for (int i = 0; i < finalSelection.size(); i++) {
                 ScoredView sv = finalSelection.get(i);
-                log.info("  {}. {} ({}지역) - 점수: {:.2f} [workspace:{}, nature:{}, activity:{}]", 
-                    i+1, sv.view().getName(), sv.view().getSido(), sv.score(),
-                    sv.view().getWorkspaceCount(), sv.view().getNatureScore(), sv.view().getActivityScore());
+                log.info("  {}. {} ({}) - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
+                    i+1, sv.view().getName(), sv.view().getSido(), 
+                    String.format("%.2f", sv.score()),
+                    sv.view().getWorkspaceCount(), 
+                    sv.view().getNatureScore(), 
+                    sv.view().getActivityScore());
             }
         } else {
             // 2개 이상 선택: 지역별로 균등 분배
@@ -132,9 +135,12 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
             log.info("✅ 선택된 장소 (다중 지역 균등 분배):");
             for (int i = 0; i < finalSelection.size(); i++) {
                 ScoredView sv = finalSelection.get(i);
-                log.info("  {}. {} ({}지역) - 점수: {:.2f} [workspace:{}, nature:{}, activity:{}]", 
-                    i+1, sv.view().getName(), sv.view().getSido(), sv.score(),
-                    sv.view().getWorkspaceCount(), sv.view().getNatureScore(), sv.view().getActivityScore());
+                log.info("  {}. {} ({}) - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
+                    i+1, sv.view().getName(), sv.view().getSido(), 
+                    String.format("%.2f", sv.score()),
+                    sv.view().getWorkspaceCount(), 
+                    sv.view().getNatureScore(), 
+                    sv.view().getActivityScore());
             }
         }
 
