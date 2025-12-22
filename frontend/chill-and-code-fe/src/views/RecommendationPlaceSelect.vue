@@ -216,7 +216,7 @@ const placeStore = usePlaceRecommendationStore()
 const recommendationStore = useRecommendationStore()
 
 const selectedStyle = ref('')
-const budget = ref(150)
+const budget = ref('적당한') // '가성비', '적당한', '프리미엄' 중 하나
 const transport = ref('')
 const selectedRegions = ref([])
 const hoveredRegion = ref(null)
@@ -589,6 +589,10 @@ function selectStyle(style) {
   selectedStyle.value = style
 }
 
+function selectBudget(budgetLevel) {
+  budget.value = budgetLevel
+}
+
 function toggleRegion(region) {
   const index = selectedRegions.value.indexOf(region)
   if (index > -1) {
@@ -607,10 +611,13 @@ function convertStyleToBackend(style) {
   return styleMap[style] || 'ACTIVITY'
 }
 
-function convertBudgetToBackend(budgetValue) {
-  if (budgetValue <= 150) return 'LOW'
-  if (budgetValue <= 300) return 'MID'
-  return 'HIGH'
+function convertBudgetToBackend(budgetText) {
+  const budgetMap = {
+    '가성비': 'LOW',
+    '적당한': 'MID',
+    '프리미엄': 'HIGH'
+  }
+  return budgetMap[budgetText] || 'MID'
 }
 
 async function goResult() {

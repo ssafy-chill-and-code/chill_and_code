@@ -273,7 +273,7 @@ function goPlace(period) {
 
 .card-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: white;
   font-size: 0.875rem;
   font-weight: 600;
@@ -281,6 +281,7 @@ function goPlace(period) {
   border-radius: 20px;
   margin-bottom: 2rem;
   letter-spacing: 0.025em;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .period-info {
