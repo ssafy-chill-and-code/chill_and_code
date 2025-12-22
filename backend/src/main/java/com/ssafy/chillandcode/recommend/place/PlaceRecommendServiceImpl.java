@@ -41,16 +41,16 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
     @Override
     public List<PlaceRecommendCard> recommendCards(String style, String budget, String region, String transport) {
 
-		// 1) budget → priceLevel
+		// 1) budget → priceLevel (명확한 구분)
 		int minPrice, maxPrice;
 		if ("LOW".equalsIgnoreCase(budget)) {
 			minPrice = 1;
 			maxPrice = 2;
 		} else if ("MID".equalsIgnoreCase(budget)) {
-			minPrice = 2;
+			minPrice = 3;
 			maxPrice = 3;
 		} else {
-			minPrice = 3;
+			minPrice = 4;
 			maxPrice = 5;
 		}
 
@@ -79,49 +79,20 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
         log.info("🔍 장소 추천 시작 - style: {}, budget: {}, region: {}", style, budget, region);
         log.info("📊 DB에서 조회된 장소 수: {}", views.size());
 
-        // 5) 타입별 균등 분배 로직 (WORKSPACE 2개 + SPOT 2개 + ACCOMMODATION 2개 = 6개)
-        List<ScoredView> allScored = views.stream()
+        // 5) 점수 계산 및 상위 6개 선택 (예산 범위 내에서만!)
+        List<ScoredView> finalSelection = views.stream()
                 .map(v -> new ScoredView(v, toFeature(v), weight))
                 .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
+                .limit(6)
                 .collect(Collectors.toList());
 
-        // place_type별로 그룹핑
-        Map<String, List<ScoredView>> byType = allScored.stream()
-                .collect(Collectors.groupingBy(sv -> sv.view().getPlaceType()));
-
-        List<ScoredView> finalSelection = new ArrayList<>();
-
-        // 각 타입에서 상위 2개씩 선택 (최대 6개)
-        int perType = 2; // 각 타입당 2개
-        List<String> types = List.of("WORKSPACE", "SPOT", "ACCOMMODATION");
-        
-        for (String type : types) {
-            List<ScoredView> typeViews = byType.getOrDefault(type, new ArrayList<>());
-            List<ScoredView> selected = typeViews.stream()
-                    .limit(perType)
-                    .collect(Collectors.toList());
-            finalSelection.addAll(selected);
-        }
-
-        // 6개 미만이면 남은 자리를 다른 타입으로 채움
-        if (finalSelection.size() < 6) {
-            int remaining = 6 - finalSelection.size();
-            List<ScoredView> additionalViews = allScored.stream()
-                    .filter(sv -> !finalSelection.contains(sv))
-                    .limit(remaining)
-                    .collect(Collectors.toList());
-            finalSelection.addAll(additionalViews);
-        }
-
-        // 최종 정렬 (점수 순)
-        finalSelection.sort(Comparator.comparingDouble(ScoredView::score).reversed());
-
-        log.info("✅ 선택된 장소 (타입별 균등 분배: WORKSPACE 2개 + SPOT 2개 + ACCOMMODATION 2개):");
+        log.info("✅ 선택된 장소 (예산 범위: {}-{}, 점수 순 상위 6개):", minPrice, maxPrice);
         for (int i = 0; i < finalSelection.size(); i++) {
             ScoredView sv = finalSelection.get(i);
-            log.info("  {}. {} ({}) [{}] - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
+            log.info("  {}. {} ({}) [{}] - 점수: {}, price_level: {} [workspace:{}, nature:{}, activity:{}]", 
                 i+1, sv.view().getName(), sv.view().getSido(), sv.view().getPlaceType(),
                 String.format("%.2f", sv.score()),
+                sv.view().getPriceLevel(),
                 sv.view().getWorkspaceCount(), 
                 sv.view().getNatureScore(), 
                 sv.view().getActivityScore());
