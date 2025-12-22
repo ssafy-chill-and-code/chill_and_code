@@ -17,10 +17,17 @@ const mobileMenuOpen = ref(false)
 const loading = ref(false)
 const error = ref(null)
 const showProfileEditModal = ref(false)
+const showPasswordChangeModal = ref(false)
+const passwordForm = ref({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
 
 const profileForm = ref({
   nickname: '',
   region: '',
+  profileImageUrl: '',
 })
 
 const showWithdrawalModal = ref(false)
@@ -105,18 +112,89 @@ const loadMySchedules = async () => {
 const openProfileEdit = () => {
   profileForm.value.nickname = user.value?.nickname || ''
   profileForm.value.region = user.value?.region || ''
+  profileForm.value.profileImageUrl = user.value?.profileImageURl || ''
   showProfileEditModal.value = true
+}
+
+const openPasswordChange = () => {
+  passwordForm.value.currentPassword = ''
+  passwordForm.value.newPassword = ''
+  passwordForm.value.confirmPassword = ''
+  showPasswordChangeModal.value = true
 }
 
 const saveProfile = async () => {
   loading.value = true
   error.value = null
   try {
-    await userStore.updateProfile(profileForm.value)
+    // 빈 문자열은 null로 변환하여 백엔드에 전달하지 않음
+    const payload = {
+      nickname: profileForm.value.nickname || null,
+      region: profileForm.value.region || null,
+      profileImageUrl: profileForm.value.profileImageUrl || null,
+    }
+    await userStore.updateProfile(payload)
     showProfileEditModal.value = false
     alert('프로필이 수정되었습니다.')
   } catch (e) {
-    error.value = '프로필 수정에 실패했습니다.'
+    const errorMessage = e?.response?.data?.message || '프로필 수정에 실패했습니다.'
+    error.value = errorMessage
+    alert(errorMessage)
+  } finally {
+    loading.value = false
+  }
+}
+
+const savePassword = async () => {
+  // 유효성 검사
+  if (!passwordForm.value.currentPassword || !passwordForm.value.newPassword) {
+    alert('모든 필드를 입력해주세요.')
+    return
+  }
+  
+  if (passwordForm.value.newPassword.length < 8) {
+    alert('새 비밀번호는 8자 이상이어야 합니다.')
+    return
+  }
+  
+  if (passwordForm.value.newPassword.includes(' ')) {
+    alert('새 비밀번호에 공백을 포함할 수 없습니다.')
+    return
+  }
+  
+  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+    alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
+    return
+  }
+  
+  if (passwordForm.value.currentPassword === passwordForm.value.newPassword) {
+    alert('현재 비밀번호와 새 비밀번호가 동일합니다.')
+    return
+  }
+  
+  loading.value = true
+  error.value = null
+  try {
+    await userStore.changePassword({
+      currentPassword: passwordForm.value.currentPassword,
+      newPassword: passwordForm.value.newPassword,
+    })
+    showPasswordChangeModal.value = false
+    passwordForm.value.currentPassword = ''
+    passwordForm.value.newPassword = ''
+    passwordForm.value.confirmPassword = ''
+    
+    // 비밀번호 변경 성공 안내
+    alert('비밀번호가 변경되었습니다. 보안을 위해 다시 로그인해주세요.')
+    
+    // 비밀번호 변경 시 Refresh Token이 이미 무효화되었으므로
+    // 서버 logout API 호출 없이 로컬 인증 상태만 정리
+    userStore.clearLocalAuth()
+    router.push('/login')
+  } catch (e) {
+    const errorMessage = e?.response?.data?.message || '비밀번호 변경에 실패했습니다.'
+    error.value = errorMessage
+    alert(errorMessage)
   } finally {
     loading.value = false
   }
@@ -273,8 +351,19 @@ onMounted(async () => {
               <h2 class="text-2xl font-bold text-gray-900 mb-6">프로필</h2>
               
               <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 mb-6">
-                <div class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg flex-shrink-0">
-                  {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+                <div class="relative flex-shrink-0">
+                  <img
+                    v-if="user?.profileImageURl"
+                    :src="user.profileImageURl"
+                    :alt="user?.nickname || '프로필'"
+                    class="w-20 h-20 rounded-full object-cover shadow-lg border-2 border-gray-200"
+                  />
+                  <div
+                    v-else
+                    class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
+                  >
+                    {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+                  </div>
                 </div>
                 <div class="flex-1 text-center lg:text-left">
                   <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ user?.nickname || '사용자' }}</h3>
@@ -512,9 +601,12 @@ onMounted(async () => {
                   <h3 class="text-xl font-bold text-gray-900 mb-2">비밀번호 변경</h3>
                   <p class="text-gray-600">계정의 비밀번호를 변경합니다</p>
                 </div>
-                <div class="px-6 py-3 bg-gray-100 text-gray-500 rounded-xl font-semibold">
-                  준비중
-                </div>
+                <button
+                  @click="openPasswordChange"
+                  class="px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+                >
+                  비밀번호 변경
+                </button>
               </div>
             </div>
           </div>
@@ -596,6 +688,19 @@ onMounted(async () => {
               <option v-for="r in regions" :key="r" :value="r">{{ r }}</option>
             </select>
           </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">프로필 이미지 URL</label>
+            <input 
+              v-model="profileForm.profileImageUrl" 
+              type="url" 
+              placeholder="https://i.pravatar.cc/150"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+            <p class="text-xs text-gray-500 mt-2">
+              프로필 이미지 URL을 입력하세요. 비워두면 기본 아바타가 표시됩니다.<br>
+              예시: https://i.pravatar.cc/150 또는 https://via.placeholder.com/150
+            </p>
+          </div>
           <div class="flex gap-3 pt-6">
             <button
               @click="showProfileEditModal = false"
@@ -609,6 +714,62 @@ onMounted(async () => {
               class="flex-1 px-6 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
             >
               저장
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div
+      v-if="showPasswordChangeModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      @click.self="showPasswordChangeModal = false"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
+        <h3 class="text-3xl font-bold text-gray-900 mb-8">비밀번호 변경</h3>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">현재 비밀번호</label>
+            <input 
+              v-model="passwordForm.currentPassword" 
+              type="password" 
+              placeholder="현재 비밀번호를 입력하세요"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">새 비밀번호</label>
+            <input 
+              v-model="passwordForm.newPassword" 
+              type="password" 
+              placeholder="8자 이상, 공백 없이"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+            <p class="text-xs text-gray-500 mt-2">8자 이상이며 공백이 없어야 합니다.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">새 비밀번호 확인</label>
+            <input 
+              v-model="passwordForm.confirmPassword" 
+              type="password" 
+              placeholder="새 비밀번호를 다시 입력하세요"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div class="flex gap-3 pt-6">
+            <button
+              @click="showPasswordChangeModal = false"
+              class="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+            >
+              취소
+            </button>
+            <button
+              @click="savePassword"
+              :disabled="loading"
+              class="flex-1 px-6 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
+            >
+              변경
             </button>
           </div>
         </div>

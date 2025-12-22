@@ -25,7 +25,7 @@ public class UserResponse {
 		UserResponse res = new UserResponse();
 		res.userId = user.getUserId();
 		res.email = user.getEmail();
-		res.nickname = user.getEmail();
+		res.nickname = user.getNickname();
 		res.region = user.getRegion();
 		res.profileImageURl = user.getProfileImageUrl();
 		
