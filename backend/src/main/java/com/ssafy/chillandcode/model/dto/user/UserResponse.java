@@ -5,19 +5,19 @@ public class UserResponse {
 	private String email;
 	private String nickname;
 	private String region;
-	private String profileImageURl;
+	private String profileImageUrl;
 
 	public UserResponse() {
 
 	}
 
-	public UserResponse(Long userId, String email, String nickname, String region, String profileImageURl) {
+	public UserResponse(Long userId, String email, String nickname, String region, String profileImageUrl) {
 		super();
 		this.userId = userId;
 		this.email = email;
 		this.nickname = nickname;
 		this.region = region;
-		this.profileImageURl = profileImageURl;
+		this.profileImageUrl = profileImageUrl;
 	}
 	
 	
@@ -27,7 +27,7 @@ public class UserResponse {
 		res.email = user.getEmail();
 		res.nickname = user.getNickname();
 		res.region = user.getRegion();
-		res.profileImageURl = user.getProfileImageUrl();
+		res.profileImageUrl = user.getProfileImageUrl();
 		
 		return res;
 	}
@@ -64,18 +64,18 @@ public class UserResponse {
 		this.region = region;
 	}
 
-	public String getProfileImageURl() {
-		return profileImageURl;
+	public String getprofileImageUrl() {
+		return profileImageUrl;
 	}
 
-	public void setProfileImageURl(String profileImageURl) {
-		this.profileImageURl = profileImageURl;
+	public void setprofileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
 	}
 
 	@Override
 	public String toString() {
 		return "UserResponse [userId=" + userId + ", email=" + email + ", nickname=" + nickname + ", region=" + region
-				+ ", profileImageURl=" + profileImageURl + "]";
+				+ ", profileImageUrl=" + profileImageUrl + "]";
 	}
 
 }
