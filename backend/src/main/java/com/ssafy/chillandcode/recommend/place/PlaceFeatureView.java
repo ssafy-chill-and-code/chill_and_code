@@ -10,6 +10,7 @@ public class PlaceFeatureView {
     private Long placeId;
     private String name;
     private String sido;
+    private String placeType; // WORKSPACE, SPOT, ACCOMMODATION
 
     // 계산 대상
     private int workspaceCount;
@@ -27,10 +28,22 @@ public class PlaceFeatureView {
     public Long getPlaceId() { return placeId; }
     public String getName() { return name; }
     public String getSido() { return sido; }
+    public String getPlaceType() { return placeType; }
     public int getWorkspaceCount() { return workspaceCount; }
     public double getNatureScore() { return natureScore; }
     public double getActivityScore() { return activityScore; }
     public double getTrendScore() { return trendScore; }
     public int getPriceLevel() { return priceLevel; }
     public String getImageUrl() { return imageUrl; }
+
+    public void setPlaceId(Long placeId) { this.placeId = placeId; }
+    public void setName(String name) { this.name = name; }
+    public void setSido(String sido) { this.sido = sido; }
+    public void setPlaceType(String placeType) { this.placeType = placeType; }
+    public void setWorkspaceCount(int workspaceCount) { this.workspaceCount = workspaceCount; }
+    public void setNatureScore(double natureScore) { this.natureScore = natureScore; }
+    public void setActivityScore(double activityScore) { this.activityScore = activityScore; }
+    public void setTrendScore(double trendScore) { this.trendScore = trendScore; }
+    public void setPriceLevel(int priceLevel) { this.priceLevel = priceLevel; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

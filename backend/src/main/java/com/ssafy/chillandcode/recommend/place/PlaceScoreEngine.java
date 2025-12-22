@@ -10,19 +10,26 @@ package com.ssafy.chillandcode.recommend.place;
  */
 public class PlaceScoreEngine {
 
+    // 정규화 최대값
+    // workspace: 513 범위를 50으로 제한 (코워킹/호텔 과다 점수 방지)
+    // nature/activity: 0.5 범위를 10으로 스케일업 (x20 배율)
+    private static final double MAX_WORKSPACE_NORMALIZED = 50.0;
+    private static final double NATURE_SCALE_FACTOR = 20.0; // 0.5 → 10.0
+    private static final double ACTIVITY_SCALE_FACTOR = 20.0; // 0.5 → 10.0
+
     public static double calculate(PlaceFeature feature, WeightStrategy weight) {
 
-        // workspace 점수 반영
-        double workspaceScore =
-                feature.getWorkspaceCount() * weight.getWorkspace();
+        // workspace 점수 반영 (정규화: 0~50 제한)
+        double normalizedWorkspace = Math.min(feature.getWorkspaceCount(), MAX_WORKSPACE_NORMALIZED);
+        double workspaceScore = normalizedWorkspace * weight.getWorkspace();
 
-        // nature 점수 반영
-        double natureScore =
-                feature.getNatureScore() * weight.getNature();
+        // nature 점수 반영 (스케일업: 0~0.5 → 0~10)
+        double scaledNature = feature.getNatureScore() * NATURE_SCALE_FACTOR;
+        double natureScore = scaledNature * weight.getNature();
 
-        // activity 점수 반영
-        double activityScore =
-                feature.getActivityScore() * weight.getActivity();
+        // activity 점수 반영 (스케일업: 0~0.5 → 0~10)
+        double scaledActivity = feature.getActivityScore() * ACTIVITY_SCALE_FACTOR;
+        double activityScore = scaledActivity * weight.getActivity();
 
         // trend 점수 반영 (보조 항)
         // - trend_score는 0~100 범위로 정규화된 값을 전제로 사용한다.

@@ -69,7 +69,7 @@
           </div>
         </section>
 
-        <!-- 월간 예산 -->
+        <!-- 예산 -->
         <section class="form-section">
           <div class="section-header">
             <h3 class="section-title">💰 월간 예산 <span class="required">*</span></h3>
@@ -593,12 +593,20 @@ function selectBudget(budgetLevel) {
   budget.value = budgetLevel
 }
 
+function selectBudget(budgetLevel) {
+  budget.value = budgetLevel
+}
+
 function toggleRegion(region) {
   const index = selectedRegions.value.indexOf(region)
   if (index > -1) {
+    // 이미 선택된 지역이면 제거
     selectedRegions.value.splice(index, 1)
   } else {
-    selectedRegions.value.push(region)
+    // 최대 3개까지만 선택 가능
+    if (selectedRegions.value.length < 3) {
+      selectedRegions.value.push(region)
+    }
   }
 }
 
@@ -611,6 +619,13 @@ function convertStyleToBackend(style) {
   return styleMap[style] || 'ACTIVITY'
 }
 
+function convertBudgetToBackend(budgetText) {
+  const budgetMap = {
+    '가성비': 'LOW',
+    '적당한': 'MID',
+    '프리미엄': 'HIGH'
+  }
+  return budgetMap[budgetText] || 'MID'
 function convertBudgetToBackend(budgetText) {
   const budgetMap = {
     '가성비': 'LOW',
