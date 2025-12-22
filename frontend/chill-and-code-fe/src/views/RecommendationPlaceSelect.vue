@@ -72,25 +72,54 @@
         <!-- 월간 예산 -->
         <section class="form-section">
           <div class="section-header">
-            <h3 class="section-title">💰 월간 예산</h3>
+            <h3 class="section-title">💰 월간 예산 <span class="required">*</span></h3>
           </div>
-          <div class="budget-card">
-            <div class="budget-display">
-              <span class="budget-amount">{{ budget }}</span>
-              <span class="budget-unit">만원</span>
-            </div>
-            <input 
-              type="range" 
-              v-model.number="budget" 
-              class="budget-slider" 
-              min="50" 
-              max="500" 
-              step="10" 
-            />
-            <div class="budget-labels">
-              <span>50만원</span>
-              <span>500만원</span>
-            </div>
+          <div class="budget-grid">
+            <button 
+              type="button" 
+              class="budget-option" 
+              :class="{ 'selected': budget === '가성비' }" 
+              @click="selectBudget('가성비')"
+            >
+              <div class="option-check">
+                <svg v-if="budget === '가성비'" class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="option-emoji">💰</div>
+              <div class="option-title">가성비</div>
+              <div class="option-desc">합리적인 가격대</div>
+            </button>
+            <button 
+              type="button" 
+              class="budget-option" 
+              :class="{ 'selected': budget === '적당한' }" 
+              @click="selectBudget('적당한')"
+            >
+              <div class="option-check">
+                <svg v-if="budget === '적당한'" class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="option-emoji">💵</div>
+              <div class="option-title">적당한</div>
+              <div class="option-desc">균형잡힌 가격대</div>
+            </button>
+            <button 
+              type="button" 
+              class="budget-option" 
+              :class="{ 'selected': budget === '프리미엄' }" 
+              @click="selectBudget('프리미엄')"
+            >
+              <div class="option-check">
+                <svg v-if="budget === '프리미엄'" class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="option-emoji">💎</div>
+              <div class="option-title">프리미엄</div>
+              <div class="option-desc">고급스러운 경험</div>
+            </button>
           </div>
         </section>
 
@@ -112,6 +141,7 @@
         <section class="form-section">
           <div class="section-header">
             <h3 class="section-title">선호 지역 <span class="optional">(선택)</span></h3>
+            <p class="section-hint">최대 3개까지 선택 가능합니다</p>
           </div>
           <div class="region-map-container">
             <div class="region-selected-tags" v-if="selectedRegions.length > 0">
@@ -250,13 +280,70 @@ const handleRegionClick = (event, regionId) => {
 
 // SVG path 호버 핸들러
 const handleRegionHover = (event, regionId, isHover) => {
+  const path = event?.currentTarget || event?.target
+  if (!path || path.tagName !== 'path') {
+    console.warn('handleRegionHover: path element not found', { event, regionId, isHover })
+    return
+  }
+  
   if (isHover) {
     const regionName = regionIdToName[regionId]
     hoveredRegion.value = getDisplayName(regionName)
     
+    // SVG에서 z-index가 작동하지 않으므로, hover된 path를 DOM 맨 뒤로 이동
+    // 이렇게 하면 실제로 다른 path 위에 렌더링됨
+    const svgElement = path.closest('svg')
+    const parentNode = path.parentNode
+    
+    if (svgElement && parentNode) {
+      // hover 클래스 추가
+      path.classList.add('region-hover')
+      
+      // SVG 인라인 속성 제거 (CSS가 우선하도록)
+      if (path.hasAttribute('fill')) {
+        path.removeAttribute('fill')
+      }
+      if (path.hasAttribute('stroke')) {
+        path.removeAttribute('stroke')
+      }
+      if (path.hasAttribute('stroke-width')) {
+        path.removeAttribute('stroke-width')
+      }
+      
+      // JavaScript로 직접 스타일 적용 (SVG 인라인 속성보다 우선)
+      // 선택된 지역인 경우 다른 색상 사용
+      const isSelected = path.classList.contains('region-active')
+      
+      if (isSelected) {
+        // 선택된 지역 + hover: 보라색 계열
+        path.style.fill = '#4f46e5'
+        path.style.stroke = '#4338ca'
+        path.style.strokeWidth = '4'
+        path.style.filter = 'drop-shadow(0 8px 24px rgba(99, 102, 241, 0.7))'
+      } else {
+        // 일반 hover: 포인트 컬러 (월간 예산 선택 색상과 동일)
+        path.style.fill = '#6366f1'
+        path.style.stroke = '#4f46e5'
+        path.style.strokeWidth = '3.5'
+        path.style.filter = 'drop-shadow(0 8px 24px rgba(99, 102, 241, 0.6))'
+      }
+      
+      path.style.transform = 'scale(1.04) translateY(-3px)'
+      path.style.transformOrigin = 'center'
+      path.style.transformBox = 'fill-box'
+      
+      // DOM 순서상 맨 뒤로 이동 (나중에 그려진 것이 위에 표시됨)
+      // appendChild는 이미 자식인 경우 자동으로 이동시킴
+      try {
+        parentNode.appendChild(path)
+      } catch (e) {
+        console.error('Failed to move path to end:', e)
+      }
+    }
+    
     // 마우스 위치에 따라 툴팁 위치 설정
     if (event) {
-      const mapWrapper = event.currentTarget.closest('.map-wrapper')
+      const mapWrapper = path.closest('.map-wrapper')
       if (mapWrapper) {
         const rect = mapWrapper.getBoundingClientRect()
         tooltipPosition.value = {
@@ -267,6 +354,36 @@ const handleRegionHover = (event, regionId, isHover) => {
     }
   } else {
     hoveredRegion.value = null
+    // hover 클래스 제거
+    if (path) {
+      path.classList.remove('region-hover')
+      
+      // 인라인 속성 제거
+      if (path.hasAttribute('fill')) {
+        path.removeAttribute('fill')
+      }
+      if (path.hasAttribute('stroke')) {
+        path.removeAttribute('stroke')
+      }
+      if (path.hasAttribute('stroke-width')) {
+        path.removeAttribute('stroke-width')
+      }
+      
+      // JavaScript로 기본 스타일 복원
+      path.style.fill = ''
+      path.style.stroke = ''
+      path.style.strokeWidth = ''
+      path.style.transform = ''
+      path.style.filter = ''
+      
+      // 선택된 지역인 경우 선택 스타일 유지
+      if (path.classList.contains('region-active')) {
+        path.style.fill = '#6366f1'
+        path.style.stroke = '#4f46e5'
+        path.style.strokeWidth = '3'
+        path.style.filter = 'drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4))'
+      }
+    }
   }
 }
 
@@ -342,6 +459,19 @@ onMounted(async () => {
         return
       }
       
+      // SVG path에 기본 스타일 속성 설정 (CSS가 우선하도록 인라인 속성은 제거)
+      // CSS에서 fill, stroke, stroke-width를 관리하므로 인라인 속성은 설정하지 않음
+      // 단, SVG 원본에 이미 속성이 있다면 제거
+      if (path.hasAttribute('fill')) {
+        path.removeAttribute('fill')
+      }
+      if (path.hasAttribute('stroke')) {
+        path.removeAttribute('stroke')
+      }
+      if (path.hasAttribute('stroke-width')) {
+        path.removeAttribute('stroke-width')
+      }
+      
       // 클릭 이벤트
       path.addEventListener('click', (e) => handleRegionClick(e, regionId))
       
@@ -364,10 +494,21 @@ onMounted(async () => {
       // 포인터 스타일 개선
       path.style.pointerEvents = 'all'
       
-      // 선택 상태에 따라 클래스 추가
+      // 선택 상태에 따라 클래스 및 스타일 적용
       const regionName = regionIdToName[regionId]
       if (regionName && selectedRegions.value.includes(regionName)) {
         path.classList.add('region-active')
+        // 선택된 지역 스타일 적용
+        path.style.fill = '#6366f1'
+        path.style.stroke = '#4f46e5'
+        path.style.strokeWidth = '3'
+        path.style.filter = 'drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4))'
+      } else {
+        // 기본 스타일 (CSS가 적용되도록 인라인 스타일 제거)
+        path.style.fill = ''
+        path.style.stroke = ''
+        path.style.strokeWidth = ''
+        path.style.filter = ''
       }
     })
   } catch (error) {
@@ -382,10 +523,28 @@ watch(selectedRegions, () => {
     const paths = svgContainer.value.querySelectorAll('path[id^="KR-"]')
     paths.forEach(path => {
       const regionName = regionIdToName[path.id]
+      // hover 상태가 아닐 때만 스타일 업데이트
+      const isHovered = path.classList.contains('region-hover')
+      
       if (regionName && selectedRegions.value.includes(regionName)) {
         path.classList.add('region-active')
+        // hover 상태가 아니면 선택 스타일 적용
+        if (!isHovered) {
+          path.style.fill = '#6366f1'
+          path.style.stroke = '#4f46e5'
+          path.style.strokeWidth = '3'
+          path.style.filter = 'drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4))'
+        }
       } else {
         path.classList.remove('region-active')
+        // hover 상태가 아니면 기본 스타일로 복원
+        if (!isHovered) {
+          path.style.fill = ''
+          path.style.stroke = ''
+          path.style.strokeWidth = ''
+          path.style.filter = ''
+          path.style.transform = ''
+        }
       }
     })
   }
@@ -460,6 +619,11 @@ async function goResult() {
     return
   }
   
+  if (!budget.value) {
+    errorMessage.value = '월간 예산을 선택해주세요.'
+    return
+  }
+  
   errorMessage.value = ''
   
   const backendStyle = convertStyleToBackend(selectedStyle.value)
@@ -491,6 +655,9 @@ function goBack() {
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
+  /* SVG hover 효과가 잘리지 않도록 */
+  overflow: visible;
+  position: relative;
 }
 
 .back-link {
@@ -522,7 +689,7 @@ function goBack() {
 
 .step-indicator {
   display: inline-block;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
   font-size: 0.6875rem;
   font-weight: 600;
@@ -531,13 +698,13 @@ function goBack() {
   margin-bottom: 1.25rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
 }
 
 .page-title {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
   font-weight: 800;
-  background: linear-gradient(135deg, #0ea5e9 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -565,6 +732,9 @@ function goBack() {
   margin-bottom: 1.5rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
+  /* SVG hover 효과가 잘리지 않도록 overflow visible */
+  overflow: visible;
+  position: relative;
 }
 
 .form-section:hover {
@@ -586,7 +756,7 @@ function goBack() {
   left: 0;
   width: 48px;
   height: 2px;
-  background: linear-gradient(90deg, #0ea5e9 0%, #64748b 100%);
+  background: linear-gradient(90deg, #6366f1 0%, #1e293b 100%);
 }
 
 .section-title {
@@ -596,6 +766,14 @@ function goBack() {
   margin: 0;
   letter-spacing: 0.025em;
   text-transform: uppercase;
+}
+
+.section-hint {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+  line-height: 1.5;
 }
 
 .required {
@@ -627,8 +805,12 @@ function goBack() {
   width: 100%;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: left;
+  text-align: center;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .style-option:hover {
@@ -638,9 +820,9 @@ function goBack() {
 }
 
 .style-option.selected {
-  border-color: #0ea5e9;
-  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
-  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15), 0 4px 6px rgba(14, 165, 233, 0.1);
+  border-color: #6366f1;
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
 .option-emoji {
@@ -661,16 +843,20 @@ function goBack() {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.2s ease;
-  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .style-option.selected .option-check {
+  opacity: 1;
+}
+
+.budget-option.selected .option-check {
   opacity: 1;
 }
 
@@ -692,102 +878,52 @@ function goBack() {
   font-size: 0.8125rem;
   color: #6b7280;
   line-height: 1.5;
+  margin-bottom: 0.25rem;
 }
 
-/* Budget Card */
-.budget-card {
-  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-  padding: 1.75rem;
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  position: relative;
-  overflow: hidden;
-}
-
-.budget-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #0ea5e9 0%, #64748b 50%, #0ea5e9 100%);
-  opacity: 0.4;
-}
-
-.budget-display {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.budget-amount {
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
-}
-
-.budget-unit {
-  font-size: 1.25rem;
-  color: #6b7280;
-  margin-left: 0.5rem;
-  font-weight: 600;
-}
-
-.budget-slider {
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: linear-gradient(90deg, #e5e7eb 0%, #cbd5e1 50%, #e5e7eb 100%);
-  outline: none;
-  -webkit-appearance: none;
-  margin-bottom: 0.75rem;
-  position: relative;
-}
-
-.budget-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
-  transition: all 0.2s ease;
-  border: 2px solid white;
-}
-
-.budget-slider::-webkit-slider-thumb:hover {
-  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.5);
-  transform: scale(1.15);
-}
-
-.budget-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
-  transition: all 0.2s ease;
-}
-
-.budget-slider::-moz-range-thumb:hover {
-  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.5);
-  transform: scale(1.15);
-}
-
-.budget-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8125rem;
-  color: #9ca3af;
+.option-hint {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-top: 0.25rem;
   font-weight: 500;
+}
+
+/* Budget Grid */
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Budget Options */
+.budget-option {
+  appearance: none;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.budget-option:hover {
+  border-color: #1e293b;
+  background: #f9fafb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.budget-option.selected {
+  border-color: #6366f1;
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
 /* Select */
@@ -815,6 +951,9 @@ function goBack() {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  /* SVG hover 효과가 잘리지 않도록 */
+  overflow: visible;
+  position: relative;
 }
 
 .region-selected-tags {
@@ -822,22 +961,22 @@ function goBack() {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 1rem;
-  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
   border-radius: 0.75rem;
-  border: 1px solid #e0f2fe;
+  border: 1px solid #c7d2fe;
 }
 
 .selected-tag {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: white;
   padding: 0.375rem 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 }
 
 .remove-tag {
@@ -867,11 +1006,15 @@ function goBack() {
   position: relative;
   background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
   border-radius: 0.75rem;
-  padding: 2rem;
+  padding: 1.5rem;
   border: 1px solid #e5e7eb;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: visible;
+  /* pointer-events가 자식에 전달되도록 */
+  pointer-events: auto;
+  z-index: 1;
 }
 
 .korea-map-container {
@@ -879,15 +1022,26 @@ function goBack() {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
+  overflow: visible;
+  /* pointer-events가 path에 전달되도록 */
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .korea-map-container svg {
-  max-width: 600px;
-  min-width: 300px;
+  max-width: 500px;
+  min-width: 280px;
   width: 100%;
   height: auto;
-  min-height: 400px;
+  min-height: 350px;
   display: block;
+  margin: 0 auto;
+  overflow: visible;
+  /* SVG가 pointer-events를 받을 수 있도록 */
+  pointer-events: auto;
+  position: relative;
 }
 
 .korea-map-container path {
@@ -895,54 +1049,83 @@ function goBack() {
   stroke: #cbd5e1;
   stroke-width: 1.5;
   cursor: pointer;
-  transition: all 0.2s ease;
-  pointer-events: all;
+  transition: fill 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  /* pointer-events 명시적으로 설정 */
+  pointer-events: all !important;
+  /* SVG path의 fill 영역 중심을 기준으로 transform */
+  transform-origin: center;
+  transform-box: fill-box;
+  transform: scale(1) translateY(0);
+  /* hover 시 다른 path 위에 표시되도록 */
+  position: relative;
 }
 
-/* 호버 시 선택된 것처럼 보이게 */
+/* 호버 상태 - DOM 순서상 맨 뒤로 이동되어 다른 path 위에 렌더링됨 */
+.korea-map-container path.region-hover,
 .korea-map-container path:hover {
-  fill: #0ea5e9;
-  stroke: #0284c7;
-  stroke-width: 2.5;
-  filter: drop-shadow(0 2px 8px rgba(14, 165, 233, 0.4));
+  fill: #6366f1 !important;
+  stroke: #4f46e5 !important;
+  stroke-width: 3.5 !important;
+  /* path의 중심을 기준으로 살짝 확대 + 위로 이동 */
+  transform: scale(1.04) translateY(-3px) !important;
+  /* 강한 그림자 효과로 떠 보이는 느낌 명확히 */
+  filter: drop-shadow(0 8px 24px rgba(99, 102, 241, 0.6)) !important;
+}
+
+/* SVG 인라인 속성보다 CSS가 우선하도록 더 구체적인 선택자 */
+.korea-map-container svg path.region-hover,
+.korea-map-container svg path:hover {
+  fill: #6366f1 !important;
+  stroke: #4f46e5 !important;
+  stroke-width: 3.5 !important;
+  transform: scale(1.04) translateY(-3px) !important;
+  filter: drop-shadow(0 8px 24px rgba(99, 102, 241, 0.6)) !important;
 }
 
 /* 클릭 시 피드백 */
 .korea-map-container path:active {
-  fill: #0284c7;
-  stroke: #0369a1;
+  fill: #4f46e5;
+  stroke: #4338ca;
   stroke-width: 2.5;
-  filter: drop-shadow(0 1px 4px rgba(14, 165, 233, 0.5));
+  filter: drop-shadow(0 1px 4px rgba(99, 102, 241, 0.5));
 }
 
-/* 선택된 지역 - 호버와 비슷하지만 더 진하게 */
+/* 선택된 지역 - hover와 구분되는 선택 상태 */
 .korea-map-container path.region-active {
-  fill: #0284c7 !important;
-  stroke: #0369a1 !important;
+  fill: #6366f1 !important;
+  stroke: #4f46e5 !important;
   stroke-width: 3 !important;
-  filter: drop-shadow(0 4px 12px rgba(14, 165, 233, 0.5)) !important;
+  filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4)) !important;
+  transform: scale(1) translateY(0) !important;
 }
 
-/* 선택된 지역에 호버 시 - 더 진하게 */
+/* 선택된 지역에 호버 시 - 선택 상태 + hover 효과 결합 */
+.korea-map-container path.region-active.region-hover,
 .korea-map-container path.region-active:hover {
-  fill: #0369a1 !important;
-  stroke: #075985 !important;
-  stroke-width: 3.5 !important;
-  filter: drop-shadow(0 6px 16px rgba(14, 165, 233, 0.6)) !important;
+  fill: #4f46e5 !important;
+  stroke: #4338ca !important;
+  stroke-width: 4 !important;
+  /* 선택된 지역도 동일하게 transform-origin 중심 기준 확대 */
+  transform: scale(1.04) translateY(-3px) !important;
+  filter: drop-shadow(0 8px 24px rgba(99, 102, 241, 0.7)) !important;
 }
 
 .region-tooltip {
   position: absolute;
   transform: translateX(-50%) translateY(-100%);
   margin-top: -8px;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
   pointer-events: none;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
   z-index: 100;
   animation: tooltipFadeIn 0.15s ease-out;
   white-space: nowrap;
@@ -956,7 +1139,7 @@ function goBack() {
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: #0284c7;
+  border-top-color: #1e293b;
 }
 
 @keyframes tooltipFadeIn {
@@ -1012,7 +1195,7 @@ function goBack() {
 .btn-submit {
   appearance: none;
   border: none;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -1020,7 +1203,7 @@ function goBack() {
   border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 6px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1045,8 +1228,8 @@ function goBack() {
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  box-shadow: 0 6px 12px rgba(14, 165, 233, 0.3);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: 0 8px 20px rgba(30, 41, 59, 0.35);
   transform: translateY(-2px);
 }
 
@@ -1075,8 +1258,8 @@ function goBack() {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .budget-amount {
-    font-size: 2.25rem;
+  .budget-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1094,8 +1277,8 @@ function goBack() {
     grid-template-columns: 1fr;
   }
   
-  .budget-amount {
-    font-size: 2rem;
+  .budget-grid {
+    grid-template-columns: 1fr;
   }
   
   .map-wrapper {
@@ -1103,7 +1286,8 @@ function goBack() {
   }
   
   .korea-map-container svg {
-    max-width: 320px;
+    max-width: 280px;
+    min-height: 300px;
   }
   
   .btn-submit {
