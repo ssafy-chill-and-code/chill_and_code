@@ -18,6 +18,7 @@
         trend_score     AS trendScore,
         price_level     AS priceLevel,
         sido,
+        place_type      AS placeType,
         img_url         AS imageUrl
     FROM place
     <where>

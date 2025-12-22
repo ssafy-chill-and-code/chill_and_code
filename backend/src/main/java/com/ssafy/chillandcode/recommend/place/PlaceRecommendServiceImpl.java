@@ -93,8 +93,8 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
             log.info("✅ 선택된 장소 (단일/전체 지역):");
             for (int i = 0; i < finalSelection.size(); i++) {
                 ScoredView sv = finalSelection.get(i);
-                log.info("  {}. {} ({}) - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
-                    i+1, sv.view().getName(), sv.view().getSido(), 
+                log.info("  {}. {} ({}) [{}] - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
+                    i+1, sv.view().getName(), sv.view().getSido(), sv.view().getPlaceType(),
                     String.format("%.2f", sv.score()),
                     sv.view().getWorkspaceCount(), 
                     sv.view().getNatureScore(), 
@@ -135,8 +135,8 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
             log.info("✅ 선택된 장소 (다중 지역 균등 분배):");
             for (int i = 0; i < finalSelection.size(); i++) {
                 ScoredView sv = finalSelection.get(i);
-                log.info("  {}. {} ({}) - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
-                    i+1, sv.view().getName(), sv.view().getSido(), 
+                log.info("  {}. {} ({}) [{}] - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
+                    i+1, sv.view().getName(), sv.view().getSido(), sv.view().getPlaceType(),
                     String.format("%.2f", sv.score()),
                     sv.view().getWorkspaceCount(), 
                     sv.view().getNatureScore(), 
