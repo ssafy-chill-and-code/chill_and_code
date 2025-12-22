@@ -8,7 +8,7 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     style: null, // 'RELAX' | 'WORK' | 'BALANCE'
     minDays: null,
     maxDays: null,
-    remoteWorkAllowed: true
+    remoteWorkAllowed: false
   })
   
   const result = ref(null) // 추천 결과 { primary, reason, alternatives }
@@ -24,6 +24,14 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     loading.value = true
     error.value = ''
     try {
+      console.log('🚀 [Store] API 요청 시작')
+      console.log('요청 데이터:', {
+        style: selection.value.style,
+        minDays: selection.value.minDays,
+        maxDays: selection.value.maxDays,
+        remoteWorkAllowed: selection.value.remoteWorkAllowed
+      })
+      
       const response = await api.post('/recommend/period', {
         style: selection.value.style,
         minDays: selection.value.minDays,
@@ -31,9 +39,21 @@ export const useRecommendationStore = defineStore('recommendation', () => {
         remoteWorkAllowed: selection.value.remoteWorkAllowed
       })
       
+      console.log('✅ [Store] API 응답 받음')
+      console.log('response.data:', response.data)
+      console.log('response.data.data:', response.data.data)
+      console.log('primary:', response.data.data?.primary)
+      console.log('alternatives:', response.data.data?.alternatives)
+      console.log('alternatives 타입:', typeof response.data.data?.alternatives)
+      console.log('alternatives 배열인가?', Array.isArray(response.data.data?.alternatives))
+      
       result.value = response.data.data
+      console.log('💾 [Store] result.value 저장 완료:', result.value)
+      
       return result.value
     } catch (e) {
+      console.error('❌ [Store] API 에러:', e)
+      console.error('에러 응답:', e?.response?.data)
       error.value = e?.response?.data?.message || e.message
       throw e
     } finally {
@@ -51,7 +71,7 @@ export const useRecommendationStore = defineStore('recommendation', () => {
       style: null,
       minDays: null,
       maxDays: null,
-      remoteWorkAllowed: true
+      remoteWorkAllowed: false
     }
     result.value = null
     loading.value = false

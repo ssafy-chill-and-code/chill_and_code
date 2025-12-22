@@ -15,49 +15,43 @@
 
       <!-- 스타일 카드 -->
       <section class="style-cards-wrapper">
-        <div class="row g-4 justify-content-center">
-          <div class="col-12 col-md-6 col-lg-4">
-            <button type="button" class="style-card" @click="goPeriod('RELAX')">
-              <div class="card-gradient relax"></div>
-              <div class="card-content">
-                <div class="icon">🏝️</div>
-                <h3 class="card-title">휴양형</h3>
-                <ul class="card-features">
-                  <li><span>✓</span> 휴식/리프레시 우선</li>
-                  <li><span>✓</span> 여유로운 일정 구성</li>
-                  <li><span>✓</span> 자연과 함께하는 힐링</li>
-                </ul>
-              </div>
-            </button>
-          </div>
-          <div class="col-12 col-md-6 col-lg-4">
-            <button type="button" class="style-card" @click="goPeriod('WORK')">
-              <div class="card-gradient work"></div>
-              <div class="card-content">
-                <div class="icon">💻</div>
-                <h3 class="card-title">업무형</h3>
-                <ul class="card-features">
-                  <li><span>✓</span> 집중 업무 환경 중시</li>
-                  <li><span>✓</span> 시간 관리 최우선</li>
-                  <li><span>✓</span> 생산성 극대화</li>
-                </ul>
-              </div>
-            </button>
-          </div>
-          <div class="col-12 col-md-6 col-lg-4">
-            <button type="button" class="style-card" @click="goPeriod('BALANCE')">
-              <div class="card-gradient balance"></div>
-              <div class="card-content">
-                <div class="icon">⚖️</div>
-                <h3 class="card-title">밸런스형</h3>
-                <ul class="card-features">
-                  <li><span>✓</span> 일·휴식 균형 추구</li>
-                  <li><span>✓</span> 유연한 스케줄</li>
-                  <li><span>✓</span> 적절한 업무와 여가</li>
-                </ul>
-              </div>
-            </button>
-          </div>
+        <div class="cards-grid">
+          <button type="button" class="style-card" @click="goPeriod('RELAX')">
+            <div class="card-gradient relax"></div>
+            <div class="card-content">
+              <div class="icon">🏝️</div>
+              <h3 class="card-title">휴양형</h3>
+              <ul class="card-features">
+                <li><span>✓</span> 휴식/리프레시 우선</li>
+                <li><span>✓</span> 여유로운 일정 구성</li>
+                <li><span>✓</span> 자연과 함께하는 힐링</li>
+              </ul>
+            </div>
+          </button>
+          <button type="button" class="style-card" @click="goPeriod('WORK')">
+            <div class="card-gradient work"></div>
+            <div class="card-content">
+              <div class="icon">💻</div>
+              <h3 class="card-title">업무형</h3>
+              <ul class="card-features">
+                <li><span>✓</span> 집중 업무 환경 중시</li>
+                <li><span>✓</span> 시간 관리 최우선</li>
+                <li><span>✓</span> 생산성 극대화</li>
+              </ul>
+            </div>
+          </button>
+          <button type="button" class="style-card" @click="goPeriod('BALANCE')">
+            <div class="card-gradient balance"></div>
+            <div class="card-content">
+              <div class="icon">⚖️</div>
+              <h3 class="card-title">밸런스형</h3>
+              <ul class="card-features">
+                <li><span>✓</span> 일·휴식 균형 추구</li>
+                <li><span>✓</span> 유연한 스케줄</li>
+                <li><span>✓</span> 적절한 업무와 여가</li>
+              </ul>
+            </div>
+          </button>
         </div>
       </section>
     </div>
@@ -141,6 +135,12 @@ function goPeriod(styleType) {
   max-width: 1200px;
   margin: 0 auto;
   padding: 3rem 0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
 }
 
 .style-card {
@@ -283,6 +283,11 @@ function goPeriod(styleType) {
     padding-bottom: 3rem;
   }
   
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
   .style-card {
     min-height: 300px;
   }
@@ -298,6 +303,11 @@ function goPeriod(styleType) {
   .style-select-wrapper {
     padding-top: 2rem;
     padding-bottom: 2rem;
+  }
+  
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
   
   .icon {

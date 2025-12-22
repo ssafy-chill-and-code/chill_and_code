@@ -18,54 +18,61 @@
         <!-- 워케이션 스타일 -->
         <section class="form-section">
           <div class="section-header">
-            <span class="section-icon">⚡</span>
             <h3 class="section-title">워케이션 스타일 <span class="required">*</span></h3>
           </div>
-          <div class="row g-3">
-            <div class="col-12 col-md-4">
-              <button 
-                type="button" 
-                class="style-option" 
-                :class="{ 'selected': selectedStyle === '힐링' }" 
-                @click="selectStyle('힐링')"
-              >
-                <div class="option-icon">🌿</div>
-                <div class="option-title">힐링</div>
-                <div class="option-desc">자연 속에서 마음을 편안하게</div>
-              </button>
-            </div>
-            <div class="col-12 col-md-4">
-              <button 
-                type="button" 
-                class="style-option" 
-                :class="{ 'selected': selectedStyle === '작업몰입' }" 
-                @click="selectStyle('작업몰입')"
-              >
-                <div class="option-icon">💻</div>
-                <div class="option-title">작업몰입</div>
-                <div class="option-desc">집중력 있는 업무 환경</div>
-              </button>
-            </div>
-            <div class="col-12 col-md-4">
-              <button 
-                type="button" 
-                class="style-option" 
-                :class="{ 'selected': selectedStyle === '액티비티' }" 
-                @click="selectStyle('액티비티')"
-              >
-                <div class="option-icon">🏃‍♂️</div>
-                <div class="option-title">액티비티</div>
-                <div class="option-desc">다양한 활동과 경험</div>
-              </button>
-            </div>
+          <div class="style-grid">
+            <button 
+              type="button" 
+              class="style-option" 
+              :class="{ 'selected': selectedStyle === '힐링' }" 
+              @click="selectStyle('힐링')"
+            >
+              <div class="option-check">
+                <svg v-if="selectedStyle === '힐링'" class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="option-emoji">🌿</div>
+              <div class="option-title">힐링</div>
+              <div class="option-desc">자연 속에서 마음을 편안하게</div>
+            </button>
+            <button 
+              type="button" 
+              class="style-option" 
+              :class="{ 'selected': selectedStyle === '작업몰입' }" 
+              @click="selectStyle('작업몰입')"
+            >
+              <div class="option-check">
+                <svg v-if="selectedStyle === '작업몰입'" class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="option-emoji">💻</div>
+              <div class="option-title">작업몰입</div>
+              <div class="option-desc">집중력 있는 업무 환경</div>
+            </button>
+            <button 
+              type="button" 
+              class="style-option" 
+              :class="{ 'selected': selectedStyle === '액티비티' }" 
+              @click="selectStyle('액티비티')"
+            >
+              <div class="option-check">
+                <svg v-if="selectedStyle === '액티비티'" class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="option-emoji">🏃‍♂️</div>
+              <div class="option-title">액티비티</div>
+              <div class="option-desc">다양한 활동과 경험</div>
+            </button>
           </div>
         </section>
 
         <!-- 월간 예산 -->
         <section class="form-section">
           <div class="section-header">
-            <span class="section-icon">💰</span>
-            <h3 class="section-title">월간 예산</h3>
+            <h3 class="section-title">💰 월간 예산</h3>
           </div>
           <div class="budget-card">
             <div class="budget-display">
@@ -90,7 +97,6 @@
         <!-- 이동수단 -->
         <section class="form-section">
           <div class="section-header">
-            <span class="section-icon">🚗</span>
             <h3 class="section-title">이동수단 <span class="optional">(선택)</span></h3>
           </div>
           <select v-model="transport" class="form-select-custom">
@@ -105,7 +111,6 @@
         <!-- 선호 지역 -->
         <section class="form-section">
           <div class="section-header">
-            <span class="section-icon">📍</span>
             <h3 class="section-title">선호 지역 <span class="optional">(선택)</span></h3>
           </div>
           <div class="region-tags">
@@ -124,7 +129,10 @@
 
         <!-- 에러 메시지 -->
         <div v-if="errorMessage" class="error-alert">
-          <span>⚠️</span> {{ errorMessage }}
+          <svg class="error-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ errorMessage }}
         </div>
 
         <!-- 제출 버튼 -->
@@ -134,9 +142,14 @@
             @click="goResult" 
             :disabled="placeStore.loading"
           >
-            <span v-if="!placeStore.loading">🎯</span>
-            <span v-if="placeStore.loading" class="spinner"></span>
-            {{ placeStore.loading ? '추천 중...' : '장소 추천받기' }}
+            <span v-if="placeStore.loading" class="flex items-center gap-2">
+              <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              추천 중...
+            </span>
+            <span v-else>장소 추천받기</span>
           </button>
         </div>
       </div>
@@ -291,21 +304,25 @@ function goBack() {
 
 .step-indicator {
   display: inline-block;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  padding: 0.5rem 1.25rem;
-  border-radius: 20px;
+  padding: 0.375rem 1rem;
+  border-radius: 0.375rem;
   margin-bottom: 1.25rem;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
 }
 
 .page-title {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
   font-weight: 800;
-  color: #0f172a;
+  background: linear-gradient(135deg, #0ea5e9 0%, #1e293b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
 }
@@ -324,44 +341,43 @@ function goBack() {
 
 .form-section {
   background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
   padding: 2rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
 .form-section:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-color: #d1d5db;
 }
 
 .section-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  position: relative;
 }
 
-.section-icon {
-  font-size: 1.5rem;
-  background: #f8fafc;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, #0ea5e9 0%, #64748b 100%);
 }
 
 .section-title {
-  font-size: 1.1875rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #111827;
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
 }
 
 .required {
@@ -370,60 +386,115 @@ function goBack() {
 }
 
 .optional {
-  color: #94a3b8;
-  font-size: 0.8125rem;
+  color: #9ca3af;
+  font-size: 0.75rem;
   font-weight: 500;
+  text-transform: none;
+}
+
+/* Style Grid */
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
 /* Style Options */
 .style-option {
   appearance: none;
-  border: 2px solid #e2e8f0;
+  border: 1px solid #d1d5db;
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
   width: 100%;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
+  transition: all 0.2s ease;
+  text-align: left;
+  position: relative;
 }
 
 .style-option:hover {
   border-color: #1e293b;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #f9fafb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .style-option.selected {
-  border-color: #1e293b;
-  background: #f8fafc;
-  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.12);
+  border-color: #0ea5e9;
+  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15), 0 4px 6px rgba(14, 165, 233, 0.1);
 }
 
-.option-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.75rem;
+.option-emoji {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  filter: grayscale(0.3);
+  transition: filter 0.2s ease;
+}
+
+.style-option.selected .option-emoji {
+  filter: grayscale(0);
+}
+
+.option-check {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+}
+
+.style-option.selected .option-check {
+  opacity: 1;
+}
+
+.check-icon {
+  width: 16px;
+  height: 16px;
+  color: white;
 }
 
 .option-title {
-  font-size: 1.0625rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.375rem;
   letter-spacing: -0.01em;
 }
 
 .option-desc {
-  font-size: 0.875rem;
-  color: #64748b;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.5;
 }
 
 /* Budget Card */
 .budget-card {
-  background: #f8fafc;
-  padding: 2rem;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  padding: 1.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
+}
+
+.budget-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0ea5e9 0%, #64748b 50%, #0ea5e9 100%);
+  opacity: 0.4;
 }
 
 .budget-display {
@@ -432,15 +503,18 @@ function goBack() {
 }
 
 .budget-amount {
-  font-size: 3rem;
-  font-weight: 800;
-  color: #1e293b;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.02em;
 }
 
 .budget-unit {
-  font-size: 1.5rem;
-  color: #64748b;
+  font-size: 1.25rem;
+  color: #6b7280;
   margin-left: 0.5rem;
   font-weight: 600;
 }
@@ -449,38 +523,52 @@ function goBack() {
   width: 100%;
   height: 6px;
   border-radius: 3px;
-  background: #e2e8f0;
+  background: linear-gradient(90deg, #e5e7eb 0%, #cbd5e1 50%, #e5e7eb 100%);
   outline: none;
   -webkit-appearance: none;
   margin-bottom: 0.75rem;
+  position: relative;
 }
 
 .budget-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.4);
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+  transition: all 0.2s ease;
+  border: 2px solid white;
+}
+
+.budget-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.5);
+  transform: scale(1.15);
 }
 
 .budget-slider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   cursor: pointer;
-  border: none;
-  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.4);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+  transition: all 0.2s ease;
+}
+
+.budget-slider::-moz-range-thumb:hover {
+  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.5);
+  transform: scale(1.15);
 }
 
 .budget-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.875rem;
-  color: #94a3b8;
+  font-size: 0.8125rem;
+  color: #9ca3af;
   font-weight: 500;
 }
 
@@ -488,53 +576,53 @@ function goBack() {
 .form-select-custom {
   width: 100%;
   padding: 1rem 1.25rem;
-  font-size: 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  font-size: 0.9375rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
   background: white;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #0f172a;
-  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #111827;
+  font-weight: 400;
 }
 
 .form-select-custom:focus {
   outline: none;
   border-color: #1e293b;
-  box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.1);
+  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
 }
 
 /* Region Tags */
 .region-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.625rem;
+  gap: 0.5rem;
 }
 
 .region-tag {
   appearance: none;
-  border: 2px solid #e2e8f0;
+  border: 1px solid #d1d5db;
   background: white;
-  color: #64748b;
-  padding: 0.625rem 1.125rem;
-  border-radius: 20px;
-  font-size: 0.9375rem;
+  color: #6b7280;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .region-tag:hover {
-  border-color: #1e293b;
-  color: #1e293b;
-  background: #f8fafc;
+  border-color: #0ea5e9;
+  color: #0ea5e9;
+  background: #f0f9ff;
 }
 
 .region-tag.active {
-  border-color: #1e293b;
-  background: #1e293b;
+  border-color: #0ea5e9;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.3);
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
 }
 
 /* Error Alert */
@@ -542,16 +630,21 @@ function goBack() {
   background: #fef2f2;
   border: 1px solid #fecaca;
   color: #991b1b;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  text-align: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-align: left;
   margin-bottom: 1.5rem;
   font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
+}
+
+.error-icon-svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 /* Submit */
@@ -563,41 +656,51 @@ function goBack() {
 .btn-submit {
   appearance: none;
   border: none;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   color: white;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   font-weight: 600;
-  padding: 1.125rem 2.5rem;
-  border-radius: 12px;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(14, 165, 233, 0.2);
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  min-width: 240px;
   justify-content: center;
-  letter-spacing: -0.01em;
+  min-width: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-submit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-submit:hover:not(:disabled)::before {
+  left: 100%;
 }
 
 .btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 6px 12px rgba(14, 165, 233, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(30, 41, 59, 0.4);
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 .btn-submit:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -612,14 +715,12 @@ function goBack() {
     padding-bottom: 3rem;
   }
   
-  .budget-amount {
-    font-size: 2.5rem;
+  .style-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  .section-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.375rem;
+  .budget-amount {
+    font-size: 2.25rem;
   }
 }
 
@@ -630,21 +731,20 @@ function goBack() {
   }
   
   .form-section {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
   
-  .option-icon {
-    font-size: 2rem;
+  .style-grid {
+    grid-template-columns: 1fr;
   }
   
   .budget-amount {
     font-size: 2rem;
   }
   
-  .section-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 1.25rem;
+  .btn-submit {
+    width: 100%;
+    min-width: unset;
   }
 }
 </style>

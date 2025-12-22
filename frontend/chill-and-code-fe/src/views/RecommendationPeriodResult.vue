@@ -55,19 +55,22 @@
         <!-- 대안 추천 -->
         <div v-if="result.alternatives && result.alternatives.length > 0" class="alternatives-section">
           <h3 class="section-title">다른 추천 기간</h3>
-          <div class="row g-3">
-            <div v-for="(alt, index) in result.alternatives" :key="index" class="col-12 col-md-6 col-lg-4">
-              <div class="result-card alternative-card">
-                <div class="period-info">
-                  <div class="date-range-small">
-                    {{ formatDate(alt.startDate) }} ~ {{ formatDate(alt.endDate) }}
-                  </div>
-                  <div class="duration-small">{{ alt.durationDays }}일</div>
+          <div class="alternatives-grid">
+            <div v-for="(alt, index) in result.alternatives" :key="index" class="result-card alternative-card">
+              <div class="period-info">
+                <div class="date-range-alt">
+                  <span class="date-text-alt">{{ formatDate(alt.startDate) }}</span>
+                  <span class="date-separator-alt">~</span>
+                  <span class="date-text-alt">{{ formatDate(alt.endDate) }}</span>
                 </div>
-                <button class="btn-select secondary" @click="goPlace(alt)">
-                  선택하기
-                </button>
+                <div class="duration-alt">{{ alt.durationDays }}일간</div>
               </div>
+              <button class="btn-select secondary" @click="goPlace(alt)">
+                <svg class="btn-icon-small" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                이 기간 선택
+              </button>
             </div>
           </div>
         </div>
@@ -77,14 +80,28 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecommendationStore } from '@/stores/recommendation'
 
 const router = useRouter()
 const recommendationStore = useRecommendationStore()
 
-const result = computed(() => recommendationStore.result)
+const result = computed(() => {
+  const res = recommendationStore.result
+  console.log('=== 기간 추천 결과 디버깅 ===')
+  console.log('전체 result:', res)
+  console.log('primary:', res?.primary)
+  console.log('alternatives:', res?.alternatives)
+  console.log('alternatives 개수:', res?.alternatives?.length)
+  console.log('========================')
+  return res
+})
+
+// result가 변경될 때마다 로그 출력
+watch(result, (newVal) => {
+  console.log('🔄 result 변경됨:', newVal)
+}, { deep: true, immediate: true })
 
 function formatDate(dateString) {
   if (!dateString) return ''
@@ -96,6 +113,7 @@ function formatDate(dateString) {
 }
 
 function goPlace(period) {
+  console.log('📍 선택된 기간:', period)
   // 선택한 기간을 스토어에 저장하고 장소 선택 화면으로 이동
   recommendationStore.updateSelection({
     selectedPeriod: period
@@ -353,16 +371,19 @@ function goPlace(period) {
 
 .btn-select.secondary {
   background: white;
-  color: #1e293b;
-  border: 2px solid #e2e8f0;
+  color: #334155;
+  border: 1px solid #e2e8f0;
   font-size: 0.9375rem;
-  padding: 1rem;
+  padding: 0.875rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .btn-select.secondary:hover {
   background: #f8fafc;
   border-color: #1e293b;
-  transform: translateY(-2px);
+  color: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Alternatives */
@@ -371,29 +392,58 @@ function goPlace(period) {
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 1.5rem;
   text-align: center;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+
+.alternatives-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
 }
 
 .alternative-card {
-  padding: 1.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.date-range-small {
-  font-size: 1rem;
-  font-weight: 600;
+.date-range-alt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.date-text-alt {
+  font-size: 1.125rem;
+  font-weight: 700;
   color: #0f172a;
-  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
 }
 
-.duration-small {
+.date-separator-alt {
+  font-size: 1rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.duration-alt {
   font-size: 0.875rem;
   color: #64748b;
-  margin-bottom: 1.25rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.btn-icon-small {
+  width: 16px;
+  height: 16px;
 }
 
 @keyframes spin {
