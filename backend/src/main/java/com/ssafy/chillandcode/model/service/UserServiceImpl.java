@@ -84,6 +84,14 @@ public class UserServiceImpl implements UserService {
 	//회원 정보 수정
 	@Override
     public void updateUser(Long userId, UserUpdateRequest req) {
+		
+		// 수정 요청에 nickname이 포함되어 있다면 반드시 검증
+		if (req.getNickname() != null) {
+		    if (!isValidNickname(req.getNickname())) {
+		        throw new ApiException(ErrorCode.INVALID_NICKNAME);
+		    }
+		}
+		
 		req.setUserId(userId);
 		
 		int rows = userDao.updateUser(req);
