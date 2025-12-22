@@ -126,9 +126,9 @@ const displayStyle = computed(() => {
 
 const displayBudget = computed(() => {
   const budgetMap = {
-    'LOW': '~150만원',
-    'MID': '150~300만원',
-    'HIGH': '300만원~'
+    'LOW': '가성비',
+    'MID': '적당한',
+    'HIGH': '프리미엄'
   }
   return budgetMap[selection.value.budget] || selection.value.budget
 })

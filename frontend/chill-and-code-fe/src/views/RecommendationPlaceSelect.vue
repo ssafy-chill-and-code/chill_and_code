@@ -61,28 +61,45 @@
           </div>
         </section>
 
-        <!-- 월간 예산 -->
+        <!-- 예산 -->
         <section class="form-section">
           <div class="section-header">
             <span class="section-icon">💰</span>
-            <h3 class="section-title">월간 예산</h3>
+            <h3 class="section-title">예산</h3>
           </div>
-          <div class="budget-card">
-            <div class="budget-display">
-              <span class="budget-amount">{{ budget }}</span>
-              <span class="budget-unit">만원</span>
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <button 
+                type="button" 
+                class="budget-option" 
+                :class="{ 'selected': budget === '가성비' }" 
+                @click="selectBudget('가성비')"
+              >
+                <div class="option-icon">💵</div>
+                <div class="option-title">가성비</div>
+              </button>
             </div>
-            <input 
-              type="range" 
-              v-model.number="budget" 
-              class="budget-slider" 
-              min="50" 
-              max="500" 
-              step="10" 
-            />
-            <div class="budget-labels">
-              <span>50만원</span>
-              <span>500만원</span>
+            <div class="col-12 col-md-4">
+              <button 
+                type="button" 
+                class="budget-option" 
+                :class="{ 'selected': budget === '적당한' }" 
+                @click="selectBudget('적당한')"
+              >
+                <div class="option-icon">💳</div>
+                <div class="option-title">적당한</div>
+              </button>
+            </div>
+            <div class="col-12 col-md-4">
+              <button 
+                type="button" 
+                class="budget-option" 
+                :class="{ 'selected': budget === '프리미엄' }" 
+                @click="selectBudget('프리미엄')"
+              >
+                <div class="option-icon">💎</div>
+                <div class="option-title">프리미엄</div>
+              </button>
             </div>
           </div>
         </section>
@@ -159,7 +176,7 @@ const placeStore = usePlaceRecommendationStore()
 const recommendationStore = useRecommendationStore()
 
 const selectedStyle = ref('')
-const budget = ref(150)
+const budget = ref('적당한')
 const transport = ref('')
 const selectedRegions = ref([])
 const errorMessage = ref('')
@@ -203,6 +220,10 @@ function selectStyle(style) {
   selectedStyle.value = style
 }
 
+function selectBudget(budgetLevel) {
+  budget.value = budgetLevel
+}
+
 function toggleRegion(region) {
   const index = selectedRegions.value.indexOf(region)
   if (index > -1) {
@@ -225,10 +246,13 @@ function convertStyleToBackend(style) {
   return styleMap[style] || 'ACTIVITY'
 }
 
-function convertBudgetToBackend(budgetValue) {
-  if (budgetValue <= 150) return 'LOW'
-  if (budgetValue <= 300) return 'MID'
-  return 'HIGH'
+function convertBudgetToBackend(budgetText) {
+  const budgetMap = {
+    '가성비': 'LOW',
+    '적당한': 'MID',
+    '프리미엄': 'HIGH'
+  }
+  return budgetMap[budgetText] || 'MID'
 }
 
 async function goResult() {
@@ -410,67 +434,29 @@ function goBack() {
   color: #64748b;
 }
 
-/* Budget Card */
-.budget-card {
-  background: #f8f9fa;
-  padding: 2rem;
-  border-radius: 16px;
-  border: 2px solid #e5e7eb;
-}
-
-.budget-display {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.budget-amount {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #667eea;
-}
-
-.budget-unit {
-  font-size: 1.5rem;
-  color: #64748b;
-  margin-left: 0.5rem;
-}
-
-.budget-slider {
-  width: 100%;
-  height: 8px;
-  border-radius: 4px;
-  background: #e5e7eb;
-  outline: none;
-  -webkit-appearance: none;
-  margin-bottom: 0.75rem;
-}
-
-.budget-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
+/* Budget Options */
+.budget-option {
   appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  text-align: center;
 }
 
-.budget-slider::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+.budget-option:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
-.budget-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: #94a3b8;
+.budget-option.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
 /* Select */

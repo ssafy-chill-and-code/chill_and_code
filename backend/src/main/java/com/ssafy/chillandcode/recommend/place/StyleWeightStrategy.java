@@ -13,19 +13,20 @@ public class StyleWeightStrategy {
     private static final double DEFAULT_TREND_WEIGHT = 0.02; // default Wt
 
     // style 입력값을 받아 가중치 묶음을 반환
+    // workspace 가중치를 낮춰 호텔 편향 방지
     public static WeightStrategy byStyle(String style) {
 
-        // 카페·업무 중심
+        // 카페·업무 중심 (workspace 비중 감소: 0.6 → 0.3)
         if ("CAFE".equals(style)) {
-            return new WeightStrategy(0.6, 0.3, 0.1, DEFAULT_TREND_WEIGHT);
+            return new WeightStrategy(0.3, 0.4, 0.3, DEFAULT_TREND_WEIGHT);
 
-        // 자연·힐링 중심
+        // 자연·힐링 중심 (workspace 비중 감소: 0.2 → 0.1)
         } else if ("NATURE".equals(style)) {
-            return new WeightStrategy(0.2, 0.6, 0.2, DEFAULT_TREND_WEIGHT);
+            return new WeightStrategy(0.1, 0.6, 0.3, DEFAULT_TREND_WEIGHT);
 
-        // 활동·관광 중심 (기본)
+        // 활동·관광 중심 (기본) (workspace 비중 감소: 0.3 → 0.2)
         } else {
-            return new WeightStrategy(0.3, 0.3, 0.4, DEFAULT_TREND_WEIGHT);
+            return new WeightStrategy(0.2, 0.3, 0.5, DEFAULT_TREND_WEIGHT);
         }
     }
 }

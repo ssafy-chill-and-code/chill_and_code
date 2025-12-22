@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 
+	private static final Logger log = LoggerFactory.getLogger(PlaceRecommendServiceImpl.class);
 	private static final String NO_IMAGE = "NO_IMAGE";
 
     // 장소 피처 조회용 저장소
@@ -76,6 +79,9 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
         // 5) 지역별 균등 분배 로직
         List<ScoredView> finalSelection;
         
+        log.info("🔍 장소 추천 시작 - style: {}, budget: {}, region: {}", style, budget, region);
+        log.info("📊 DB에서 조회된 장소 수: {}", views.size());
+        
         if (selectedRegions.isEmpty() || selectedRegions.size() == 1) {
             // 지역 선택 없음 또는 1개 선택: 기존 로직 (전체에서 상위 6개)
             finalSelection = views.stream()
@@ -83,6 +89,14 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
                     .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
                     .limit(6)
                     .collect(Collectors.toList());
+                    
+            log.info("✅ 선택된 장소 (단일/전체 지역):");
+            for (int i = 0; i < finalSelection.size(); i++) {
+                ScoredView sv = finalSelection.get(i);
+                log.info("  {}. {} ({}지역) - 점수: {:.2f} [workspace:{}, nature:{}, activity:{}]", 
+                    i+1, sv.view().getName(), sv.view().getSido(), sv.score(),
+                    sv.view().getWorkspaceCount(), sv.view().getNatureScore(), sv.view().getActivityScore());
+            }
         } else {
             // 2개 이상 선택: 지역별로 균등 분배
             int perRegion = 6 / selectedRegions.size(); // 기본 할당량
@@ -114,6 +128,14 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
             
             // 최종 정렬 (점수 순)
             finalSelection.sort(Comparator.comparingDouble(ScoredView::score).reversed());
+            
+            log.info("✅ 선택된 장소 (다중 지역 균등 분배):");
+            for (int i = 0; i < finalSelection.size(); i++) {
+                ScoredView sv = finalSelection.get(i);
+                log.info("  {}. {} ({}지역) - 점수: {:.2f} [workspace:{}, nature:{}, activity:{}]", 
+                    i+1, sv.view().getName(), sv.view().getSido(), sv.score(),
+                    sv.view().getWorkspaceCount(), sv.view().getNatureScore(), sv.view().getActivityScore());
+            }
         }
 
         // 6) LLM 전달
