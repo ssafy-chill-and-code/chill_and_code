@@ -27,9 +27,6 @@
 	<update id="updateUser" parameterType="UserUpdateRequest">
 		UPDATE users
 		<set>
-			<if test="password != null">
-				password = #{password},
-			</if>
 			<if test="nickname != null">
 				nickname = #{nickname},
 			</if>
@@ -38,6 +35,14 @@
 			</if>
 		</set>
 		WHERE user_id=#{userId}
+			AND is_deleted = 0
+	</update>
+	
+	<!-- 비밀번호 수정 -->
+	<update id="updatePassword">
+		UPDATE users
+		SET password = #{password}
+		WHERE user_id = #{userId}
 			AND is_deleted = 0
 	</update>
 	

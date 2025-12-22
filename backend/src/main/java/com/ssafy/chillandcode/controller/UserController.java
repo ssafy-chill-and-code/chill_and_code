@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.chillandcode.common.ApiResponse;
 import com.ssafy.chillandcode.model.dto.user.LoginRequest;
 import com.ssafy.chillandcode.model.dto.user.LoginResponse;
+import com.ssafy.chillandcode.model.dto.user.PasswordChangeRequest;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
@@ -73,7 +74,17 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.success("프로필 수정이 완료되었습니다.", null));
 	}
-
+	
+	// 비밀번호 변경
+	@PatchMapping("/me/password")
+	@Operation(summary = "비밀번호 변경", description = "로그인된 사용자의 기존 비밀번호를 입력받은 후 새로운 비밀번호로 변경합니다.")
+	public ResponseEntity<ApiResponse<?>> changePassword(@AuthenticationPrincipal Long userId, @RequestBody PasswordChangeRequest req){
+		
+		userService.changePassword(userId, req);
+		
+		return ResponseEntity.ok(ApiResponse.success("비밀번호 수정이 완료되었습니다.", null));
+	}
+	
 	// 회원 정보 삭제 (탈퇴)
 	@DeleteMapping("/me")
 	@Operation(summary = "회원 탈퇴", description = "로그인된 사용자를 소프트 삭제 처리합니다. 실제 데이터는 삭제되지 않습니다.")

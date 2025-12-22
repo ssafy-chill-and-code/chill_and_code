@@ -2,7 +2,6 @@ package com.ssafy.chillandcode.model.dto.user;
 
 public class UserUpdateRequest {
 	private Long userId;
-	private String password;
 	private String nickname;
 	private String region;
 
@@ -10,10 +9,9 @@ public class UserUpdateRequest {
 
 	}
 
-	public UserUpdateRequest(Long userId, String password, String nickname, String region) {
+	public UserUpdateRequest(Long userId, String nickname, String region) {
 		super();
 		this.userId = userId;
-		this.password = password;
 		this.nickname = nickname;
 		this.region = region;
 	}
@@ -24,14 +22,6 @@ public class UserUpdateRequest {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getNickname() {
@@ -52,8 +42,7 @@ public class UserUpdateRequest {
 
 	@Override
 	public String toString() {
-		return "UserUpdateRequest [userId=" + userId + ", password=" + password + ", nickname=" + nickname + ", region="
-				+ region + "]";
+		return "UserUpdateRequest [userId=" + userId + ", nickname=" + nickname + ", region=" + region + "]";
 	}
 
 }
