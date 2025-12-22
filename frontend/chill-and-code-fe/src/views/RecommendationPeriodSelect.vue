@@ -135,8 +135,10 @@ async function goResult() {
 
 <style scoped>
 .period-select-wrapper {
-  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  background: white;
   min-height: calc(100vh - 64px);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
 }
 
 .back-link {
@@ -154,9 +156,8 @@ async function goResult() {
 }
 
 .back-link:hover {
-  background: white;
-  color: #667eea;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: #f8fafc;
+  color: #1e293b;
 }
 
 .header-content {
@@ -165,60 +166,76 @@ async function goResult() {
 
 .step-indicator {
   display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   border-radius: 20px;
-  margin-bottom: 1rem;
-  letter-spacing: 0.5px;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 .page-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.75rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-  font-size: 1.1rem;
+  font-size: 1.0625rem;
   color: #64748b;
   margin-bottom: 0;
+  font-weight: 400;
 }
 
 .form-wrapper {
   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 3rem 0;
 }
 
 .input-card {
   background: white;
-  border-radius: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
   padding: 2.5rem 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   text-align: center;
 }
 
 .input-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
 }
 
 .card-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #e2e8f0;
 }
 
 .input-label {
   display: block;
-  font-size: 1.1rem;
+  font-size: 1.0625rem;
   font-weight: 600;
-  color: #1a202c;
-  margin-bottom: 1rem;
+  color: #0f172a;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
 }
 
 .input-group-custom {
@@ -235,27 +252,28 @@ async function goResult() {
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  border: 3px solid #e5e7eb;
-  border-radius: 16px;
-  background: #f8f9fa;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #0f172a;
   transition: all 0.3s ease;
 }
 
 .form-control-custom:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #1e293b;
   background: white;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.1);
 }
 
 .input-suffix {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 600;
   color: #64748b;
 }
 
 .input-hint {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: #94a3b8;
 }
 
@@ -264,27 +282,27 @@ async function goResult() {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+  background: #f8fafc;
   padding: 1.25rem 2rem;
-  border-radius: 16px;
+  border-radius: 12px;
   margin: 2.5rem auto 1.5rem;
   max-width: 600px;
-  border: 2px solid rgba(102, 126, 234, 0.2);
+  border: 1px solid #e2e8f0;
 }
 
 .info-icon {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .info-text {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: #4c1d95;
+  color: #334155;
 }
 
 .error-alert {
-  background: #fee2e2;
-  border: 2px solid #fecaca;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   color: #991b1b;
   padding: 1rem 1.5rem;
   border-radius: 12px;
@@ -296,6 +314,7 @@ async function goResult() {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  font-size: 0.9375rem;
 }
 
 .cta-wrapper {
@@ -306,25 +325,27 @@ async function goResult() {
 .btn-primary-custom {
   appearance: none;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.0625rem;
   font-weight: 600;
-  padding: 1.25rem 3rem;
-  border-radius: 16px;
+  padding: 1.125rem 2.5rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   min-width: 240px;
   justify-content: center;
+  letter-spacing: -0.01em;
 }
 
 .btn-primary-custom:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 16px rgba(30, 41, 59, 0.4);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 .btn-primary-custom:active:not(:disabled) {
@@ -332,7 +353,7 @@ async function goResult() {
 }
 
 .btn-primary-custom:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -352,18 +373,26 @@ async function goResult() {
 }
 
 @media (max-width: 992px) {
-  .page-title {
-    font-size: 2rem;
+  .period-select-wrapper {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
   
   .input-card {
     padding: 2rem 1.5rem;
   }
+  
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 2.25rem;
+  }
 }
 
 @media (max-width: 576px) {
-  .page-title {
-    font-size: 1.75rem;
+  .period-select-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
   }
   
   .form-control-custom {
@@ -373,7 +402,13 @@ async function goResult() {
   }
   
   .input-suffix {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
+  }
+  
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 2rem;
   }
 }
 </style>

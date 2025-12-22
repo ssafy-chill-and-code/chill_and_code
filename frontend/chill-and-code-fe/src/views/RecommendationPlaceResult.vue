@@ -1,98 +1,107 @@
 <template>
-  <div class="container-fluid px-4 py-4" style="max-width: 1400px;">
-    <!-- 상단 타이틀/서브 -->
-    <header class="mb-4">
-      <h1 class="h4 mb-1">당신을 위한 워케이션 장소</h1>
-      <p class="text-muted small mb-0">{{ periodText }}에 추천하는 최고의 워케이션 장소들입니다.</p>
-    </header>
+  <div class="place-result-wrapper">
+    <div class="container py-5">
+      <!-- 헤더 -->
+      <header class="text-center mb-5">
+        <div class="step-indicator">추천 결과</div>
+        <h1 class="page-title">당신을 위한 워케이션 장소</h1>
+        <p class="page-subtitle">{{ periodText }}에 추천하는 최고의 워케이션 장소들입니다.</p>
+      </header>
 
-    <!-- 로딩 중 -->
-    <div v-if="placeStore.loading" class="text-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <!-- 로딩 중 -->
+      <div v-if="placeStore.loading" class="loading-wrapper">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">장소를 추천하고 있습니다...</div>
       </div>
-      <div class="mt-3">장소를 추천하고 있습니다...</div>
-    </div>
 
-    <!-- 에러 메시지 -->
-    <div v-else-if="placeStore.error" class="alert alert-danger">
-      {{ placeStore.error }}
-    </div>
+      <!-- 에러 메시지 -->
+      <div v-else-if="placeStore.error" class="error-card">
+        <div class="error-icon">😔</div>
+        <div class="error-title">오류가 발생했습니다</div>
+        <div class="error-message">{{ placeStore.error }}</div>
+        <button class="btn-retry" @click="router.push('/recommend/place')">다시 시도</button>
+      </div>
 
-    <!-- 결과가 없을 때 -->
-    <div v-else-if="!places || places.length === 0" class="alert alert-warning">
-      추천 가능한 장소가 없습니다. 조건을 변경해주세요.
-    </div>
+      <!-- 결과가 없을 때 -->
+      <div v-else-if="!places || places.length === 0" class="empty-card">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">추천 가능한 장소가 없습니다</div>
+        <div class="empty-message">조건을 변경해주세요</div>
+        <button class="btn-retry" @click="router.push('/recommend/place')">조건 변경하기</button>
+      </div>
 
-    <template v-else>
-      <!-- 선택 요약 바 -->
-      <section class="mb-4">
-        <div class="summary-box p-3 border rounded bg-white d-flex flex-wrap gap-4">
-          <div>
-            <div class="small text-muted">기간</div>
-            <div class="fw-semibold">{{ periodText }}</div>
+      <!-- 결과 -->
+      <div v-else class="results-wrapper">
+        <!-- 선택 요약 -->
+        <section class="summary-card mb-4">
+          <div class="summary-item">
+            <div class="summary-label">기간</div>
+            <div class="summary-value">{{ periodText }}</div>
           </div>
-          <div>
-            <div class="small text-muted">스타일</div>
-            <div class="fw-semibold">{{ displayStyle }}</div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <div class="summary-label">스타일</div>
+            <div class="summary-value">{{ displayStyle }}</div>
           </div>
-          <div>
-            <div class="small text-muted">예산</div>
-            <div class="fw-semibold">{{ displayBudget }}</div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <div class="summary-label">예산</div>
+            <div class="summary-value">{{ displayBudget }}</div>
           </div>
-          <div>
-            <div class="small text-muted">추천 수</div>
-            <div class="fw-semibold">{{ places.length }}곳</div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <div class="summary-label">추천 수</div>
+            <div class="summary-value">{{ places.length }}곳</div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 장소 카드 -->
-      <section class="mb-4">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-          <div v-for="place in places" :key="place.placeId" class="col">
-            <CCard class="place-card h-100">
-              <!-- 카드 상단: 대표 이미지 + 배지 -->
-              <div class="thumb position-relative rounded overflow-hidden mb-3">
-                <img v-if="place.imageUrl && place.imageUrl !== 'NO_IMAGE'" :src="place.imageUrl" :alt="place.name" class="thumb-img" />
-                <div v-else class="thumb-inner d-flex align-items-center justify-content-center">🏖️</div>
-                <div class="match-badge">⭐ {{ Math.round(place.trendScore) }}%</div>
-              </div>
-
-              <!-- 카드 본문 -->
-              <div class="card-body-content">
-                <h6 class="fw-bold mb-1">{{ place.name }}</h6>
-                <div class="text-muted small mb-2">{{ place.region }}</div>
-
-                <!-- 태그 영역 -->
-                <div class="d-flex flex-wrap gap-1 mb-2">
-                  <span v-for="tag in place.tags" :key="tag" class="hash">{{ tag }}</span>
+        <!-- 장소 카드 -->
+        <section class="places-section">
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div v-for="place in places" :key="place.placeId" class="col">
+              <div class="place-card">
+                <!-- 이미지 -->
+                <div class="place-image">
+                  <img v-if="place.imageUrl && place.imageUrl !== 'NO_IMAGE'" :src="place.imageUrl" :alt="place.name" />
+                  <div v-else class="place-image-placeholder">🏖️</div>
+                  <div class="match-badge">⭐ {{ Math.round(place.trendScore) }}%</div>
                 </div>
 
-                <!-- 가격 정보 -->
-                <div class="price-text mb-2">월 {{ formatPrice(place.score) }}</div>
+                <!-- 정보 -->
+                <div class="place-info">
+                  <h6 class="place-name">{{ place.name }}</h6>
+                  <div class="place-region">{{ place.region }}</div>
 
-                <!-- 추천 이유 박스 -->
-                <div class="reason-box small mb-3">
-                  <div class="fw-semibold mb-1">추천이유</div>
-                  <div class="reason-text">{{ place.reasonText || '당신의 예산과 일정에 완벽하게 맞습니다' }}</div>
+                  <!-- 태그 -->
+                  <div class="place-tags">
+                    <span v-for="tag in place.tags" :key="tag" class="place-tag">{{ tag }}</span>
+                  </div>
+
+                  <!-- 가격 -->
+                  <div class="place-price">월 {{ formatPrice(place.score) }}</div>
+
+                  <!-- 추천 이유 -->
+                  <div class="reason-box">
+                    <div class="reason-title">📝 추천이유</div>
+                    <div class="reason-text">{{ place.reasonText || '당신의 예산과 일정에 완벽하게 맞습니다' }}</div>
+                  </div>
+
+                  <!-- 버튼 -->
+                  <button class="btn-select" @click="goSchedule(place)">
+                    <span>✓</span> 이 장소로 일정 만들기
+                  </button>
                 </div>
-
-                <!-- CTA -->
-                <CButton block @click="goSchedule(place)">이 장소로 일정 만들기</CButton>
               </div>
-            </CCard>
+            </div>
           </div>
-        </div>
-      </section>
-    </template>
+        </section>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import CButton from '@/components/common/CButton.vue'
-import CCard from '@/components/common/CCard.vue'
 import { useRouter } from 'vue-router'
 import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
 import { useRecommendationStore } from '@/stores/recommendation'
@@ -155,92 +164,364 @@ function goSchedule(place) {
 </script>
 
 <style scoped>
-.summary-box { background: #fff; }
+.place-result-wrapper {
+  background: white;
+  min-height: calc(100vh - 64px);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
 
-.place-card { 
-  background: #fff; 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.step-indicator {
+  display: inline-block;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.page-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: 1.0625rem;
+  color: #64748b;
+  margin-bottom: 0;
+  font-weight: 400;
+}
+
+/* Loading */
+.loading-wrapper {
+  text-align: center;
+  padding: 5rem 0;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #1e293b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+.loading-text {
+  font-size: 1.125rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Error & Empty */
+.error-card,
+.empty-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error-icon,
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  font-size: 3rem;
+  margin: 0 auto 1.5rem;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.error-title,
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.error-message,
+.empty-message {
+  color: #64748b;
+  margin-bottom: 2rem;
+  font-size: 0.9375rem;
+}
+
+.btn-retry {
+  appearance: none;
+  border: 2px solid #1e293b;
+  background: white;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+  background: #1e293b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+}
+
+/* Results */
+.results-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Summary Card */
+.summary-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-label {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin-bottom: 0.375rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.summary-divider {
+  width: 1px;
+  height: 40px;
+  background: #e2e8f0;
+}
+
+/* Places Section */
+.places-section {
+  margin-top: 2.5rem;
+}
+
+.place-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .place-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
 }
 
-.thumb {
+.place-image {
+  position: relative;
   aspect-ratio: 16/9;
   background: #f3f4f6;
-  position: relative;
   overflow: hidden;
 }
 
-.thumb-img {
+.place-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.thumb-inner { 
-  width: 100%; 
-  height: 100%; 
-  font-size: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.place-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 }
 
 .match-badge {
-  position: absolute; 
-  left: 8px; 
-  top: 8px;
-  background: rgba(13, 110, 253, 0.9);
-  color: #fff; 
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  background: rgba(30, 41, 59, 0.95);
+  color: white;
   font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 10px; 
-  border-radius: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  padding: 0.375rem 0.75rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
 }
 
-.card-body-content {
-  padding: 0 4px;
+.place-info {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.hash {
-  display: inline-block; 
-  background: #e7f3ff; 
-  color: #0d6efd; 
-  border-radius: 12px; 
-  padding: 3px 10px; 
+.place-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.01em;
+}
+
+.place-region {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+}
+
+.place-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.place-tag {
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
 }
 
-.price-text {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #0d6efd;
+.place-price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
 }
 
-.reason-box { 
-  background: #f8f9fb; 
-  border: 1px solid #e9ecef; 
-  border-radius: 8px; 
-  padding: 10px 12px;
+.reason-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+.reason-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
 }
 
 .reason-text {
-  color: #6c757d;
   font-size: 0.875rem;
-  line-height: 1.4;
+  color: #64748b;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* 반응형 - 모바일에서는 1열, 태블릿 2열, 데스크톱 3열 */
-@media (max-width: 767px) {
-  .col-12 {
-    margin-bottom: 1rem;
+.btn-select {
+  appearance: none;
+  border: none;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.875rem 1.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.btn-select:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 992px) {
+  .place-result-wrapper {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+  
+  .summary-card {
+    gap: 1.5rem;
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .summary-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .place-result-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  .summary-card {
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .place-image-placeholder {
+    font-size: 2rem;
   }
 }
 </style>

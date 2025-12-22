@@ -80,8 +80,10 @@ function goPeriod(styleType) {
 
 <style scoped>
 .style-select-wrapper {
-  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  background: white;
   min-height: calc(100vh - 64px);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
 }
 
 .back-link {
@@ -99,9 +101,8 @@ function goPeriod(styleType) {
 }
 
 .back-link:hover {
-  background: white;
-  color: #667eea;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: #f8fafc;
+  color: #1e293b;
 }
 
 .header-content {
@@ -110,58 +111,62 @@ function goPeriod(styleType) {
 
 .step-indicator {
   display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   border-radius: 20px;
-  margin-bottom: 1rem;
-  letter-spacing: 0.5px;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 .page-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.75rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-  font-size: 1.1rem;
+  font-size: 1.0625rem;
   color: #64748b;
   margin-bottom: 0;
+  font-weight: 400;
 }
 
 .style-cards-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 3rem 0;
 }
 
 .style-card {
   position: relative;
   appearance: none;
-  border: none;
+  border: 2px solid #e2e8f0;
   background: white;
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 0;
   width: 100%;
   height: 100%;
-  min-height: 320px;
+  min-height: 340px;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .style-card:hover {
-  transform: translateY(-12px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
 }
 
 .style-card:active {
-  transform: translateY(-8px) scale(0.98);
+  transform: translateY(-4px) scale(0.99);
 }
 
 .card-gradient {
@@ -169,30 +174,31 @@ function goPeriod(styleType) {
   top: 0;
   left: 0;
   right: 0;
-  height: 140px;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
+  height: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
 .style-card:hover .card-gradient {
+  height: 4px;
   opacity: 1;
 }
 
 .card-gradient.relax {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
 }
 
 .card-gradient.work {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 }
 
 .card-gradient.balance {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .card-content {
   position: relative;
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 2rem;
   text-align: center;
   height: 100%;
   display: flex;
@@ -202,31 +208,31 @@ function goPeriod(styleType) {
 }
 
 .icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
 }
 
 .style-card:hover .icon {
-  animation: none;
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
+  background: #f1f5f9;
+  transform: scale(1.05);
+  border-color: #cbd5e1;
 }
 
 .card-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: #0f172a;
   margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
 }
 
 .card-features {
@@ -235,7 +241,7 @@ function goPeriod(styleType) {
   margin: 0;
   text-align: left;
   width: 100%;
-  max-width: 240px;
+  max-width: 260px;
 }
 
 .card-features li {
@@ -243,49 +249,65 @@ function goPeriod(styleType) {
   align-items: center;
   gap: 0.75rem;
   color: #64748b;
-  font-size: 0.95rem;
-  margin-bottom: 0.75rem;
-  padding: 0.5rem;
+  font-size: 0.9375rem;
+  margin-bottom: 0.875rem;
+  padding: 0.625rem 0.75rem;
   border-radius: 8px;
   transition: all 0.3s ease;
+  border-left: 2px solid transparent;
 }
 
 .style-card:hover .card-features li {
-  background: #f8f9fa;
-  color: #1a202c;
+  background: #f8fafc;
+  color: #334155;
+  border-left-color: #cbd5e1;
 }
 
 .card-features li span {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 18px;
+  height: 18px;
+  background: #1e293b;
   color: white;
   border-radius: 50%;
-  font-size: 0.7rem;
-  font-weight: bold;
+  font-size: 0.625rem;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
 @media (max-width: 992px) {
-  .page-title {
-    font-size: 2rem;
+  .style-select-wrapper {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
   
   .style-card {
-    min-height: 280px;
+    min-height: 300px;
+  }
+  
+  .icon {
+    width: 64px;
+    height: 64px;
+    font-size: 2.25rem;
   }
 }
 
 @media (max-width: 576px) {
-  .page-title {
-    font-size: 1.75rem;
+  .style-select-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
   }
   
   .icon {
-    font-size: 3rem;
+    width: 56px;
+    height: 56px;
+    font-size: 2rem;
+  }
+  
+  .card-content {
+    padding: 2rem 1.5rem;
   }
 }
 </style>
