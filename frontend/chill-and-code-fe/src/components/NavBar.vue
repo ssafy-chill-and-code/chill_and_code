@@ -49,8 +49,19 @@
               to="/mypage"
               class="profile-link flex items-center gap-2 text-gray-700 hover:text-slate-900 hover:bg-slate-50 transition-all duration-300 px-3 py-2 rounded-lg"
             >
-              <div class="avatar w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center text-white text-sm font-bold transition-transform duration-300">
-                {{ nickname?.charAt(0) || 'U' }}
+              <div class="avatar w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold transition-transform duration-300 overflow-hidden flex-shrink-0">
+                <img
+                  v-if="profileImageUrl"
+                  :src="profileImageUrl"
+                  :alt="nickname"
+                  class="w-full h-full object-cover"
+                />
+                <div
+                  v-else
+                  class="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center"
+                >
+                  {{ nickname?.charAt(0) || 'U' }}
+                </div>
               </div>
               <span class="text-sm font-medium">{{ nickname }}님</span>
             </RouterLink>
@@ -102,8 +113,19 @@
             class="flex items-center gap-3 py-2"
             @click="mobileMenuOpen = false"
           >
-            <div class="w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center text-white font-bold">
-              {{ nickname?.charAt(0) || 'U' }}
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold overflow-hidden flex-shrink-0">
+              <img
+                v-if="profileImageUrl"
+                :src="profileImageUrl"
+                :alt="nickname"
+                class="w-full h-full object-cover"
+              />
+              <div
+                v-else
+                class="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center"
+              >
+                {{ nickname?.charAt(0) || 'U' }}
+              </div>
             </div>
             <div>
               <div class="text-sm font-semibold text-gray-900">{{ nickname }}님</div>
@@ -199,6 +221,7 @@ const mobileMenuOpen = ref(false)
 
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 const nickname = computed(() => userStore?.user?.nickname || '회원')
+const profileImageUrl = computed(() => userStore?.user?.profileImageUrl)
 
 const onLogout = async () => {
   try {

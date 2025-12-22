@@ -12,6 +12,7 @@ import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.UserDao;
 import com.ssafy.chillandcode.model.dto.user.LoginRequest;
 import com.ssafy.chillandcode.model.dto.user.LoginResponse;
+import com.ssafy.chillandcode.model.dto.user.PasswordChangeRequest;
 import com.ssafy.chillandcode.model.dto.user.User;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
@@ -28,6 +29,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
+	
+	@Autowired
+	private RefreshTokenService refreshTokenService;
 	
 	//회원 가입 (등록)
 	@Override
@@ -76,15 +80,63 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 	
+	
 	//회원 정보 수정
 	@Override
     public void updateUser(Long userId, UserUpdateRequest req) {
+		
+		// 수정 요청에 nickname이 포함되어 있다면 반드시 검증
+		if (req.getNickname() != null) {
+		    if (!isValidNickname(req.getNickname())) {
+		        throw new ApiException(ErrorCode.INVALID_NICKNAME);
+		    }
+		}
+		
 		req.setUserId(userId);
 		
 		int rows = userDao.updateUser(req);
 		if(rows != 1) {
 			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "프로필 수정에 실패했습니다.");
 		}
+	}
+	
+	
+	//비밀번호 변경
+	@Override
+	public void changePassword(Long userId, PasswordChangeRequest req) {
+		
+		//사용자 조회
+		User user = userDao.selectUser(userId);
+		if(user == null) {
+			throw new ApiException(ErrorCode.USER_NOT_FOUND);
+		}
+		
+		//OAuth 사용자 차단 (OAuth 사용자는 외부 인증을 사용하므로 내부 비밀번호 변경 기능 제공X)
+		if(user.getProvider() != null) {
+			throw new ApiException(ErrorCode.OAUTH_USER_PASSWORD_NOT_ALLOWED);
+		}
+		
+		//기존 비밀번호 검증
+		if(!passwordEncoder.matches(req.getCurrentPassword(), user.getPassword())) {
+			throw new ApiException(ErrorCode.INVALID_CURRENT_PASSWORD);
+		}
+		
+		//새 비밀번호 형식 검증
+		if(!isValidPassword(req.getNewPassword())) {
+			throw new ApiException(ErrorCode.INVALID_NEW_PASSWORD);
+		}
+		
+		//새비밀번호 암호화
+		String encoded = passwordEncoder.encode(req.getNewPassword());
+		
+		//DB 업데이트
+		int rows = userDao.updatePassword(userId, encoded);
+		if(rows != 1) {
+			throw new ApiException(ErrorCode.PASSWORD_UPDATE_FAILED);
+		}
+		
+		//Refresh Token 무효화
+		refreshTokenService.revokeAllByUserId(userId);
 	}
 	
 	//회원 정보 삭제(탈퇴)
@@ -192,5 +244,4 @@ public class UserServiceImpl implements UserService {
 		return nickname.length() >= 2 && nickname.length() <= 20;
 	}
 
-	
 }

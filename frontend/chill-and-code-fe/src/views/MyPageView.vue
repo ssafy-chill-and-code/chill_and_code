@@ -17,15 +17,28 @@ const mobileMenuOpen = ref(false)
 const loading = ref(false)
 const error = ref(null)
 const showProfileEditModal = ref(false)
+const showPasswordChangeModal = ref(false)
+const passwordForm = ref({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
 
 const profileForm = ref({
   nickname: '',
   region: '',
+  profileImageUrl: '',
 })
 
 const showWithdrawalModal = ref(false)
 const withdrawalConfirm = ref(false)
 const scheduleTypeFilter = ref(null)
+
+// 파일 업로드 관련
+const selectedFile = ref(null)
+const previewUrl = ref(null)
+const uploading = ref(false)
+const fileInputRef = ref(null)
 
 const user = computed(() => userStore.user)
 const myPosts = computed(() => postStore.myPosts)
@@ -36,13 +49,26 @@ const schedules = computed(() => {
 })
 
 const tabs = [
-  { id: 'home', label: '홈' },
-  { id: 'posts', label: '내 게시글' },
-  { id: 'comments', label: '내 댓글' },
-  { id: 'schedules', label: '내 일정' },
-  { id: 'settings', label: '계정 설정' },
-  { id: 'withdrawal', label: '회원 탈퇴' },
+  { id: 'home', label: '홈', icon: 'home' },
+  { id: 'posts', label: '내 게시글', icon: 'document' },
+  { id: 'comments', label: '내 댓글', icon: 'chat' },
+  { id: 'schedules', label: '내 일정', icon: 'calendar' },
+  { id: 'settings', label: '계정 설정', icon: 'cog' },
+  { id: 'withdrawal', label: '회원 탈퇴', icon: 'user-minus' },
 ]
+
+// 아이콘 SVG 경로 정의
+const getIconSvg = (iconName) => {
+  const icons = {
+    home: 'M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25',
+    document: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
+    chat: 'M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155',
+    calendar: 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-9-9.75h.008v.008H12V9.75zm-3 0h.008v.008H9V9.75zm-3 0h.008v.008H6V9.75zm9 3h.008v.008H15v-.008zm-3 0h.008v.008H12v-.008zm-3 0h.008v.008H9v-.008zm9 3h.008v.008H15v-.008zm-3 0h.008v.008H12v-.008zm-3 0h.008v.008H9v-.008z',
+    cog: 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z',
+    'user-minus': 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632zM13.5 10.5h-3v6h3v-6z'
+  }
+  return icons[iconName] || ''
+}
 
 const regions = [
   '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종',
@@ -105,18 +131,154 @@ const loadMySchedules = async () => {
 const openProfileEdit = () => {
   profileForm.value.nickname = user.value?.nickname || ''
   profileForm.value.region = user.value?.region || ''
+  profileForm.value.profileImageUrl = user.value?.profileImageUrl || ''
+  selectedFile.value = null
+  previewUrl.value = null
   showProfileEditModal.value = true
+}
+
+const openPasswordChange = () => {
+  passwordForm.value.currentPassword = ''
+  passwordForm.value.newPassword = ''
+  passwordForm.value.confirmPassword = ''
+  showPasswordChangeModal.value = true
+}
+
+const handleFileSelect = (event) => {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  // 파일 타입 검증
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+  if (!allowedTypes.includes(file.type)) {
+    alert('이미지 파일만 업로드 가능합니다. (JPEG, PNG, WebP)')
+    return
+  }
+
+  // 파일 크기 검증 (10MB 제한)
+  if (file.size > 10 * 1024 * 1024) {
+    alert('파일 크기는 10MB 이하여야 합니다.')
+    return
+  }
+
+  selectedFile.value = file
+  previewUrl.value = URL.createObjectURL(file)
+}
+
+const uploadFile = async () => {
+  if (!selectedFile.value) return
+
+  uploading.value = true
+  error.value = null
+  try {
+    const response = await userStore.uploadFile(selectedFile.value)
+    if (response?.data?.url) {
+      profileForm.value.profileImageUrl = response.data.url
+      selectedFile.value = null
+      if (previewUrl.value) {
+        URL.revokeObjectURL(previewUrl.value)
+        previewUrl.value = null
+      }
+      alert('이미지가 업로드되었습니다.')
+    } else {
+      throw new Error('업로드된 파일의 URL을 받지 못했습니다.')
+    }
+  } catch (e) {
+    const errorMessage = e?.response?.data?.message || '파일 업로드에 실패했습니다.'
+    error.value = errorMessage
+    alert(errorMessage)
+  } finally {
+    uploading.value = false
+  }
 }
 
 const saveProfile = async () => {
   loading.value = true
   error.value = null
   try {
-    await userStore.updateProfile(profileForm.value)
+    // 빈 문자열을 trim하고, 빈 문자열이면 null로 변환
+    const payload = {
+      nickname: profileForm.value.nickname?.trim() || null,
+      region: profileForm.value.region?.trim() || null,
+      profileImageUrl: profileForm.value.profileImageUrl?.trim() || null,
+    }
+    
+    // 최소한 하나의 필드는 값이 있어야 함
+    if (!payload.nickname && !payload.region && !payload.profileImageUrl) {
+      alert('수정할 정보를 입력해주세요.')
+      loading.value = false
+      return
+    }
+    
+    await userStore.updateProfile(payload)
+    
     showProfileEditModal.value = false
+    // 미리보기 URL 정리
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value)
+      previewUrl.value = null
+    }
+    selectedFile.value = null
     alert('프로필이 수정되었습니다.')
   } catch (e) {
-    error.value = '프로필 수정에 실패했습니다.'
+    const errorMessage = e?.response?.data?.message || '프로필 수정에 실패했습니다.'
+    error.value = errorMessage
+    alert(errorMessage)
+  } finally {
+    loading.value = false
+  }
+}
+
+const savePassword = async () => {
+  // 유효성 검사
+  if (!passwordForm.value.currentPassword || !passwordForm.value.newPassword) {
+    alert('모든 필드를 입력해주세요.')
+    return
+  }
+  
+  if (passwordForm.value.newPassword.length < 8) {
+    alert('새 비밀번호는 8자 이상이어야 합니다.')
+    return
+  }
+  
+  if (passwordForm.value.newPassword.includes(' ')) {
+    alert('새 비밀번호에 공백을 포함할 수 없습니다.')
+    return
+  }
+  
+  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+    alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
+    return
+  }
+  
+  if (passwordForm.value.currentPassword === passwordForm.value.newPassword) {
+    alert('현재 비밀번호와 새 비밀번호가 동일합니다.')
+    return
+  }
+  
+  loading.value = true
+  error.value = null
+  try {
+    await userStore.changePassword({
+      currentPassword: passwordForm.value.currentPassword,
+      newPassword: passwordForm.value.newPassword,
+    })
+    showPasswordChangeModal.value = false
+    passwordForm.value.currentPassword = ''
+    passwordForm.value.newPassword = ''
+    passwordForm.value.confirmPassword = ''
+    
+    // 비밀번호 변경 성공 안내
+    alert('비밀번호가 변경되었습니다. 보안을 위해 다시 로그인해주세요.')
+    
+    // 비밀번호 변경 시 Refresh Token이 이미 무효화되었으므로
+    // 서버 logout API 호출 없이 로컬 인증 상태만 정리
+    userStore.clearLocalAuth()
+    router.push('/login')
+  } catch (e) {
+    const errorMessage = e?.response?.data?.message || '비밀번호 변경에 실패했습니다.'
+    error.value = errorMessage
+    alert(errorMessage)
   } finally {
     loading.value = false
   }
@@ -189,13 +351,27 @@ onMounted(async () => {
               :key="tab.id"
               @click="changeTab(tab.id)"
               :class="[
-                'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium',
+                'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium flex items-center gap-3',
                 activeTab === tab.id
                   ? 'bg-slate-800 text-white shadow-lg'
                   : 'text-gray-700 hover:bg-gray-100'
               ]"
             >
-              {{ tab.label }}
+              <svg 
+                class="w-5 h-5 flex-shrink-0" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                :class="activeTab === tab.id ? 'stroke-current' : 'stroke-gray-600'"
+              >
+                <path 
+                  stroke-linecap="round" 
+                  stroke-linejoin="round" 
+                  stroke-width="2" 
+                  :d="getIconSvg(tab.icon)"
+                />
+              </svg>
+              <span>{{ tab.label }}</span>
             </button>
           </nav>
         </div>
@@ -240,13 +416,27 @@ onMounted(async () => {
             :key="tab.id"
             @click="changeTab(tab.id)"
             :class="[
-              'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium',
+              'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium flex items-center gap-3',
               activeTab === tab.id
                 ? 'bg-slate-800 text-white shadow-lg'
                 : 'text-gray-700 hover:bg-gray-100'
             ]"
           >
-            {{ tab.label }}
+            <svg 
+              class="w-5 h-5 flex-shrink-0" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              :class="activeTab === tab.id ? 'stroke-current' : 'stroke-gray-600'"
+            >
+              <path 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                :d="getIconSvg(tab.icon)"
+              />
+            </svg>
+            <span>{{ tab.label }}</span>
           </button>
         </nav>
       </div>
@@ -273,8 +463,19 @@ onMounted(async () => {
               <h2 class="text-2xl font-bold text-gray-900 mb-6">프로필</h2>
               
               <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 mb-6">
-                <div class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg flex-shrink-0">
-                  {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+                <div class="relative flex-shrink-0">
+                  <img
+                    v-if="user?.profileImageUrl"
+                    :src="user.profileImageUrl"
+                    :alt="user?.nickname || '프로필'"
+                    class="w-20 h-20 rounded-full object-cover shadow-lg border-2 border-gray-200"
+                  />
+                  <div
+                    v-else
+                    class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
+                  >
+                    {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+                  </div>
                 </div>
                 <div class="flex-1 text-center lg:text-left">
                   <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ user?.nickname || '사용자' }}</h3>
@@ -512,9 +713,12 @@ onMounted(async () => {
                   <h3 class="text-xl font-bold text-gray-900 mb-2">비밀번호 변경</h3>
                   <p class="text-gray-600">계정의 비밀번호를 변경합니다</p>
                 </div>
-                <div class="px-6 py-3 bg-gray-100 text-gray-500 rounded-xl font-semibold">
-                  준비중
-                </div>
+                <button
+                  @click="openPasswordChange"
+                  class="px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+                >
+                  비밀번호 변경
+                </button>
               </div>
             </div>
           </div>
@@ -566,9 +770,9 @@ onMounted(async () => {
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       @click.self="showProfileEditModal = false"
     >
-      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-10">
         <h3 class="text-3xl font-bold text-gray-900 mb-8">프로필 수정</h3>
-        <div class="space-y-5">
+        <div class="space-y-6">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-3">이메일 (변경 불가)</label>
             <input 
@@ -596,19 +800,153 @@ onMounted(async () => {
               <option v-for="r in regions" :key="r" :value="r">{{ r }}</option>
             </select>
           </div>
-          <div class="flex gap-3 pt-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-4">프로필 이미지</label>
+            
+            <!-- 프로필 이미지 섹션: 좌측 이미지, 우측 상단 버튼, 우측 하단 URL 입력 -->
+            <div class="flex gap-6 items-start">
+              <!-- 좌측: 동그라미 이미지 -->
+              <div class="flex-shrink-0">
+                <div class="w-36 h-36 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center shadow-md">
+                  <img
+                    v-if="previewUrl"
+                    :src="previewUrl"
+                    alt="미리보기"
+                    class="w-full h-full object-cover"
+                  />
+                  <img
+                    v-else-if="profileForm.profileImageUrl"
+                    :src="profileForm.profileImageUrl"
+                    alt="현재 프로필 이미지"
+                    class="w-full h-full object-cover"
+                  />
+                  <div
+                    v-else
+                    class="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-white text-5xl font-bold"
+                  >
+                    {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 우측: 상단 버튼, 하단 URL 입력 -->
+              <div class="flex-1 flex flex-col gap-4">
+                <!-- 우측 상단: 파일 선택 및 업로드 버튼 -->
+                <div class="flex flex-col gap-3">
+                  <input
+                    ref="fileInputRef"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    @change="handleFileSelect"
+                    class="hidden"
+                  />
+                  <div class="flex gap-3">
+                    <button
+                      type="button"
+                      @click="fileInputRef?.click()"
+                      :disabled="uploading"
+                      class="flex-1 px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 hover:shadow-md transition-all font-medium text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      {{ uploading ? '업로드 중...' : '파일 선택' }}
+                    </button>
+                    <button
+                      v-if="selectedFile"
+                      type="button"
+                      @click="uploadFile"
+                      :disabled="uploading"
+                      class="flex-1 px-5 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 hover:shadow-md transition-all font-medium text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      {{ uploading ? '업로드 중...' : '업로드' }}
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- 우측 하단: URL 직접 입력 -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-2">또는 이미지 URL 직접 입력</label>
+                  <input 
+                    v-model="profileForm.profileImageUrl" 
+                    type="url" 
+                    placeholder="https://i.pravatar.cc/150"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all text-sm"
+                  />
+                  <p class="text-xs text-gray-500 mt-2">
+                    로컬 파일을 업로드하거나 이미지 URL을 직접 입력할 수 있습니다.<br>
+                    비워두면 기본 아바타가 표시됩니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 pt-4">
             <button
               @click="showProfileEditModal = false"
-              class="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+              class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
             >
               취소
             </button>
             <button
               @click="saveProfile"
               :disabled="loading"
-              class="flex-1 px-6 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
+              class="flex-1 px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
             >
               저장
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div
+      v-if="showPasswordChangeModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      @click.self="showPasswordChangeModal = false"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
+        <h3 class="text-3xl font-bold text-gray-900 mb-8">비밀번호 변경</h3>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">현재 비밀번호</label>
+            <input 
+              v-model="passwordForm.currentPassword" 
+              type="password" 
+              placeholder="현재 비밀번호를 입력하세요"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">새 비밀번호</label>
+            <input 
+              v-model="passwordForm.newPassword" 
+              type="password" 
+              placeholder="8자 이상, 공백 없이"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+            <p class="text-xs text-gray-500 mt-2">8자 이상이며 공백이 없어야 합니다.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">새 비밀번호 확인</label>
+            <input 
+              v-model="passwordForm.confirmPassword" 
+              type="password" 
+              placeholder="새 비밀번호를 다시 입력하세요"
+              class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div class="flex gap-3 pt-6">
+            <button
+              @click="showPasswordChangeModal = false"
+              class="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+            >
+              취소
+            </button>
+            <button
+              @click="savePassword"
+              :disabled="loading"
+              class="flex-1 px-6 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
+            >
+              변경
             </button>
           </div>
         </div>

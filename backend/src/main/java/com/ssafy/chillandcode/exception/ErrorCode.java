@@ -43,7 +43,28 @@ public enum ErrorCode {
     OAUTH_USER_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "OAuth 사용자 생성에 실패했습니다."),
     OAUTH_PROVIDER_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth 제공자입니다."),
     
-    //
+    /* =========================
+     * 비밀번호 변경
+     * ========================= */
+
+    // 🔹 인증(Authentication)
+    INVALID_CURRENT_PASSWORD(HttpStatus.UNAUTHORIZED, "현재 비밀번호가 일치하지 않습니다."),
+
+    // 🔹 인가(Authorization)
+    OAUTH_USER_PASSWORD_NOT_ALLOWED(HttpStatus.FORBIDDEN, "OAuth 사용자는 비밀번호를 변경할 수 없습니다."),
+
+    // 🔹 입력값 검증 (Validation)
+    INVALID_NEW_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호는 8자 이상이며 공백이 없어야 합니다."),
+
+    // 🔹 서버 오류
+    PASSWORD_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "비밀번호 변경에 실패했습니다."),
+
+    
+    // 🔹 파일 업로드 관련
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "허용되지 않은 파일 형식입니다."),
+    FILE_TOO_LARGE(HttpStatus.BAD_REQUEST, "파일 용량이 너무 큽니다."),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+    
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
 	USER_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "회원 정보 수정에 실패했습니다."),
 	USER_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "회원 탈퇴 처리에 실패했습니다.");

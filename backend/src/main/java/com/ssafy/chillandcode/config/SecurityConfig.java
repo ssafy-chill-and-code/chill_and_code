@@ -53,6 +53,9 @@ public class SecurityConfig {
 							
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 						
+						//파일 조회
+						.requestMatchers("/uploads/**").permitAll()
+						
 						// OAuth2
 						.requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 						

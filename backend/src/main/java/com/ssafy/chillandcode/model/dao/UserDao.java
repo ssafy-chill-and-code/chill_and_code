@@ -19,7 +19,10 @@ public interface UserDao {
 
 	// 회원 정보 수정
 	int updateUser(UserUpdateRequest req);
-
+	
+	// 비밀번호 수정
+	int updatePassword(@Param("userId") Long userId, @Param("password") String password);
+	
 	// 회원 정보 삭제(탈퇴)
 	int softDelete(Long userId);
 

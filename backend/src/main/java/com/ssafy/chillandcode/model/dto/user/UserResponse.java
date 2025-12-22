@@ -1,21 +1,35 @@
 package com.ssafy.chillandcode.model.dto.user;
 
-public class UserUpdateRequest {
+public class UserResponse {
 	private Long userId;
+	private String email;
 	private String nickname;
 	private String region;
 	private String profileImageUrl;
 
-	public UserUpdateRequest() {
+	public UserResponse() {
 
 	}
 
-	public UserUpdateRequest(Long userId, String nickname, String region, String profileImageUrl) {
+	public UserResponse(Long userId, String email, String nickname, String region, String profileImageUrl) {
 		super();
 		this.userId = userId;
+		this.email = email;
 		this.nickname = nickname;
 		this.region = region;
 		this.profileImageUrl = profileImageUrl;
+	}
+	
+	
+	public static UserResponse from(User user) {
+		UserResponse res = new UserResponse();
+		res.userId = user.getUserId();
+		res.email = user.getEmail();
+		res.nickname = user.getNickname();
+		res.region = user.getRegion();
+		res.profileImageUrl = user.getProfileImageUrl();
+		
+		return res;
 	}
 
 	public Long getUserId() {
@@ -24,6 +38,14 @@ public class UserUpdateRequest {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getNickname() {
@@ -42,17 +64,17 @@ public class UserUpdateRequest {
 		this.region = region;
 	}
 
-	public String getProfileImageUrl() {
+	public String getprofileImageUrl() {
 		return profileImageUrl;
 	}
 
-	public void setProfileImageUrl(String profileImageUrl) {
+	public void setprofileImageUrl(String profileImageUrl) {
 		this.profileImageUrl = profileImageUrl;
 	}
 
 	@Override
 	public String toString() {
-		return "UserUpdateRequest [userId=" + userId + ", nickname=" + nickname + ", region=" + region
+		return "UserResponse [userId=" + userId + ", email=" + email + ", nickname=" + nickname + ", region=" + region
 				+ ", profileImageUrl=" + profileImageUrl + "]";
 	}
 

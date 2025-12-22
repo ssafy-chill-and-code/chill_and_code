@@ -10,6 +10,7 @@ public class User {
 	private String password; // 로그인 비밀번호
 	private String nickname; // 서비스 내 표시 이름
 	private String region; // 사용자 설정 지역
+	private String profileImageUrl;
 	private String createdAt; // 가입 일자
 	private int isDeleted; // 회원 탈퇴 여부 (0=정상, 1=탈퇴)
 	private String deletedAt; // 탈퇴 처리 시각
@@ -19,14 +20,15 @@ public class User {
 	public User() {
 	}
 
-	public User(Long userId, String email, String password, String nickname, String region, String createdAt,
-			int isDeleted, String deletedAt, String provider, String providerId) {
+	public User(Long userId, String email, String password, String nickname, String region, String profileImageUrl,
+			String createdAt, int isDeleted, String deletedAt, String provider, String providerId) {
 		super();
 		this.userId = userId;
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.region = region;
+		this.profileImageUrl = profileImageUrl;
 		this.createdAt = createdAt;
 		this.isDeleted = isDeleted;
 		this.deletedAt = deletedAt;
@@ -74,6 +76,14 @@ public class User {
 		this.region = region;
 	}
 
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public void setProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
+
 	public String getCreatedAt() {
 		return createdAt;
 	}
@@ -117,8 +127,9 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", email=" + email + ", password=" + password + ", nickname=" + nickname
-				+ ", region=" + region + ", createdAt=" + createdAt + ", isDeleted=" + isDeleted + ", deletedAt="
-				+ deletedAt + ", provider=" + provider + ", providerId=" + providerId + "]";
+				+ ", region=" + region + ", profileImageUrl=" + profileImageUrl + ", createdAt=" + createdAt
+				+ ", isDeleted=" + isDeleted + ", deletedAt=" + deletedAt + ", provider=" + provider + ", providerId="
+				+ providerId + "]";
 	}
 
 }
