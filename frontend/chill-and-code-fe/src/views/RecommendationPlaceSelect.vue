@@ -106,7 +106,10 @@
         <section class="form-section">
           <div class="section-header">
             <span class="section-icon">📍</span>
-            <h3 class="section-title">선호 지역 <span class="optional">(선택)</span></h3>
+            <h3 class="section-title">선호 지역 <span class="optional">(최대 3개 선택)</span></h3>
+          </div>
+          <div class="region-selection-info">
+            <span class="selection-count">{{ selectedRegions.length }} / 3 선택됨</span>
           </div>
           <div class="region-tags">
             <button 
@@ -114,7 +117,8 @@
               :key="region" 
               type="button" 
               class="region-tag" 
-              :class="{ 'active': selectedRegions.includes(region) }"
+              :class="{ 'active': selectedRegions.includes(region), 'disabled': !selectedRegions.includes(region) && selectedRegions.length >= 3 }"
+              :disabled="!selectedRegions.includes(region) && selectedRegions.length >= 3"
               @click="toggleRegion(region)"
             >
               {{ region }}
@@ -202,9 +206,13 @@ function selectStyle(style) {
 function toggleRegion(region) {
   const index = selectedRegions.value.indexOf(region)
   if (index > -1) {
+    // 이미 선택된 지역이면 제거
     selectedRegions.value.splice(index, 1)
   } else {
-    selectedRegions.value.push(region)
+    // 최대 3개까지만 선택 가능
+    if (selectedRegions.value.length < 3) {
+      selectedRegions.value.push(region)
+    }
   }
 }
 
@@ -513,6 +521,27 @@ function goBack() {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.region-tag.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.region-selection-info {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.selection-count {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  color: #667eea;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #667eea;
 }
 
 /* Error Alert */

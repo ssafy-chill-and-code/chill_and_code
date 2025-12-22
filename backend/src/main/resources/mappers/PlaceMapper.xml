@@ -20,8 +20,15 @@
         sido,
         img_url         AS imageUrl
     FROM place
-    WHERE sido = #{sido}
+    <where>
+      <if test="sido != null and sido != ''">
+        AND sido IN
+        <foreach collection="sidoList" item="region" open="(" separator="," close=")">
+          #{region}
+        </foreach>
+      </if>
       AND price_level BETWEEN #{minPriceLevel} AND #{maxPriceLevel}
+    </where>
 </select>
 
 

@@ -33,6 +33,7 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 
     /**
      * 점수 계산/정렬은 내부에서, 표현(태그/이유)은 LLM에 위임해 카드 리스트를 생성한다.
+     * 다중 지역 선택 시 지역별로 균등하게 분배하여 추천한다.
      */
     @Override
     public List<PlaceRecommendCard> recommendCards(String style, String budget, String region, String transport) {
@@ -50,21 +51,73 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 			maxPrice = 5;
 		}
 
-        // 2) DB 조회 (Projection)
-        List<PlaceFeatureView> views = placeRepository.findByRegionAndBudget(region, minPrice, maxPrice);
+        // 2) region 파싱 (콤마로 구분된 지역 리스트)
+        List<String> selectedRegions = new ArrayList<>();
+        if (region != null && !region.trim().isEmpty()) {
+            for (String r : region.split(",")) {
+                String trimmed = r.trim();
+                if (!trimmed.isEmpty()) {
+                    selectedRegions.add(trimmed);
+                }
+            }
+        }
 
-        // 3) 가중치
+        // 3) DB 조회 (Projection) - 다중 지역 지원
+        List<PlaceFeatureView> views = placeRepository.findByRegionAndBudget(
+            region, 
+            selectedRegions.isEmpty() ? null : selectedRegions, 
+            minPrice, 
+            maxPrice
+        );
+
+        // 4) 가중치
         WeightStrategy weight = StyleWeightStrategy.byStyle(style);
 
-        // 4) 점수 계산 + 정렬
-        List<ScoredView> scored = views.stream()
-                .map(v -> new ScoredView(v, toFeature(v), weight))
-                .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
-                .collect(Collectors.toList());
+        // 5) 지역별 균등 분배 로직
+        List<ScoredView> finalSelection;
+        
+        if (selectedRegions.isEmpty() || selectedRegions.size() == 1) {
+            // 지역 선택 없음 또는 1개 선택: 기존 로직 (전체에서 상위 6개)
+            finalSelection = views.stream()
+                    .map(v -> new ScoredView(v, toFeature(v), weight))
+                    .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
+                    .limit(6)
+                    .collect(Collectors.toList());
+        } else {
+            // 2개 이상 선택: 지역별로 균등 분배
+            int perRegion = 6 / selectedRegions.size(); // 기본 할당량
+            int remainder = 6 % selectedRegions.size();  // 나머지
+            
+            // 지역별로 그룹핑하고 점수 계산
+            Map<String, List<ScoredView>> byRegion = views.stream()
+                    .map(v -> new ScoredView(v, toFeature(v), weight))
+                    .collect(Collectors.groupingBy(sv -> sv.view().getSido()));
+            
+            finalSelection = new ArrayList<>();
+            
+            // 각 지역에서 균등하게 선택
+            for (int i = 0; i < selectedRegions.size(); i++) {
+                String regionName = selectedRegions.get(i);
+                List<ScoredView> regionViews = byRegion.getOrDefault(regionName, new ArrayList<>());
+                
+                // 이 지역에서 가져올 개수 (첫 remainder개 지역은 +1)
+                int takeCount = perRegion + (i < remainder ? 1 : 0);
+                
+                // 해당 지역에서 점수 순으로 takeCount개 선택
+                List<ScoredView> selected = regionViews.stream()
+                        .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
+                        .limit(takeCount)
+                        .collect(Collectors.toList());
+                
+                finalSelection.addAll(selected);
+            }
+            
+            // 최종 정렬 (점수 순)
+            finalSelection.sort(Comparator.comparingDouble(ScoredView::score).reversed());
+        }
 
-        // 5) 상위 K개 LLM 전달 (UI에 최대 6개만 표시)
-        int K = Math.min(6, scored.size());
-        List<LlmPlaceInput> inputs = scored.stream().limit(K).map(sv ->
+        // 6) LLM 전달
+        List<LlmPlaceInput> inputs = finalSelection.stream().map(sv ->
                 new LlmPlaceInput(
                         sv.view().getPlaceId(),
                         sv.view().getName(),
@@ -78,8 +131,8 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
         // llm-service 호출 → placeId별 tags/reasonText 매핑 결과 수신
         Map<Long, LlmResult> llmResultMap = llmClient.request(style, budget, transport, inputs);
 
-        // 6) 카드 변환 (LLM 결과 있으면 반영, 없으면 로컬 규칙)
-        return scored.stream()
+        // 7) 카드 변환 (LLM 결과 있으면 반영, 없으면 로컬 규칙)
+        return finalSelection.stream()
                 .map(sv -> toCard(sv.view(), sv.score(), style, budget, transport, llmResultMap))
                 .collect(Collectors.toList());
     }

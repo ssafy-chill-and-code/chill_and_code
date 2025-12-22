@@ -13,6 +13,7 @@ public interface PlaceRepository {
 
 	List<PlaceFeatureView> findByRegionAndBudget(
 			@Param("sido") String sido,
+			@Param("sidoList") List<String> sidoList,
 			@Param("minPriceLevel") int minPriceLevel,
 			@Param("maxPriceLevel") int maxPriceLevel
 	);
