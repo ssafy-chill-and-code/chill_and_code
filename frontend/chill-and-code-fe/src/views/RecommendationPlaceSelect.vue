@@ -113,17 +113,35 @@
           <div class="section-header">
             <h3 class="section-title">선호 지역 <span class="optional">(선택)</span></h3>
           </div>
-          <div class="region-tags">
-            <button 
-              v-for="region in regions" 
-              :key="region" 
-              type="button" 
-              class="region-tag" 
-              :class="{ 'active': selectedRegions.includes(region) }"
-              @click="toggleRegion(region)"
-            >
-              {{ region }}
-            </button>
+          <div class="region-map-container">
+            <div class="region-selected-tags" v-if="selectedRegions.length > 0">
+              <span 
+                v-for="region in selectedRegions" 
+                :key="region" 
+                class="selected-tag"
+              >
+                {{ region }}
+                <button 
+                  type="button" 
+                  class="remove-tag"
+                  @click="toggleRegion(region)"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+            <div class="map-wrapper">
+              <div ref="svgContainer" class="korea-map-container"></div>
+              
+              <!-- 호버 시 지역명 표시 -->
+              <div 
+                v-if="hoveredRegion" 
+                class="region-tooltip"
+                :style="{ left: tooltipPosition.x + 'px', top: tooltipPosition.y + 'px' }"
+              >
+                {{ hoveredRegion }}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -158,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
 import { useRecommendationStore } from '@/stores/recommendation'
@@ -171,7 +189,207 @@ const selectedStyle = ref('')
 const budget = ref(150)
 const transport = ref('')
 const selectedRegions = ref([])
+const hoveredRegion = ref(null)
+const tooltipPosition = ref({ x: 0, y: 0 })
 const errorMessage = ref('')
+
+// 지역 ID를 한국어로 매핑
+const regionIdToName = {
+  'KR-11': '서울특별시',
+  'KR-26': '부산광역시',
+  'KR-27': '대구광역시',
+  'KR-28': '인천광역시',
+  'KR-29': '광주광역시',
+  'KR-30': '대전광역시',
+  'KR-31': '울산광역시',
+  'KR-41': '경기도',
+  'KR-42': '강원도',
+  'KR-43': '충청북도',
+  'KR-44': '충청남도',
+  'KR-45': '전라북도',
+  'KR-46': '전라남도',
+  'KR-47': '경상북도',
+  'KR-48': '경상남도',
+  'KR-49': '제주특별자치도',
+  'KR-50': '세종특별자치시'
+}
+
+// 한국어를 표시용 짧은 이름으로 변환
+const getDisplayName = (fullName) => {
+  const shortNames = {
+    '서울특별시': '서울',
+    '부산광역시': '부산',
+    '대구광역시': '대구',
+    '인천광역시': '인천',
+    '광주광역시': '광주',
+    '대전광역시': '대전',
+    '울산광역시': '울산',
+    '경기도': '경기',
+    '강원도': '강원',
+    '강원특별자치도': '강원',
+    '충청북도': '충북',
+    '충청남도': '충남',
+    '전라북도': '전북',
+    '전북특별자치도': '전북',
+    '전라남도': '전남',
+    '경상북도': '경북',
+    '경상남도': '경남',
+    '제주특별자치도': '제주',
+    '세종특별자치시': '세종'
+  }
+  return shortNames[fullName] || fullName
+}
+
+// SVG path 클릭 핸들러
+const handleRegionClick = (event, regionId) => {
+  const regionName = regionIdToName[regionId]
+  if (regionName) {
+    toggleRegion(regionName)
+  }
+}
+
+// SVG path 호버 핸들러
+const handleRegionHover = (event, regionId, isHover) => {
+  if (isHover) {
+    const regionName = regionIdToName[regionId]
+    hoveredRegion.value = getDisplayName(regionName)
+    
+    // 마우스 위치에 따라 툴팁 위치 설정
+    if (event) {
+      const mapWrapper = event.currentTarget.closest('.map-wrapper')
+      if (mapWrapper) {
+        const rect = mapWrapper.getBoundingClientRect()
+        tooltipPosition.value = {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top - 40
+        }
+      }
+    }
+  } else {
+    hoveredRegion.value = null
+  }
+}
+
+// SVG 컨테이너 ref
+const svgContainer = ref(null)
+
+// SVG 로드 및 이벤트 연결
+onMounted(async () => {
+  try {
+    const response = await fetch('/southKoreaHigh.svg')
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch SVG: ${response.status} ${response.statusText}`)
+    }
+    
+    const svgText = await response.text()
+    
+    if (!svgContainer.value) {
+      console.error('SVG container element not found')
+      return
+    }
+    
+    svgContainer.value.innerHTML = svgText
+    
+    // SVG 요소 찾기
+    const svgElement = svgContainer.value.querySelector('svg')
+    if (!svgElement) {
+      console.error('SVG element not found')
+      return
+    }
+    
+    // viewBox가 없으면 경로들의 bounding box를 계산해서 설정
+    if (!svgElement.getAttribute('viewBox')) {
+      const paths = svgElement.querySelectorAll('path')
+      if (paths.length > 0) {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        
+        paths.forEach(path => {
+          const bbox = path.getBBox()
+          minX = Math.min(minX, bbox.x)
+          minY = Math.min(minY, bbox.y)
+          maxX = Math.max(maxX, bbox.x + bbox.width)
+          maxY = Math.max(maxY, bbox.y + bbox.height)
+        })
+        
+        // 여백 추가
+        const padding = 20
+        svgElement.setAttribute('viewBox', `${minX - padding} ${minY - padding} ${maxX - minX + padding * 2} ${maxY - minY + padding * 2}`)
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet')
+        console.log(`Set viewBox: ${svgElement.getAttribute('viewBox')}`)
+      } else {
+        // 경로가 없으면 기본값 설정
+        svgElement.setAttribute('viewBox', '0 0 500 700')
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet')
+      }
+    }
+    
+    // 모든 path 요소 찾기
+    const paths = svgContainer.value.querySelectorAll('path[id^="KR-"]')
+    
+    if (paths.length === 0) {
+      console.error('No region paths found in SVG')
+      return
+    }
+    
+    console.log(`Loaded ${paths.length} regions from SVG`)
+    
+    paths.forEach(path => {
+      const regionId = path.id
+      
+      if (!regionId) {
+        console.warn('Path element without ID found')
+        return
+      }
+      
+      // 클릭 이벤트
+      path.addEventListener('click', (e) => handleRegionClick(e, regionId))
+      
+      // 호버 이벤트
+      path.addEventListener('mouseenter', (e) => handleRegionHover(e, regionId, true))
+      path.addEventListener('mouseleave', (e) => handleRegionHover(e, regionId, false))
+      path.addEventListener('mousemove', (e) => {
+        if (hoveredRegion.value) {
+          const mapWrapper = e.currentTarget.closest('.map-wrapper')
+          if (mapWrapper) {
+            const rect = mapWrapper.getBoundingClientRect()
+            tooltipPosition.value = {
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top - 40
+            }
+          }
+        }
+      })
+      
+      // 포인터 스타일 개선
+      path.style.pointerEvents = 'all'
+      
+      // 선택 상태에 따라 클래스 추가
+      const regionName = regionIdToName[regionId]
+      if (regionName && selectedRegions.value.includes(regionName)) {
+        path.classList.add('region-active')
+      }
+    })
+  } catch (error) {
+    console.error('Failed to load Korea map:', error)
+    errorMessage.value = '지도를 불러오는데 실패했습니다. 페이지를 새로고침해주세요.'
+  }
+})
+
+// 선택 상태 변경 시 SVG 업데이트
+watch(selectedRegions, () => {
+  if (svgContainer.value) {
+    const paths = svgContainer.value.querySelectorAll('path[id^="KR-"]')
+    paths.forEach(path => {
+      const regionName = regionIdToName[path.id]
+      if (regionName && selectedRegions.value.includes(regionName)) {
+        path.classList.add('region-active')
+      } else {
+        path.classList.remove('region-active')
+      }
+    })
+  }
+})
 
 const regions = [
   '경기도',
@@ -592,37 +810,175 @@ function goBack() {
   box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
 }
 
-/* Region Tags */
-.region-tags {
+/* Region Map */
+.region-map-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.region-selected-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #e0f2fe;
 }
 
-.region-tag {
+.selected-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+}
+
+.remove-tag {
   appearance: none;
-  border: 1px solid #d1d5db;
-  background: white;
-  color: #6b7280;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.remove-tag:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.map-wrapper {
+  position: relative;
+  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.korea-map-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.korea-map-container svg {
+  max-width: 600px;
+  min-width: 300px;
+  width: 100%;
+  height: auto;
+  min-height: 400px;
+  display: block;
+}
+
+.korea-map-container path {
+  fill: #f1f5f9;
+  stroke: #cbd5e1;
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  pointer-events: all;
+}
+
+/* 호버 시 선택된 것처럼 보이게 */
+.korea-map-container path:hover {
+  fill: #0ea5e9;
+  stroke: #0284c7;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 2px 8px rgba(14, 165, 233, 0.4));
+}
+
+/* 클릭 시 피드백 */
+.korea-map-container path:active {
+  fill: #0284c7;
+  stroke: #0369a1;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 1px 4px rgba(14, 165, 233, 0.5));
+}
+
+/* 선택된 지역 - 호버와 비슷하지만 더 진하게 */
+.korea-map-container path.region-active {
+  fill: #0284c7 !important;
+  stroke: #0369a1 !important;
+  stroke-width: 3 !important;
+  filter: drop-shadow(0 4px 12px rgba(14, 165, 233, 0.5)) !important;
+}
+
+/* 선택된 지역에 호버 시 - 더 진하게 */
+.korea-map-container path.region-active:hover {
+  fill: #0369a1 !important;
+  stroke: #075985 !important;
+  stroke-width: 3.5 !important;
+  filter: drop-shadow(0 6px 16px rgba(14, 165, 233, 0.6)) !important;
+}
+
+.region-tooltip {
+  position: absolute;
+  transform: translateX(-50%) translateY(-100%);
+  margin-top: -8px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+  z-index: 100;
+  animation: tooltipFadeIn 0.15s ease-out;
+  white-space: nowrap;
+  border: none;
 }
 
-.region-tag:hover {
-  border-color: #0ea5e9;
-  color: #0ea5e9;
-  background: #f0f9ff;
+.region-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #0284c7;
 }
 
-.region-tag.active {
-  border-color: #0ea5e9;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  color: white;
-  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%) translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* Error Alert */
@@ -740,6 +1096,14 @@ function goBack() {
   
   .budget-amount {
     font-size: 2rem;
+  }
+  
+  .map-wrapper {
+    padding: 1rem;
+  }
+  
+  .korea-map-container svg {
+    max-width: 320px;
   }
   
   .btn-submit {
