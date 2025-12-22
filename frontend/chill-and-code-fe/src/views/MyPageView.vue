@@ -729,9 +729,9 @@ onMounted(async () => {
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       @click.self="showProfileEditModal = false"
     >
-      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-10">
         <h3 class="text-3xl font-bold text-gray-900 mb-8">프로필 수정</h3>
-        <div class="space-y-5">
+        <div class="space-y-6">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-3">이메일 (변경 불가)</label>
             <input 
@@ -760,37 +760,38 @@ onMounted(async () => {
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-3">프로필 이미지</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-4">프로필 이미지</label>
             
-            <!-- 파일 선택 및 미리보기 -->
-            <div class="mb-4">
-              <div class="flex flex-col sm:flex-row gap-4 items-start">
-                <!-- 미리보기 -->
-                <div class="flex-shrink-0">
-                  <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
-                    <img
-                      v-if="previewUrl"
-                      :src="previewUrl"
-                      alt="미리보기"
-                      class="w-full h-full object-cover"
-                    />
-                    <img
-                      v-else-if="profileForm.profileImageUrl"
-                      :src="profileForm.profileImageUrl"
-                      alt="현재 프로필 이미지"
-                      class="w-full h-full object-cover"
-                    />
-                    <div
-                      v-else
-                      class="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-white text-4xl font-bold"
-                    >
-                      {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
-                    </div>
+            <!-- 프로필 이미지 섹션: 좌측 이미지, 우측 상단 버튼, 우측 하단 URL 입력 -->
+            <div class="flex gap-6 items-start">
+              <!-- 좌측: 동그라미 이미지 -->
+              <div class="flex-shrink-0">
+                <div class="w-36 h-36 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center shadow-md">
+                  <img
+                    v-if="previewUrl"
+                    :src="previewUrl"
+                    alt="미리보기"
+                    class="w-full h-full object-cover"
+                  />
+                  <img
+                    v-else-if="profileForm.profileImageUrl"
+                    :src="profileForm.profileImageUrl"
+                    alt="현재 프로필 이미지"
+                    class="w-full h-full object-cover"
+                  />
+                  <div
+                    v-else
+                    class="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-white text-5xl font-bold"
+                  >
+                    {{ user?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
                   </div>
                 </div>
-                
-                <!-- 파일 선택 버튼 -->
-                <div class="flex-1 space-y-3">
+              </div>
+              
+              <!-- 우측: 상단 버튼, 하단 URL 입력 -->
+              <div class="flex-1 flex flex-col gap-4">
+                <!-- 우측 상단: 파일 선택 및 업로드 버튼 -->
+                <div class="flex flex-col gap-3">
                   <input
                     ref="fileInputRef"
                     type="file"
@@ -798,53 +799,55 @@ onMounted(async () => {
                     @change="handleFileSelect"
                     class="hidden"
                   />
-                  <button
-                    type="button"
-                    @click="fileInputRef?.click()"
-                    :disabled="uploading"
-                    class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
-                  >
-                    {{ uploading ? '업로드 중...' : '파일 선택' }}
-                  </button>
-                  <button
-                    v-if="selectedFile"
-                    type="button"
-                    @click="uploadFile"
-                    :disabled="uploading"
-                    class="w-full sm:w-auto px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
-                  >
-                    {{ uploading ? '업로드 중...' : '업로드' }}
-                  </button>
+                  <div class="flex gap-3">
+                    <button
+                      type="button"
+                      @click="fileInputRef?.click()"
+                      :disabled="uploading"
+                      class="flex-1 px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 hover:shadow-md transition-all font-medium text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      {{ uploading ? '업로드 중...' : '파일 선택' }}
+                    </button>
+                    <button
+                      v-if="selectedFile"
+                      type="button"
+                      @click="uploadFile"
+                      :disabled="uploading"
+                      class="flex-1 px-5 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 hover:shadow-md transition-all font-medium text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      {{ uploading ? '업로드 중...' : '업로드' }}
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- 우측 하단: URL 직접 입력 -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-2">또는 이미지 URL 직접 입력</label>
+                  <input 
+                    v-model="profileForm.profileImageUrl" 
+                    type="url" 
+                    placeholder="https://i.pravatar.cc/150"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all text-sm"
+                  />
+                  <p class="text-xs text-gray-500 mt-2">
+                    로컬 파일을 업로드하거나 이미지 URL을 직접 입력할 수 있습니다.<br>
+                    비워두면 기본 아바타가 표시됩니다.
+                  </p>
                 </div>
               </div>
             </div>
-            
-            <!-- URL 입력 필드 (기존 기능 유지) -->
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-2">또는 이미지 URL 직접 입력</label>
-              <input 
-                v-model="profileForm.profileImageUrl" 
-                type="url" 
-                placeholder="https://i.pravatar.cc/150"
-                class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
-              />
-              <p class="text-xs text-gray-500 mt-2">
-                로컬 파일을 업로드하거나 이미지 URL을 직접 입력할 수 있습니다.<br>
-                비워두면 기본 아바타가 표시됩니다.
-              </p>
-            </div>
           </div>
-          <div class="flex gap-3 pt-6">
+          <div class="flex gap-3 pt-4">
             <button
               @click="showProfileEditModal = false"
-              class="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+              class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
             >
               취소
             </button>
             <button
               @click="saveProfile"
               :disabled="loading"
-              class="flex-1 px-6 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
+              class="flex-1 px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold disabled:bg-gray-300"
             >
               저장
             </button>
