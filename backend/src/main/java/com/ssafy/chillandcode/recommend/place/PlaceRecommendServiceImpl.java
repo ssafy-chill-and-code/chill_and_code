@@ -41,16 +41,16 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
     @Override
     public List<PlaceRecommendCard> recommendCards(String style, String budget, String region, String transport) {
 
-		// 1) budget → priceLevel
+		// 1) budget → priceLevel (명확한 구분)
 		int minPrice, maxPrice;
 		if ("LOW".equalsIgnoreCase(budget)) {
 			minPrice = 1;
 			maxPrice = 2;
 		} else if ("MID".equalsIgnoreCase(budget)) {
-			minPrice = 2;
+			minPrice = 3;
 			maxPrice = 3;
 		} else {
-			minPrice = 3;
+			minPrice = 4;
 			maxPrice = 5;
 		}
 
@@ -76,72 +76,26 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
         // 4) 가중치
         WeightStrategy weight = StyleWeightStrategy.byStyle(style);
 
-        // 5) 지역별 균등 분배 로직
-        List<ScoredView> finalSelection;
-        
         log.info("🔍 장소 추천 시작 - style: {}, budget: {}, region: {}", style, budget, region);
         log.info("📊 DB에서 조회된 장소 수: {}", views.size());
-        
-        if (selectedRegions.isEmpty() || selectedRegions.size() == 1) {
-            // 지역 선택 없음 또는 1개 선택: 기존 로직 (전체에서 상위 6개)
-            finalSelection = views.stream()
-                    .map(v -> new ScoredView(v, toFeature(v), weight))
-                    .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
-                    .limit(6)
-                    .collect(Collectors.toList());
-                    
-            log.info("✅ 선택된 장소 (단일/전체 지역):");
-            for (int i = 0; i < finalSelection.size(); i++) {
-                ScoredView sv = finalSelection.get(i);
-                log.info("  {}. {} ({}) [{}] - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
-                    i+1, sv.view().getName(), sv.view().getSido(), sv.view().getPlaceType(),
-                    String.format("%.2f", sv.score()),
-                    sv.view().getWorkspaceCount(), 
-                    sv.view().getNatureScore(), 
-                    sv.view().getActivityScore());
-            }
-        } else {
-            // 2개 이상 선택: 지역별로 균등 분배
-            int perRegion = 6 / selectedRegions.size(); // 기본 할당량
-            int remainder = 6 % selectedRegions.size();  // 나머지
-            
-            // 지역별로 그룹핑하고 점수 계산
-            Map<String, List<ScoredView>> byRegion = views.stream()
-                    .map(v -> new ScoredView(v, toFeature(v), weight))
-                    .collect(Collectors.groupingBy(sv -> sv.view().getSido()));
-            
-            finalSelection = new ArrayList<>();
-            
-            // 각 지역에서 균등하게 선택
-            for (int i = 0; i < selectedRegions.size(); i++) {
-                String regionName = selectedRegions.get(i);
-                List<ScoredView> regionViews = byRegion.getOrDefault(regionName, new ArrayList<>());
-                
-                // 이 지역에서 가져올 개수 (첫 remainder개 지역은 +1)
-                int takeCount = perRegion + (i < remainder ? 1 : 0);
-                
-                // 해당 지역에서 점수 순으로 takeCount개 선택
-                List<ScoredView> selected = regionViews.stream()
-                        .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
-                        .limit(takeCount)
-                        .collect(Collectors.toList());
-                
-                finalSelection.addAll(selected);
-            }
-            
-            // 최종 정렬 (점수 순)
-            finalSelection.sort(Comparator.comparingDouble(ScoredView::score).reversed());
-            
-            log.info("✅ 선택된 장소 (다중 지역 균등 분배):");
-            for (int i = 0; i < finalSelection.size(); i++) {
-                ScoredView sv = finalSelection.get(i);
-                log.info("  {}. {} ({}) [{}] - 점수: {} [workspace:{}, nature:{}, activity:{}]", 
-                    i+1, sv.view().getName(), sv.view().getSido(), sv.view().getPlaceType(),
-                    String.format("%.2f", sv.score()),
-                    sv.view().getWorkspaceCount(), 
-                    sv.view().getNatureScore(), 
-                    sv.view().getActivityScore());
-            }
+
+        // 5) 점수 계산 및 상위 6개 선택 (예산 범위 내에서만!)
+        List<ScoredView> finalSelection = views.stream()
+                .map(v -> new ScoredView(v, toFeature(v), weight))
+                .sorted(Comparator.comparingDouble(ScoredView::score).reversed())
+                .limit(6)
+                .collect(Collectors.toList());
+
+        log.info("✅ 선택된 장소 (예산 범위: {}-{}, 점수 순 상위 6개):", minPrice, maxPrice);
+        for (int i = 0; i < finalSelection.size(); i++) {
+            ScoredView sv = finalSelection.get(i);
+            log.info("  {}. {} ({}) [{}] - 점수: {}, price_level: {} [workspace:{}, nature:{}, activity:{}]", 
+                i+1, sv.view().getName(), sv.view().getSido(), sv.view().getPlaceType(),
+                String.format("%.2f", sv.score()),
+                sv.view().getPriceLevel(),
+                sv.view().getWorkspaceCount(), 
+                sv.view().getNatureScore(), 
+                sv.view().getActivityScore());
         }
 
         // 6) LLM 전달
