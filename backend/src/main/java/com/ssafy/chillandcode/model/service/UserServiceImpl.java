@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
 			throw new ApiException(ErrorCode.USER_NOT_FOUND);
 		}
 		
-		//OAuth 사용자 차단
+		//OAuth 사용자 차단 (OAuth 사용자는 외부 인증을 사용하므로 내부 비밀번호 변경 기능 제공X)
 		if(user.getProvider() != null) {
 			throw new ApiException(ErrorCode.OAUTH_USER_PASSWORD_NOT_ALLOWED);
 		}

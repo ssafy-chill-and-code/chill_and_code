@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
+import com.ssafy.chillandcode.exception.ApiException;
+import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dto.user.LoginRequest;
 import com.ssafy.chillandcode.model.dto.user.LoginResponse;
 import com.ssafy.chillandcode.model.dto.user.PasswordChangeRequest;
 import com.ssafy.chillandcode.model.dto.user.User;
+import com.ssafy.chillandcode.model.dto.user.UserResponse;
 import com.ssafy.chillandcode.model.dto.user.UserSignUpRequest;
 import com.ssafy.chillandcode.model.dto.user.UserUpdateRequest;
 import com.ssafy.chillandcode.model.service.RefreshTokenService;
@@ -60,7 +63,9 @@ public class UserController {
 	@Operation(summary = "회원 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.")
     public ResponseEntity<?> getUser(@AuthenticationPrincipal Long userId) {
 
-		User result = userService.selectUser(userId);
+		User user = userService.selectUser(userId);
+		
+		UserResponse result = UserResponse.from(user);
 		
         return ResponseEntity.ok(ApiResponse.success(result));
 	}
