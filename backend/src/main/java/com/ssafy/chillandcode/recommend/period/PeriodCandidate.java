@@ -1,30 +1,28 @@
-package com.ssafy.chillcode.recommend.dto;
+package com.ssafy.chillandcode.recommend.period;
 
 import java.time.LocalDate;
 
-import com.ssafy.chillcode.recommend.period.PeriodCandidate;
-
-public class Period {
+/**
+ * 엔진 내부 도메인 객체*/
+public class PeriodCandidate {
+	
 	LocalDate startDate;
 	LocalDate endDate;
 	int durationDays;
-
-	public Period() {
+	CandidateType type;
+	
+	public PeriodCandidate() {
 
 	}
 
-	public Period(LocalDate startDate, LocalDate endDate, int durationDays) {
+	public PeriodCandidate(LocalDate startDate, LocalDate endDate, int durationDays, CandidateType type) {
 		super();
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.durationDays = durationDays;
+		this.type = type;
 	}
-	
-	public static Period from(PeriodCandidate c) {
-		return new Period(c.getStartDate(), c.getEndDate(), c.getDurationDays());
-	}
-	
-	//getter, setter
+
 	public LocalDate getStartDate() {
 		return startDate;
 	}
@@ -49,9 +47,18 @@ public class Period {
 		this.durationDays = durationDays;
 	}
 
-	@Override
-	public String toString() {
-		return "Period [startDate=" + startDate + ", endDate=" + endDate + ", durationDays=" + durationDays + "]";
+	public CandidateType getType() {
+		return type;
 	}
 
+	public void setType(CandidateType type) {
+		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "PeriodCandidate [startDate=" + startDate + ", endDate=" + endDate + ", durationDays=" + durationDays
+				+ ", type=" + type + "]";
+	}
+	
 }

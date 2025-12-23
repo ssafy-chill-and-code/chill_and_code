@@ -4,6 +4,7 @@ import axios from '@/api/axios'
 export const useScheduleStore = defineStore('schedule', {
   state: () => ({
     schedules: [],
+    summary: null,
     prefilledPlace: null, // 추천 장소에서 넘어온 정보
     prefilledPeriod: null, // 추천받은 기간 정보
   }),
@@ -29,6 +30,13 @@ export const useScheduleStore = defineStore('schedule', {
       }
       const { data } = await axios.get('/schedules', { params })
       this.schedules = data?.data?.schedules || []
+    },
+    async fetchSummary(monthString) {
+      const { data } = await axios.get('/schedules/summary', { 
+        params: { month: monthString } 
+      })
+      this.summary = data?.data || null
+      return this.summary
     },
     async updateSchedule(id, payload) {
       const { data } = await axios.patch(`/schedules/${id}`, payload)

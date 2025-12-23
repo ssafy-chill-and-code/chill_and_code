@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
 import com.ssafy.chillandcode.model.service.RecommendPeriodService;
-import com.ssafy.chillcode.recommend.dto.RecommendPeriodRequest;
-import com.ssafy.chillcode.recommend.dto.RecommendPeriodResponse;
+import com.ssafy.chillandcode.recommend.dto.RecommendPeriodRequest;
+import com.ssafy.chillandcode.recommend.dto.RecommendPeriodResponse;
 
 @RestController
 @RequestMapping("/api/recommend")

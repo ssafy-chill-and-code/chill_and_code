@@ -1,7 +1,7 @@
 package com.ssafy.chillandcode.model.service;
 
-import com.ssafy.chillcode.recommend.dto.RecommendPeriodRequest;
-import com.ssafy.chillcode.recommend.dto.RecommendPeriodResponse;
+import com.ssafy.chillandcode.recommend.dto.RecommendPeriodRequest;
+import com.ssafy.chillandcode.recommend.dto.RecommendPeriodResponse;
 
 public interface RecommendPeriodService {
 	
