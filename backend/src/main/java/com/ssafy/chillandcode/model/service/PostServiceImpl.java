@@ -93,4 +93,10 @@ public class PostServiceImpl implements PostService {
 		return postDao.selectRegionRank(params);
 	}
 
+	// 게시글 총 개수 조회 (검색 조건 포함)
+	@Override
+	public int countAll(Map<String, Object> params) {
+		return postDao.countAll(params);
+	}
+
 }

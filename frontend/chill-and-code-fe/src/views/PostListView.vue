@@ -52,6 +52,13 @@ async function load() {
   })
 }
 
+function goToPage(newPage) {
+  if (newPage < 1 || newPage > postStore.totalPages) return
+  page.value = newPage
+  load()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 function goCreate() {
   router.push({ name: 'post-create' })
 }
@@ -323,6 +330,82 @@ function deriveCategoryForPost(p) {
             <!-- Error State -->
             <div v-if="postStore.error" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-red-700 text-sm">
               {{ postStore.error }}
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div v-if="!postStore.loading && filteredPosts.length > 0 && postStore.totalPages > 1" class="flex items-center justify-center gap-2 mt-8">
+              <!-- 첫 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === 1 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === 1"
+                @click="goToPage(1)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/>
+                </svg>
+              </button>
+
+              <!-- 이전 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === 1 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === 1"
+                @click="goToPage(postStore.currentPage - 1)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+
+              <!-- 페이지 번호들 -->
+              <template v-for="pageNum in Array.from({ length: Math.min(5, postStore.totalPages) }, (_, i) => {
+                const start = Math.max(1, Math.min(postStore.currentPage - 2, postStore.totalPages - 4))
+                return start + i
+              })" :key="pageNum">
+                <button
+                  v-if="pageNum <= postStore.totalPages"
+                  class="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                  :class="pageNum === postStore.currentPage 
+                    ? 'bg-slate-800 text-white shadow-md' 
+                    : 'text-gray-700 hover:bg-gray-100'"
+                  @click="goToPage(pageNum)"
+                >
+                  {{ pageNum }}
+                </button>
+              </template>
+
+              <!-- 다음 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === postStore.totalPages 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === postStore.totalPages"
+                @click="goToPage(postStore.currentPage + 1)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+
+              <!-- 마지막 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === postStore.totalPages 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === postStore.totalPages"
+                @click="goToPage(postStore.totalPages)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m13 17 5-5-5-5"/><path d="m6 17 5-5-5-5"/>
+                </svg>
+              </button>
             </div>
           </div>
         </section>

@@ -59,7 +59,17 @@ public class PostController {
 		params.put("offset", (page - 1) * size);
 		params.put("limit", size);
 
-        return ResponseEntity.ok(ApiResponse.success(Map.of("posts", postService.selectAll(params))));
+		List<Post> posts = postService.selectAll(params);
+		int total = postService.countAll(params);
+		int totalPages = (int) Math.ceil((double) total / size);
+
+        return ResponseEntity.ok(ApiResponse.success(Map.of(
+        		"posts", posts,
+        		"total", total,
+        		"totalPages", totalPages,
+        		"currentPage", page,
+        		"size", size
+        )));
 	}
 
 	// 지역별 게시글 수 랭킹 조회 (windowDays: 최근 N일, limit: 최대 개수)

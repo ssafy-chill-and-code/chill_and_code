@@ -148,4 +148,22 @@
 		WHERE post_id = #{postId}
 	</update>
 
+	<!-- 게시글 총 개수 조회 (검색 조건 포함) -->
+	<select id="countAll" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM post p
+		<where>
+			<!-- 지역 필터 -->
+			<if test="region != null and region != ''">
+				p.region = #{region}
+			</if>
+
+			<!-- 검색(제목+내용) -->
+			<if test="search != null and search != ''">
+				AND (p.title LIKE CONCAT('%', #{search}, '%')
+				OR p.content LIKE CONCAT('%', #{search}, '%'))
+			</if>
+		</where>
+	</select>
+
 </mapper>

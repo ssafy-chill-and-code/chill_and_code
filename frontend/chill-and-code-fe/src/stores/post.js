@@ -9,6 +9,10 @@ export const usePostStore = defineStore('post', () => {
   const regionRanks = ref([])
   const loading = ref(false)
   const error = ref('')
+  const total = ref(0)
+  const totalPages = ref(0)
+  const currentPage = ref(1)
+  const pageSize = ref(10)
 
   async function fetchPostList(params = {}) {
     loading.value = true
@@ -16,6 +20,10 @@ export const usePostStore = defineStore('post', () => {
     try {
       const { data } = await api.get('/posts', { params })
       posts.value = data?.data?.posts || []
+      total.value = data?.data?.total || 0
+      totalPages.value = data?.data?.totalPages || 0
+      currentPage.value = data?.data?.currentPage || 1
+      pageSize.value = data?.data?.size || 10
       return posts.value
     } catch (e) {
       error.value = e?.response?.data?.message || e.message
@@ -91,6 +99,10 @@ export const usePostStore = defineStore('post', () => {
     post,
     loading,
     error,
+    total,
+    totalPages,
+    currentPage,
+    pageSize,
     fetchPostList,
     fetchPostDetail,
     fetchMyPosts,

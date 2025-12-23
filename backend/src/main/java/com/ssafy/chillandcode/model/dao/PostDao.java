@@ -55,4 +55,9 @@ public interface PostDao {
 	 */
 	int incrementViewCount(Long postId);
 
+	/**
+	 * 게시글 총 개수 조회 (검색 조건 포함)
+	 */
+	int countAll(Map<String, Object> params);
+
 }

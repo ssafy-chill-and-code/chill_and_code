@@ -45,4 +45,9 @@ public interface PostService {
 	 */
 	List<RegionRank> selectRegionRank(Map<String, Object> params);
 
+	/**
+	 * 게시글 총 개수 조회 (검색 조건 포함)
+	 */
+	int countAll(Map<String, Object> params);
+
 }
