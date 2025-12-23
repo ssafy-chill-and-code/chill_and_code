@@ -1,11 +1,12 @@
 <template>
-  <nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
+  <nav class="fixed top-0 left-0 right-0 bg-white border-b z-50" style="border-color: var(--brand-200);">
     <div class="w-full px-4 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- 좌측: 로고 -->
         <RouterLink 
           to="/" 
-          class="logo-link flex items-center gap-2 text-xl font-bold text-slate-800 hover:text-slate-900 transition-all duration-300"
+          class="logo-link flex items-center gap-2 text-xl font-bold transition-all duration-300"
+          style="color: var(--brand-600);"
         >
           <span class="tracking-tight">Chill & Code</span>
         </RouterLink>
@@ -251,7 +252,7 @@ nav:hover {
   transform: translateY(-1px);
 }
 
-/* 메뉴 링크 밑줄 애니메이션 */
+/* 메뉴 링크 밑줄 애니메이션 - 톤앤톤 적용 */
 .nav-link::after {
   content: '';
   position: absolute;
@@ -259,7 +260,7 @@ nav:hover {
   left: 50%;
   width: 0;
   height: 2px;
-  background: linear-gradient(to right, #1e293b, #334155);
+  background: linear-gradient(to right, var(--brand-500), var(--brand-400));
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }
@@ -270,7 +271,7 @@ nav:hover {
 
 .nav-link.router-link-active::after {
   width: 80%;
-  background: linear-gradient(to right, #334155, #475569);
+  background: linear-gradient(to right, var(--brand-400), var(--brand-300));
 }
 
 /* 프로필 링크 아바타 효과 */

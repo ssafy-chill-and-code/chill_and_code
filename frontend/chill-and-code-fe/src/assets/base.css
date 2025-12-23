@@ -1,5 +1,27 @@
-/* color palette from <https://github.com/vuejs/theme> */
+/* SBAggro 폰트 정의 */
+@font-face {
+  font-family: 'SBAggro';
+  src: url('./fonts/SBAggro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tone-on-Tone Color Palette (Based on #C9D7DE) */
 :root {
+  /* 톤앤톤 브랜드 컬러 */
+  --brand-50: #EEF3F5;
+  --brand-100: #E0E9ED;
+  --brand-200: #C9D7DE;  /* 메인 */
+  --brand-300: #A8BCC6;
+  --brand-400: #8AA2AE;
+  --brand-500: #6B8896;
+  --brand-600: #4D6D7E;
+  --brand-700: #3A5464;
+  --brand-800: #283B4A;
+  --brand-900: #1A2830;
+
+  /* 기본 색상 */
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
@@ -8,30 +30,32 @@
   --vt-c-black-soft: #222222;
   --vt-c-black-mute: #282828;
 
-  --vt-c-indigo: #2c3e50;
+  /* 브랜드 컬러로 교체 */
+  --vt-c-indigo: var(--brand-600);
 
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+  /* 구분선 - 브랜드 컬러 적용 */
+  --vt-c-divider-light-1: rgba(107, 136, 150, 0.29);
+  --vt-c-divider-light-2: rgba(107, 136, 150, 0.12);
+  --vt-c-divider-dark-1: rgba(168, 188, 198, 0.65);
+  --vt-c-divider-dark-2: rgba(168, 188, 198, 0.48);
 
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+  --vt-c-text-light-1: var(--brand-600);
+  --vt-c-text-light-2: var(--brand-400);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 }
 
 /* semantic color variables for this project */
 :root {
-  --color-background: var(--vt-c-white);
-  --color-background-soft: var(--vt-c-white-soft);
-  --color-background-mute: var(--vt-c-white-mute);
+  --color-background: var(--brand-50);
+  --color-background-soft: var(--brand-100);
+  --color-background-mute: var(--brand-200);
 
   --color-border: var(--vt-c-divider-light-2);
   --color-border-hover: var(--vt-c-divider-light-1);
 
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
+  --color-heading: var(--brand-600);
+  --color-text: var(--brand-600);
 
   --section-gap: 160px;
 }
@@ -67,7 +91,7 @@ body {
     background-color 0.5s;
   line-height: 1.6;
   font-family:
-    Inter,
+    'SBAggro',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
