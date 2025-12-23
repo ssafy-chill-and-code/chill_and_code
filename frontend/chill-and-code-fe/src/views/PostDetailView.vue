@@ -21,7 +21,6 @@ const comments = computed(() => commentStore.commentsByPost[postId] || [])
 const hashtags = computed(() => {
   const title = (postStore.post?.title || '').trim()
   const content = (postStore.post?.content || '').trim()
-  const region = (postStore.post?.region || '').trim()
 
   // 제목과 내용에서 사용자가 직접 작성한 #태그만 추출
   const titleTags = title.match(/#[^\s#]+/g) || []
@@ -29,9 +28,6 @@ const hashtags = computed(() => {
   const allTags = [...titleTags, ...contentTags]
   
   const tagSet = new Set(allTags)
-
-  // 지역 태그 추가
-  if (region) tagSet.add(`#${region}`)
   
   return Array.from(tagSet)
 })

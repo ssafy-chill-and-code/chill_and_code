@@ -73,7 +73,6 @@ onMounted(() => {
 function extractTags(p) {
   const title = (p?.title || '').trim()
   const content = (p?.content || '').trim()
-  const region = (p?.region || '').trim()
   
   // 제목과 내용에서 사용자가 직접 작성한 #태그만 추출
   const titleTags = title.match(/#[^\s#]+/g) || []
@@ -81,9 +80,6 @@ function extractTags(p) {
   const allTags = [...titleTags, ...contentTags]
   
   const set = new Set(allTags)
-  
-  // 지역 태그 추가
-  if (region) set.add(`#${region}`)
   
   return Array.from(set)
 }

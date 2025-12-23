@@ -19,9 +19,9 @@ public class HashtagExtractor {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     /**
-     * 제목과 내용에서 해시태그를 추출하고 JSON 문자열로 반환
+     * 제목과 내용에서 사용자가 직접 작성한 해시태그만 추출하고 JSON 문자열로 반환
      */
-    public static String extractAndSerialize(String title, String content, String region) {
+    public static String extractAndSerialize(String title, String content) {
         Set<String> tags = new HashSet<>();
         
         // 제목에서 해시태그 추출
@@ -38,11 +38,6 @@ public class HashtagExtractor {
             while (contentMatcher.find()) {
                 tags.add(contentMatcher.group());
             }
-        }
-        
-        // 지역 태그 추가
-        if (region != null && !region.trim().isEmpty()) {
-            tags.add("#" + region.trim());
         }
         
         // JSON 문자열로 변환

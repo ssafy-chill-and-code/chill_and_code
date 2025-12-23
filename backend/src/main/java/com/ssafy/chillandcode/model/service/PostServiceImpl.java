@@ -35,11 +35,10 @@ public class PostServiceImpl implements PostService {
 		post.setRegion(request.getRegion());
 		post.setPlaceUrl(request.getPlaceUrl());
 		
-		// 해시태그 자동 추출 및 저장
+		// 사용자가 작성한 해시태그만 추출 및 저장
 		String tags = HashtagExtractor.extractAndSerialize(
 			request.getTitle(), 
-			request.getContent(), 
-			request.getRegion()
+			request.getContent()
 		);
 		post.setTags(tags);
 
@@ -97,12 +96,11 @@ public class PostServiceImpl implements PostService {
 		post.setRegion(request.getRegion());
 		post.setPlaceUrl(request.getPlaceUrl());
 		
-		// 해시태그 자동 추출 및 저장
+		// 사용자가 작성한 해시태그만 추출 및 저장
 		String title = request.getTitle() != null ? request.getTitle() : original.getTitle();
 		String content = request.getContent() != null ? request.getContent() : original.getContent();
-		String region = request.getRegion() != null ? request.getRegion() : original.getRegion();
 		
-		String tags = HashtagExtractor.extractAndSerialize(title, content, region);
+		String tags = HashtagExtractor.extractAndSerialize(title, content);
 		post.setTags(tags);
 		
 		int rows = postDao.update(post);
