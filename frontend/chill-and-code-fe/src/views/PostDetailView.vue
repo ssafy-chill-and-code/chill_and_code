@@ -50,7 +50,6 @@ const derivedCategory = computed(() => {
   const p = postStore.post || {}
   const title = p.title || ''
   const content = p.content || ''
-  if ((p.region || '').trim() !== '') return '지역별'
   if (title.includes('후기') || content.includes('후기')) return '후기'
   if (
     title.includes('정보공유') || content.includes('정보공유') ||
@@ -60,7 +59,7 @@ const derivedCategory = computed(() => {
     title.includes('동행') || content.includes('동행') ||
     title.includes('모집') || content.includes('모집')
   ) return '동행모집'
-  return '전체'
+  return '일반'
 })
 
 function avatarUrl() {

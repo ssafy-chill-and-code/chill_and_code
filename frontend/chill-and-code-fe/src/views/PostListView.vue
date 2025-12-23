@@ -12,16 +12,13 @@ const sort = ref('latest')
 const page = ref(1)
 const size = ref(10)
 
-const categories = ['전체', '지역별', '후기', '정보공유', '동행모집']
+const categories = ['전체', '후기', '정보공유', '동행모집']
 const selectedCategory = ref('전체')
 
 const filteredPosts = computed(() => {
   const list = postStore.posts || []
   const cat = selectedCategory.value
   if (cat === '전체') return list
-  if (cat === '지역별') {
-    return list.filter(p => (p.region || '').trim() !== '')
-  }
   if (cat === '후기') {
     return list.filter(p =>
       (p.title && p.title.includes('후기')) || (p.content && p.content.includes('후기'))
@@ -134,7 +131,6 @@ function formatDate(input) {
 }
 
 function deriveCategoryForPost(p) {
-  if ((p.region || '').trim() !== '') return '지역별'
   const title = p.title || ''
   const content = p.content || ''
   if (title.includes('후기') || content.includes('후기')) return '후기'
@@ -142,7 +138,7 @@ function deriveCategoryForPost(p) {
       title.includes('정보') || content.includes('정보')) return '정보공유'
   if (title.includes('동행') || content.includes('동행') ||
       title.includes('모집') || content.includes('모집')) return '동행모집'
-  return '전체'
+  return '일반'
 }
 </script>
 

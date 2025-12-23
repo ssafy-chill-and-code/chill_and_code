@@ -16,7 +16,6 @@ const loading = ref(false)
 const initialLoading = ref(true)
 
 const categories = [
-  { value: '', label: '선택 안함' },
   { value: '후기', label: '후기' },
   { value: '정보공유', label: '정보공유' },
   { value: '동행모집', label: '동행모집' },
@@ -146,7 +145,7 @@ function cancel() {
                 v-for="cat in categories"
                 :key="cat.value"
                 type="button"
-                @click="category = cat.value"
+                @click="category = (category === cat.value ? '' : cat.value)"
                 :disabled="loading"
                 class="px-5 py-3 rounded-xl text-sm font-semibold transition-all"
                 :class="category === cat.value 
@@ -156,6 +155,7 @@ function cancel() {
                 {{ cat.label }}
               </button>
             </div>
+            <p v-if="!category" class="mt-2 text-xs text-gray-500">카테고리를 선택하지 않으면 일반 게시글로 유지됩니다.</p>
           </div>
 
           <!-- 지역 선택 -->
@@ -226,7 +226,7 @@ function cancel() {
               </li>
               <li class="flex items-start gap-2">
                 <span class="text-slate-400 mt-0.5">•</span>
-                <span>카테고리 변경 시 제목 태그가 업데이트됩니다.</span>
+                <span>카테고리 변경 시 제목 태그가 업데이트됩니다. (다시 클릭하면 해제)</span>
               </li>
               <li class="flex items-start gap-2">
                 <span class="text-slate-400 mt-0.5">•</span>
