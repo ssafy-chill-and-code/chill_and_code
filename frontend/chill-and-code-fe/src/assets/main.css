@@ -286,6 +286,30 @@ a,
   color: #e5e5e5 !important;
 }
 
+/* 페이지 헤더와 월 표시는 흰색 유지 */
+.dark .schedule-view h1[style*="color"],
+.dark .schedule-view h3[style*="color"],
+.dark .schedule-view button[style*="color"] {
+  color: #ffffff !important;
+}
+
+/* 필터 색상 원형은 인라인 스타일의 배경색 유지 */
+.dark .schedule-view .glass-filter-item .filter-color-dot,
+.dark .schedule-view .glass-filter-item .rounded-full.filter-color-dot {
+  background-color: var(--filter-color) !important;
+  color: transparent !important;
+}
+
+/* 일정 이벤트는 제외 - Reference.vue 방식 유지 (검정색 텍스트) */
+.dark .schedule-view .fc-event,
+.dark .schedule-view .fc-event *,
+.dark .schedule-view .fc-event .fc-event-title,
+.dark .schedule-view .fc-event .fc-event-title-frame,
+.dark .schedule-view .fc-event .fc-event-title-container,
+.dark .schedule-view .fc-event .fc-event-title-container * {
+  color: #000000 !important;
+}
+
 .dark .schedule-view .text-gray-900,
 .dark .schedule-view .text-gray-800,
 .dark .schedule-view .text-gray-700,
@@ -444,9 +468,34 @@ a,
   color: #0f172a !important;
 }
 
-/* 캘린더 스타일 */
+/* 캘린더 스타일 - 일정 이벤트 제외 */
 .dark .schedule-view .fc {
   color: #e5e5e5 !important;
+}
+
+/* 일정 이벤트 텍스트는 검정색 (더 구체적인 선택자) */
+.dark .schedule-view .fc .fc-event,
+.dark .schedule-view .fc .fc-event *,
+.dark .schedule-view .fc .fc-event .fc-event-title,
+.dark .schedule-view .fc .fc-event .fc-event-title-frame,
+.dark .schedule-view .fc .fc-event .fc-event-title-container,
+.dark .schedule-view .fc .fc-event .fc-event-title-container *,
+.dark .schedule-view .fc .fc-event .fc-event-main,
+.dark .schedule-view .fc .fc-event .fc-event-main-frame {
+  color: #000000 !important;
+}
+
+/* 다크모드에서 일정 이벤트 배경색 강제 유지 (밝은 색) */
+.dark .schedule-view .fc-event.schedule-type-personal {
+  background-color: #fffbeb !important;
+}
+
+.dark .schedule-view .fc-event.schedule-type-work {
+  background-color: #fef2f2 !important;
+}
+
+.dark .schedule-view .fc-event.schedule-type-workation {
+  background-color: #eff6ff !important;
 }
 
 .dark .schedule-view .fc-theme-standard td,

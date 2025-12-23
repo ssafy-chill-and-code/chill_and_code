@@ -2,9 +2,14 @@
 import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePostStore } from '@/stores/post'
+import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
 const postStore = usePostStore()
+const themeStore = useThemeStore()
+
+// 다크모드 상태 (전역 store에서 가져오기)
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const search = ref('')
 const region = ref('')
@@ -115,35 +120,82 @@ function deriveCategoryForPost(p) {
 </script>
 
 <template>
-  <div class="community-view min-h-screen py-8 lg:py-12" style="background: var(--color-background);">
-    <div class="max-w-7xl mx-auto px-4 lg:px-8">
+  <div 
+    :class="[
+      'community-view min-h-screen py-8 lg:py-12 relative transition-colors duration-300',
+      isDarkMode 
+        ? 'dark' 
+        : ''
+    ]"
+    :style="{
+      backgroundColor: isDarkMode ? '#0f172a' : '#f0f4f8'
+    }"
+  >
+    <!-- 통일된 배경 패턴 -->
+    <div 
+      class="fixed inset-0 pointer-events-none"
+      :style="{
+        backgroundImage: isDarkMode
+          ? 'radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.15) 1px, transparent 0), radial-gradient(circle at 20px 20px, rgba(139, 92, 246, 0.1) 1px, transparent 0)'
+          : 'radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.08) 1px, transparent 0), radial-gradient(circle at 20px 20px, rgba(139, 92, 246, 0.05) 1px, transparent 0)',
+        backgroundSize: '40px 40px, 60px 60px',
+        backgroundPosition: '0 0, 20px 20px'
+      }"
+    ></div>
+    <!-- 미묘한 그라데이션 오버레이 (글래스 효과 강조용) -->
+    <div 
+      class="fixed inset-0 pointer-events-none opacity-40"
+      :style="{
+        background: isDarkMode
+          ? 'radial-gradient(ellipse at top, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.1) 0%, transparent 50%)'
+          : 'radial-gradient(ellipse at top, rgba(99, 102, 241, 0.05) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.05) 0%, transparent 50%)'
+      }"
+    ></div>
+    
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8">
         <!-- 메인 영역: 게시글 목록 -->
         <section>
           <!-- 페이지 타이틀 -->
           <header class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-3">커뮤니티</h1>
-            <p class="text-base text-gray-600 font-light">워케이션 경험과 정보를 공유하고 소통해보세요.</p>
+            <h1 
+              :class="[
+                'text-4xl font-bold mb-3 transition-colors',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
+            >
+              커뮤니티
+            </h1>
+            <p 
+              :class="[
+                'text-base font-light transition-colors',
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              ]"
+            >
+              워케이션 경험과 정보를 공유하고 소통해보세요.
+            </p>
           </header>
 
           <!-- 카테고리 필터 -->
           <div class="flex gap-2 overflow-x-auto pb-2 mb-6">
-            <button
-              v-for="c in categories"
-              :key="c"
-              type="button"
-              class="px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
-              :class="selectedCategory === c 
-                ? 'bg-indigo-600 text-white shadow-md' 
-                : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50'"
-              @click="selectedCategory = c"
-            >
-              {{ c }}
-            </button>
+              <button
+                v-for="c in categories"
+                :key="c"
+                type="button"
+                class="px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                :class="selectedCategory === c 
+                  ? 'glass-button-primary text-white shadow-md' 
+                  : isDarkMode
+                    ? 'glass-button-secondary text-gray-200 hover:text-white'
+                    : 'glass-button-secondary text-gray-700 hover:text-gray-900'"
+                @click="selectedCategory = c"
+              >
+                {{ c }}
+              </button>
           </div>
 
           <!-- 검색/필터 영역 -->
-          <div class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-5 lg:p-6 mb-6">
+          <div class="glass-card p-5 lg:p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
               <div class="md:col-span-5">
                 <input 
@@ -193,7 +245,7 @@ function deriveCategoryForPost(p) {
               </div>
               <div class="md:col-span-2">
                 <button 
-                  class="w-full px-4 py-2.5 text-sm bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold" 
+                  class="glass-button-primary w-full px-4 py-2.5 text-sm rounded-xl transition-all font-semibold" 
                   @click="load"
                 >
                   검색
@@ -228,12 +280,23 @@ function deriveCategoryForPost(p) {
                     </div>
 
                     <!-- 제목 -->
-                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 leading-snug">
+                    <h3 
+                      :class="[
+                        'text-lg font-bold mb-2 line-clamp-1 leading-snug transition-colors',
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                      ]"
+                    >
                       {{ p.title }}
                     </h3>
 
                     <!-- 요약 내용 -->
-                    <p v-if="p.content" class="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+                    <p 
+                      v-if="p.content" 
+                      :class="[
+                        'text-sm mb-3 line-clamp-2 leading-relaxed transition-colors',
+                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                      ]"
+                    >
                       {{ p.content }}
                     </p>
                   </div>
@@ -261,10 +324,22 @@ function deriveCategoryForPost(p) {
                 </div>
 
                 <!-- 메타 정보 -->
-                <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 pt-3 border-t border-gray-100">
+                <div 
+                  :class="[
+                    'flex flex-wrap items-center gap-4 text-xs pt-3 border-t transition-colors',
+                    isDarkMode ? 'text-gray-400 border-gray-700' : 'text-gray-500 border-gray-100'
+                  ]"
+                >
                   <div class="flex items-center gap-1.5">
                     <img :src="avatarUrl(p)" alt="avatar" class="w-5 h-5 rounded-full" />
-                    <span class="font-medium text-gray-700">{{ p.nickname || p.userId }}</span>
+                    <span 
+                      :class="[
+                        'font-medium transition-colors',
+                        isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                      ]"
+                    >
+                      {{ p.nickname || p.userId }}
+                    </span>
                   </div>
                   <div class="flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -302,23 +377,49 @@ function deriveCategoryForPost(p) {
             </div>
 
             <!-- Empty State -->
-            <div v-if="!postStore.loading && filteredPosts.length === 0" class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-12 text-center">
-              <div class="text-gray-400 mb-4">
+            <div v-if="!postStore.loading && filteredPosts.length === 0" class="glass-card p-12 text-center">
+              <div 
+                :class="[
+                  'mb-4 transition-colors',
+                  isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                ]"
+              >
                 <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
               </div>
-              <p class="text-gray-600 font-medium">게시글이 없습니다.</p>
+              <p 
+                :class="[
+                  'font-medium transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                게시글이 없습니다.
+              </p>
             </div>
 
             <!-- Loading State -->
             <div v-if="postStore.loading" class="flex flex-col items-center justify-center gap-4 py-16">
-              <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-              <span class="text-gray-600 font-medium">불러오는 중...</span>
+              <div 
+                :class="[
+                  'animate-spin rounded-full h-10 w-10 border-4 transition-colors',
+                  isDarkMode 
+                    ? 'border-gray-700 border-t-indigo-400' 
+                    : 'border-gray-200 border-t-indigo-600'
+                ]"
+              ></div>
+              <span 
+                :class="[
+                  'font-medium transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                불러오는 중...
+              </span>
             </div>
 
             <!-- Error State -->
-            <div v-if="postStore.error" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-red-700 text-sm">
+            <div v-if="postStore.error" class="glass-error rounded-2xl p-6 text-red-700 text-sm">
               {{ postStore.error }}
             </div>
 
@@ -361,8 +462,10 @@ function deriveCategoryForPost(p) {
                   v-if="pageNum <= postStore.totalPages"
                   class="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
                   :class="pageNum === postStore.currentPage 
-                    ? 'bg-slate-800 text-white shadow-md' 
-                    : 'text-gray-700 hover:bg-gray-100'"
+                    ? 'glass-button-primary text-white shadow-md' 
+                    : isDarkMode
+                      ? 'glass-button-secondary text-gray-200 hover:text-white'
+                      : 'text-gray-700 hover:bg-gray-100'"
                   @click="goToPage(pageNum)"
                 >
                   {{ pageNum }}
@@ -403,9 +506,9 @@ function deriveCategoryForPost(p) {
         <!-- 우측 사이드바 -->
         <aside class="space-y-4">
           <!-- 글쓰기 버튼 (최상단) -->
-          <div class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-5 sticky top-6">
+          <div class="glass-card p-5 sticky top-6">
             <button 
-              class="w-full px-5 py-4 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold flex items-center justify-center gap-2" 
+              class="glass-button-primary w-full px-5 py-4 rounded-xl transition-all font-semibold flex items-center justify-center gap-2" 
               @click="goCreate"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -416,9 +519,14 @@ function deriveCategoryForPost(p) {
           </div>
 
           <!-- 인기 지역 랭킹 -->
-          <div class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
-            <h3 class="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-700">
+          <div class="glass-card p-6">
+            <h3 
+              :class="[
+                'text-base font-bold mb-5 flex items-center gap-2 transition-colors',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="isDarkMode ? 'text-indigo-400' : 'text-slate-700'">
                 <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
               </svg>
               인기 지역
@@ -439,24 +547,56 @@ function deriveCategoryForPost(p) {
                   >
                     {{ idx + 1 }}
                   </span>
-                  <span class="font-semibold text-gray-900">{{ item.region }}</span>
+                  <span 
+                    :class="[
+                      'font-semibold transition-colors',
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    ]"
+                  >
+                    {{ item.region }}
+                  </span>
                 </div>
-                <span class="text-gray-500 text-xs font-medium">{{ item.count }}건</span>
+                <span 
+                  :class="[
+                    'text-xs font-medium transition-colors',
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  ]"
+                >
+                  {{ item.count }}건
+                </span>
               </li>
-              <li v-if="postStore.regionRanks.length === 0" class="text-gray-500 text-sm text-center py-4">
+              <li 
+                v-if="postStore.regionRanks.length === 0" 
+                :class="[
+                  'text-sm text-center py-4 transition-colors',
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                ]"
+              >
                 표시할 지역이 없습니다.
               </li>
             </ul>
           </div>
 
           <!-- 실시간 트렌드 -->
-          <div v-if="postStore.hashtagRanks.length > 0" class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
-            <h3 class="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+          <div v-if="postStore.hashtagRanks.length > 0" class="glass-card p-6">
+            <h3 
+              :class="[
+                'text-base font-bold mb-5 flex items-center gap-2 transition-colors',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="isDarkMode ? 'text-indigo-400' : 'text-indigo-600'">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
               실시간 트렌드
-              <span class="ml-auto text-xs text-gray-500 font-normal">최근 7일</span>
+              <span 
+                :class="[
+                  'ml-auto text-xs font-normal transition-colors',
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                ]"
+              >
+                최근 7일
+              </span>
             </h3>
             <div class="flex flex-wrap gap-2">
               <button
@@ -477,6 +617,87 @@ function deriveCategoryForPost(p) {
 </template>
 
 <style scoped>
+/* 글래스모피즘 스타일 클래스 - 라이트 모드 기본값 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary:hover {
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.glass-button-secondary {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #374151;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-error {
+  background: rgba(254, 242, 242, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+  transition: all 0.3s ease;
+}
+
+/* 다크모드 스타일 */
+:deep(.dark) .glass-card,
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-button-secondary,
+.dark .glass-button-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e5e7eb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-button-secondary:hover,
+.dark .glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-error,
+.dark .glass-error {
+  background: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+}
+
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
