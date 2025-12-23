@@ -3,20 +3,23 @@ package com.ssafy.chillandcode.model.dto.post;
 import java.time.LocalDateTime;
 
 /**
- * Post는 게시글 Entity (DB 매핑용)입니다.
- * 조회 결과는 PostSummaryResponse, PostDetailResponse 사용
+ * PostDetailResponse는 게시글 상세 조회 응답 DTO입니다.
  */
-public class Post {
-    // DB 컬럼만
+public class PostDetailResponse {
     private Long postId;
     private Long userId;
     private String title;
     private String content;
     private String region;
     private String placeUrl;
-    private String tags;
+    private String nickname;
+    private String profileImageUrl;
     private Integer viewCount;
+    private Integer commentCount;
+    private Integer likeCount;
     private LocalDateTime createdAt;
+
+    public PostDetailResponse() {}
 
     public Long getPostId() {
         return postId;
@@ -66,20 +69,20 @@ public class Post {
         this.placeUrl = placeUrl;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public String getTags() {
-        return tags;
+    public String getProfileImageUrl() {
+        return profileImageUrl;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public Integer getViewCount() {
@@ -90,4 +93,28 @@ public class Post {
         this.viewCount = viewCount;
     }
 
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
+

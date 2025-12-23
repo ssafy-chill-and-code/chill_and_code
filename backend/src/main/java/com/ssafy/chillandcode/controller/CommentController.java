@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
-import com.ssafy.chillandcode.model.dto.comment.Comment;
 import com.ssafy.chillandcode.model.dto.comment.CommentCreateRequest;
+import com.ssafy.chillandcode.model.dto.comment.CommentResponse;
 import com.ssafy.chillandcode.model.dto.comment.CommentUpdateRequest;
 import com.ssafy.chillandcode.model.service.CommentService;
 
@@ -51,7 +51,7 @@ public class CommentController {
 	@Operation(summary = "댓글 목록 조회", description = "특정 게시글에 달린 모든 댓글 목록을 조회합니다.")
 	public ResponseEntity<?> getComments(@PathVariable Long postId) {
 
-		List<Comment> comments = commentService.findCommentsByPostId(postId);
+		List<CommentResponse> comments = commentService.findCommentsByPostId(postId);
 
 		return ResponseEntity.ok(ApiResponse.success(Map.of("comments", comments)));
 	}

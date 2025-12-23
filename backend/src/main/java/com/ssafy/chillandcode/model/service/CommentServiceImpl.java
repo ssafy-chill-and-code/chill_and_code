@@ -12,6 +12,7 @@ import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.CommentDao;
 import com.ssafy.chillandcode.model.dao.PostDao;
 import com.ssafy.chillandcode.model.dto.comment.Comment;
+import com.ssafy.chillandcode.model.dto.comment.CommentResponse;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -43,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
 
 	// 댓글 목록 조회
 	@Override
-	public List<Comment> findCommentsByPostId(Long postId) {
+	public List<CommentResponse> findCommentsByPostId(Long postId) {
 
 		if (postDao.selectById(postId) == null) {
 			throw new ApiException(ErrorCode.POST_NOT_FOUND);
@@ -54,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
 
 	// 내가 쓴 댓글 목록 조회
 	@Override
-	public List<Comment> findByUserId(Long userId) {
+	public List<CommentResponse> findByUserId(Long userId) {
 		return commentDao.selectByUserId(userId);
 	}
 

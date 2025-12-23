@@ -19,8 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
-import com.ssafy.chillandcode.model.dto.post.Post;
+import com.ssafy.chillandcode.model.dto.post.PostCreateRequest;
+import com.ssafy.chillandcode.model.dto.post.PostUpdateRequest;
+import com.ssafy.chillandcode.model.dto.post.PostSummaryResponse;
+import com.ssafy.chillandcode.model.dto.post.PostDetailResponse;
 import com.ssafy.chillandcode.model.dto.post.RegionRank;
+import com.ssafy.chillandcode.model.dto.post.HashtagRank;
 import com.ssafy.chillandcode.model.service.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,14 +39,12 @@ public class PostController {
 	// 게시글 등록
 	@PostMapping("/posts")
 	@Operation(summary = "게시글 등록", description = "새 게시글을 작성합니다.")
-    public ResponseEntity<?> write(@AuthenticationPrincipal Long userId, @RequestBody Post post) {
+    public ResponseEntity<?> write(@AuthenticationPrincipal Long userId, @RequestBody PostCreateRequest request) {
 
-		post.setUserId(userId);
-
-        postService.insert(post);
+        Long postId = postService.insert(request, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("게시글이 성공적으로 등록되었습니다.", Map.of("postId", post.getPostId())));
+                .body(ApiResponse.success("게시글이 성공적으로 등록되었습니다.", Map.of("postId", postId)));
 	}
 
 	// 게시글 목록 조회
@@ -59,7 +61,17 @@ public class PostController {
 		params.put("offset", (page - 1) * size);
 		params.put("limit", size);
 
-        return ResponseEntity.ok(ApiResponse.success(Map.of("posts", postService.selectAll(params))));
+		List<PostSummaryResponse> posts = postService.selectAll(params);
+		int total = postService.countAll(params);
+		int totalPages = (int) Math.ceil((double) total / size);
+
+        return ResponseEntity.ok(ApiResponse.success(Map.of(
+        		"posts", posts,
+        		"total", total,
+        		"totalPages", totalPages,
+        		"currentPage", page,
+        		"size", size
+        )));
 	}
 
 	// 지역별 게시글 수 랭킹 조회 (windowDays: 최근 N일, limit: 최대 개수)
@@ -78,12 +90,28 @@ public class PostController {
 		return ResponseEntity.ok(ApiResponse.success(Map.of("ranks", ranks)));
 	}
 
+	// 해시태그별 게시글 수 랭킹 조회 (windowDays: 최근 N일, limit: 최대 개수)
+	@GetMapping("/posts/hashtag-rank")
+	@Operation(summary = "해시태그 랭킹", description = "최근 N일 간 해시태그별 게시글 수 Top N")
+    public ResponseEntity<?> hashtagRank(
+            @RequestParam(required = false) Integer windowDays,
+            @RequestParam(defaultValue = "10") Integer limit
+    ) {
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("windowDays", windowDays); // null이면 전체 기간
+		params.put("limit", limit);
+
+		List<HashtagRank> ranks = postService.selectHashtagRank(params);
+		return ResponseEntity.ok(ApiResponse.success(Map.of("ranks", ranks)));
+	}
+
 	// 내가 쓴 게시글 조회
 	@GetMapping("/posts/my")
 	@Operation(summary = "내가 쓴 게시글 조회", description = "현재 로그인한 사용자가 작성한 모든 게시글을 조회합니다.")
     public ResponseEntity<?> myPosts(@AuthenticationPrincipal Long userId) {
 
-		List<Post> posts = postService.findByUserId(userId);
+		List<PostSummaryResponse> posts = postService.findByUserId(userId);
 
         return ResponseEntity.ok(ApiResponse.success(Map.of("posts", posts)));
 	}
@@ -93,7 +121,7 @@ public class PostController {
 	@Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 정보를 조회합니다.")
     public ResponseEntity<?> detail(@PathVariable Long postId) {
 
-		Post post = postService.selectById(postId);
+		PostDetailResponse post = postService.selectById(postId);
 
         return ResponseEntity.ok(ApiResponse.success(post));
 	}
@@ -101,10 +129,9 @@ public class PostController {
 	// 게시글 수정
 	@PatchMapping("/posts/{postId}")
 	@Operation(summary = "게시글 수정", description = "특정 게시글의 제목/내용/지역을 수정합니다.")
-    public ResponseEntity<?> updatePost(@AuthenticationPrincipal Long userId, @PathVariable Long postId, @RequestBody Post post) {
+    public ResponseEntity<?> updatePost(@AuthenticationPrincipal Long userId, @PathVariable Long postId, @RequestBody PostUpdateRequest request) {
 
-		post.setPostId(postId);
-		postService.update(post, userId);
+		postService.update(postId, request, userId);
 
         return ResponseEntity.ok(ApiResponse.success("게시글이 성공적으로 수정되었습니다.", null));
 	}
