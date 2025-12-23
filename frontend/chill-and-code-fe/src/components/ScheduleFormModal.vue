@@ -6,6 +6,10 @@ const props = defineProps({
   schedule: {
     type: Object,
     default: null
+  },
+  initialDate: {
+    type: String,
+    default: null
   }
 })
 
@@ -20,6 +24,8 @@ const startDate = ref('')
 const startTime = ref('09:00')
 const endDate = ref('')
 const endTime = ref('10:00')
+const userTag = ref(null)
+const tagMode = ref(null) // 'auto' 또는 'manual', null이면 아직 선택 안함
 const loading = ref(false)
 const error = ref(null)
 
@@ -31,16 +37,80 @@ const modalTitle = computed(() => isEdit.value ? '일정 수정' : '일정 추�
 
 // 일정 유형 옵션
 const scheduleTypeOptions = [
-  { value: 'PERSONAL', label: '개인 일정', color: '#93c5fd' },
-  { value: 'WORK', label: '업무 일정', color: '#64748b' },
-  { value: 'WORKATION', label: '워케이션 일정', color: '#0ea5e9' }
+  { value: 'PERSONAL', label: '개인 일정', color: '#fde68a', bgColor: '#fffbeb' },
+  { value: 'WORK', label: '업무 일정', color: '#fca5a5', bgColor: '#fef2f2' },
+  { value: 'WORKATION', label: '워케이션 일정', color: '#93c5fd', bgColor: '#eff6ff' }
 ]
+
+// 태그 처리 방식 선택 옵션
+const tagModeOptions = [
+  { 
+    value: 'auto', 
+    label: '자동으로 처리하기', 
+    description: '시스템이 일정 내용을 분석해 자동으로 태그를 지정합니다',
+    icon: '🤖'
+  },
+  { 
+    value: 'manual', 
+    label: '직접 선택하기', 
+    description: '일정의 성격을 직접 선택합니다',
+    icon: '✋'
+  }
+]
+
+// 직접 선택 시 태그 옵션
+const manualTagOptions = [
+  { 
+    value: 'HIGH_PRIORITY', 
+    label: '하루 종일 꼭 비워야 하는 일정', 
+    description: '워케이션 추천 시 이 날짜는 제외됩니다.',
+    icon: '🔴',
+    color: '#ef4444',
+    bgColor: '#fef2f2'
+  },
+  { 
+    value: 'REMOTE_POSSIBLE', 
+    label: '원격으로도 가능한 일정', 
+    description: '원격 근무 허용 시 워케이션 기간에 포함될 수 있습니다.',
+    icon: '💻',
+    color: '#3b82f6',
+    bgColor: '#eff6ff'
+  },
+  { 
+    value: 'PERSONAL_FLEX', 
+    label: '조정 가능한 개인 일정', 
+    description: '워케이션 기간에 포함됩니다.',
+    icon: '📅',
+    color: '#10b981',
+    bgColor: '#f0fdf4'
+  },
+  { 
+    value: 'UNKNOWN', 
+    label: '거의 신경 쓰지 않아도 되는 일정', 
+    description: '워케이션 기간에 포함됩니다.',
+    icon: '⚪',
+    color: '#6b7280',
+    bgColor: '#f9fafb'
+  }
+]
+
+// 태그 옵션 (수정 모드에서 autoTag 표시용)
+const tagOptions = [
+  { value: null, label: '자동 태그 사용', description: '시스템이 자동으로 태그를 지정합니다' },
+  ...manualTagOptions
+]
+
+// 현재 일정의 autoTag (수정 모드에서만 표시)
+const autoTag = computed(() => props.schedule?.autoTag || null)
 
 // 초기값 설정
 const initForm = () => {
   if (props.schedule) {
     title.value = props.schedule.title || ''
     scheduleType.value = props.schedule.scheduleType || 'PERSONAL'
+    userTag.value = props.schedule.userTag || null
+    // 수정 모드에서는 userTag가 있으면 manual, 없으면 auto
+    tagMode.value = userTag.value !== null ? 'manual' : 'auto'
     
     // startDateTime 파싱
     if (props.schedule.startDateTime) {
@@ -56,23 +126,46 @@ const initForm = () => {
       endTime.value = endDT.toTimeString().slice(0, 5)
     }
   } else {
-    // 기본값: 오늘 날짜
-    const today = new Date().toISOString().split('T')[0]
-    startDate.value = today
-    endDate.value = today
+    // initialDate가 있으면 사용, 없으면 오늘 날짜
+    const dateToUse = props.initialDate || new Date().toISOString().split('T')[0]
+    startDate.value = dateToUse
+    endDate.value = dateToUse
+    userTag.value = null
+    tagMode.value = null // 새 일정은 아직 선택 안함
   }
+}
+
+// 태그 모드 변경 핸들러
+const handleTagModeChange = (mode) => {
+  tagMode.value = mode
+  if (mode === 'auto') {
+    userTag.value = null
+  }
+  // manual 모드로 변경해도 userTag는 그대로 유지 (사용자가 선택할 때까지)
 }
 
 initForm()
 
+// props 변경 시 폼 재초기화
+watch(() => [props.schedule, props.initialDate], () => {
+  initForm()
+}, { deep: true })
+
 // 백엔드 API 형식으로 변환
 const buildPayload = () => {
-  return {
+  const payload = {
     title: title.value,
     scheduleType: scheduleType.value,
     startDateTime: `${startDate.value}T${startTime.value}:00`,
     endDateTime: `${endDate.value}T${endTime.value}:00`
   }
+  
+  // userTag가 선택된 경우에만 포함
+  if (userTag.value !== null) {
+    payload.userTag = userTag.value
+  }
+  
+  return payload
 }
 
 // 유효성 검증
@@ -209,8 +302,12 @@ const handleOverlayClick = (e) => {
               <label
                 v-for="option in scheduleTypeOptions"
                 :key="option.value"
-                class="relative flex items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-slate-400"
-                :class="scheduleType === option.value ? 'border-slate-700 bg-slate-50' : 'border-gray-200'"
+                class="relative flex items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all"
+                :class="scheduleType === option.value ? 'border-opacity-100' : 'border-gray-200 border-opacity-50'"
+                :style="scheduleType === option.value ? { 
+                  borderColor: option.color, 
+                  backgroundColor: option.bgColor 
+                } : {}"
               >
                 <input
                   type="radio"
@@ -227,7 +324,7 @@ const handleOverlayClick = (e) => {
                   v-if="scheduleType === option.value"
                   class="absolute top-2 right-2"
                 >
-                  <svg class="w-5 h-5 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-5 h-5" :style="{ color: option.color }" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
                 </div>
@@ -287,18 +384,143 @@ const handleOverlayClick = (e) => {
             </div>
           </div>
 
-          <!-- 안내 문구 -->
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-              </svg>
-              <div class="text-sm text-blue-800">
-                <p class="font-semibold mb-1">참고사항</p>
-                <ul class="list-disc list-inside space-y-1 text-blue-700">
-                  <li>장소, 메모 등 추가 필드는 향후 백엔드 API 확장 시 지원됩니다.</li>
-                  <li>연속된 일정은 캘린더에서 시각적으로 연결되어 표시됩니다.</li>
-                </ul>
+          <!-- 태그 선택 -->
+          <div>
+            <label class="block text-sm font-bold text-gray-900 mb-2">
+              이 일정은 어떻게 처리할까요?
+            </label>
+            
+            <!-- 안내 문구 -->
+            <p class="text-xs text-gray-500 mb-4 px-1">
+              이 설정은 나중에 일정 추천에 반영돼요.
+            </p>
+            
+            <!-- 수정 모드에서 autoTag 표시 -->
+            <div v-if="isEdit && autoTag && tagMode === 'auto'" class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex-1">
+                  <div class="text-xs font-semibold text-blue-800 mb-1">시스템이 자동으로 지정한 태그</div>
+                  <div class="text-sm font-medium text-blue-900 mb-1">
+                    {{ tagOptions.find(t => t.value === autoTag)?.label || autoTag }}
+                  </div>
+                  <div class="text-xs text-blue-700">
+                    {{ tagOptions.find(t => t.value === autoTag)?.description || '' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1단계: 자동/직접 선택 -->
+            <div v-if="tagMode === null" class="space-y-3">
+              <label
+                v-for="option in tagModeOptions"
+                :key="option.value"
+                class="relative flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md"
+                :class="'border-gray-200 border-opacity-50 hover:border-opacity-75'"
+              >
+                <input
+                  type="radio"
+                  :value="option.value"
+                  @change="handleTagModeChange(option.value)"
+                  :disabled="loading"
+                  class="sr-only"
+                />
+                <div class="flex items-start gap-3 flex-1">
+                  <!-- 아이콘 -->
+                  <div class="text-2xl flex-shrink-0 mt-0.5">
+                    {{ option.icon }}
+                  </div>
+                  <!-- 내용 -->
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold text-gray-900 mb-1">
+                      {{ option.label }}
+                    </div>
+                    <div class="text-xs text-gray-600 leading-relaxed">
+                      {{ option.description }}
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <!-- 2단계: 직접 선택 시 상세 옵션 -->
+            <div v-if="tagMode === 'manual'" class="space-y-3">
+              <!-- 뒤로가기 버튼 -->
+              <button
+                type="button"
+                @click="tagMode = null; userTag = null"
+                class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-2 transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>처리 방식 다시 선택하기</span>
+              </button>
+
+              <!-- 직접 선택 옵션들 -->
+              <label
+                v-for="option in manualTagOptions"
+                :key="option.value"
+                class="relative flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md"
+                :class="userTag === option.value ? 'border-opacity-100 shadow-sm' : 'border-gray-200 border-opacity-50 hover:border-opacity-75'"
+                :style="userTag === option.value && option.color ? { 
+                  borderColor: option.color, 
+                  backgroundColor: option.bgColor || 'transparent'
+                } : {}"
+              >
+                <input
+                  type="radio"
+                  :value="option.value"
+                  v-model="userTag"
+                  :disabled="loading"
+                  class="sr-only"
+                />
+                <div class="flex items-start gap-3 flex-1">
+                  <!-- 아이콘 -->
+                  <div class="text-2xl flex-shrink-0 mt-0.5">
+                    {{ option.icon }}
+                  </div>
+                  <!-- 내용 -->
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold text-gray-900 mb-1">
+                      {{ option.label }}
+                    </div>
+                    <div class="text-xs text-gray-600 leading-relaxed">
+                      {{ option.description }}
+                    </div>
+                  </div>
+                  <!-- 선택 표시 -->
+                  <div
+                    v-if="userTag === option.value"
+                    class="flex-shrink-0"
+                  >
+                    <svg class="w-5 h-5" :style="{ color: option.color || '#6366f1' }" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <!-- 자동 처리 선택 시 안내 -->
+            <div v-if="tagMode === 'auto'" class="mt-3 p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div class="text-xs text-gray-600">
+                  <p>시스템이 일정 내용을 분석해 자동으로 태그를 지정합니다.</p>
+                  <button
+                    type="button"
+                    @click="tagMode = null"
+                    class="mt-2 text-blue-600 hover:text-blue-800 font-medium underline"
+                  >
+                    직접 선택하기로 변경
+                  </button>
+                </div>
               </div>
             </div>
           </div>
