@@ -17,15 +17,39 @@ public class ScheduleUpdateRequest {
 
 	}
 
-	public ScheduleUpdateRequest(Long scheduleId, String title, LocalDateTime startDateTime,
-			LocalDateTime endDateTime, ScheduleType scheduleType, Tag userTag) {
-		super();
+	public ScheduleUpdateRequest(Long scheduleId, String title, LocalDateTime startDateTime, LocalDateTime endDateTime,
+			ScheduleType scheduleType, Tag userTag) {
 		this.scheduleId = scheduleId;
 		this.title = title;
 		this.startDateTime = startDateTime;
 		this.endDateTime = endDateTime;
 		this.scheduleType = scheduleType;
 		this.userTag = userTag;
+	}
+
+	public Schedule applyTo(Schedule target) {
+
+		if (this.title != null) {
+			target.setTitle(this.title);
+		}
+
+		if (this.startDateTime != null) {
+			target.setStartDateTime(this.startDateTime);
+		}
+
+		if (this.endDateTime != null) {
+			target.setEndDateTime(this.endDateTime);
+		}
+
+		if (this.scheduleType != null) {
+			target.setScheduleType(this.scheduleType);
+		}
+
+		if (this.userTag != null) {
+			target.setUserTag(this.userTag);
+		}
+
+		return target;
 	}
 
 	public Long getScheduleId() {
@@ -78,9 +102,9 @@ public class ScheduleUpdateRequest {
 
 	@Override
 	public String toString() {
-		return "ScheduleUpdateRequest [scheduleId=" + scheduleId + ", title=" + title
-				+ ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", scheduleType=" + scheduleType
-				+ ", userTag=" + userTag + "]";
+		return "ScheduleUpdateRequest [scheduleId=" + scheduleId + ", title=" + title + ", startDateTime="
+				+ startDateTime + ", endDateTime=" + endDateTime + ", scheduleType=" + scheduleType + ", userTag="
+				+ userTag + "]";
 	}
 
 }
