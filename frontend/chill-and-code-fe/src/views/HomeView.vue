@@ -397,7 +397,7 @@ const navigateToPage = (event, path) => {
 
 <style scoped>
 .home-wrapper {
-  background: #ffffff;
+  background: var(--brand-50);
   min-height: calc(100vh - 64px);
 }
 
@@ -431,7 +431,7 @@ const navigateToPage = (event, path) => {
   }
 }
 
-/* 미묘한 그라데이션 배경 */
+/* 미묘한 그라데이션 배경 - 톤앤톤 적용 */
 .hero-section::before {
   content: '';
   position: absolute;
@@ -440,15 +440,15 @@ const navigateToPage = (event, path) => {
   right: 0;
   bottom: -10%;
   background: 
-    radial-gradient(ellipse 1400px 900px at 15% 40%, rgba(148, 163, 184, 0.04) 0%, transparent 65%),
-    radial-gradient(ellipse 1200px 800px at 85% 65%, rgba(71, 85, 105, 0.05) 0%, transparent 65%),
-    radial-gradient(ellipse 1000px 600px at 50% 5%, rgba(203, 213, 225, 0.035) 0%, transparent 55%),
-    linear-gradient(to bottom, rgba(248, 250, 252, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+    radial-gradient(ellipse 1400px 900px at 15% 40%, rgba(168, 188, 198, 0.08) 0%, transparent 65%),
+    radial-gradient(ellipse 1200px 800px at 85% 65%, rgba(107, 136, 150, 0.1) 0%, transparent 65%),
+    radial-gradient(ellipse 1000px 600px at 50% 5%, rgba(201, 215, 222, 0.07) 0%, transparent 55%),
+    linear-gradient(to bottom, rgba(238, 243, 245, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
   z-index: 0;
   pointer-events: none;
 }
 
-/* 미묘한 dot 패턴 */
+/* 미묘한 dot 패턴 - 톤앤톤 적용 */
 .hero-section::after {
   content: '';
   position: absolute;
@@ -457,7 +457,7 @@ const navigateToPage = (event, path) => {
   right: 0;
   bottom: 0;
   background-image: 
-    radial-gradient(circle, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+    radial-gradient(circle, rgba(138, 162, 174, 0.12) 1px, transparent 1px);
   background-size: 24px 24px;
   z-index: 0;
   opacity: 0.4;
@@ -487,7 +487,7 @@ const navigateToPage = (event, path) => {
 
 .badge-label {
   display: inline-block;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);
   color: white;
   font-size: 0.75rem;
   font-weight: 700;
@@ -495,7 +495,7 @@ const navigateToPage = (event, path) => {
   padding: 0.5rem 1.25rem;
   border-radius: 24px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
+  box-shadow: 0 2px 8px rgba(107, 136, 150, 0.3);
 }
 
 .hero-title {
@@ -503,12 +503,12 @@ const navigateToPage = (event, path) => {
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 1.5rem;
-  color: #0f172a;
+  color: var(--brand-700);
   letter-spacing: -0.02em;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-400) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -517,7 +517,7 @@ const navigateToPage = (event, path) => {
 .hero-description {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: #64748b;
+  color: var(--brand-400);
   margin-bottom: 2.5rem;
   font-weight: 400;
 }
@@ -529,14 +529,14 @@ const navigateToPage = (event, path) => {
 }
 
 .btn-primary {
-  background: #1e293b;
+  background: var(--brand-500);
   color: white;
   border: none;
   padding: 1rem 2rem;
   font-weight: 600;
   font-size: 1rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25);
+  box-shadow: 0 4px 12px rgba(107, 136, 150, 0.3);
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -545,7 +545,7 @@ const navigateToPage = (event, path) => {
 }
 
 .btn-primary:hover {
-  background: #0f172a;
+  background: var(--brand-600);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(30, 41, 59, 0.35);
 }
