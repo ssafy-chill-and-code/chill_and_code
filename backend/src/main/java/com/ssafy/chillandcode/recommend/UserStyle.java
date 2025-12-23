@@ -1,8 +1,8 @@
-package com.ssafy.chillcode.recommend;
+package com.ssafy.chillandcode.recommend;
 
 import java.util.List;
 
-import com.ssafy.chillcode.recommend.period.CandidateType;
+import com.ssafy.chillandcode.recommend.period.CandidateType;
 
 public enum UserStyle {
 	RELAX(	

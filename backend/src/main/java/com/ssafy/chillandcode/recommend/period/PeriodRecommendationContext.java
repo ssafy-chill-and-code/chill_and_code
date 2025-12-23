@@ -1,4 +1,4 @@
-package com.ssafy.chillcode.recommend.period;
+package com.ssafy.chillandcode.recommend.period;
 
 import java.time.LocalDate;
 
@@ -34,7 +34,21 @@ public class PeriodRecommendationContext {
 		this.allowLightPersonal = allowLightPersonal;
 		this.today = today;
 	}
-
+	
+	//분석 전용 팩토리 메서드
+	public static PeriodRecommendationContext forAnalysis() {
+	    return new PeriodRecommendationContext(
+	        null,               // searchStart: 분석에서는 사용 안 함
+	        null,               // searchEnd
+	        0,                  // minDays
+	        Integer.MAX_VALUE,  // maxDays (분석에서는 제약 없음)
+	        true,               // remoteWorkAllowed: 관대하게
+	        true,               // allowLightPersonal: 관대하게
+	        LocalDate.now()     // today
+	    );
+	}
+	
+	//getter, setter
 	public LocalDate getSearchStart() {
 		return searchStart;
 	}

@@ -1,4 +1,4 @@
-package com.ssafy.chillcode.recommend.period;
+package com.ssafy.chillandcode.recommend.period;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ssafy.chillcode.recommend.UserStyle;
+import com.ssafy.chillandcode.recommend.UserStyle;
 
 /**
  * 역할 - Engine이 만든 PeriodCandidate들을 입력으로 받는다 
