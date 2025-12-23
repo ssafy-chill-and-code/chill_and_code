@@ -49,4 +49,11 @@
 		</where>
 	</select>
 
+	<!-- 장소 리뷰 작성 -->
+	<insert id="insert" parameterType="com.ssafy.chillandcode.model.dto.review.PlaceReview"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO place_review (place_name, region, rating, content, user_id)
+		VALUES (#{placeName}, #{region}, #{rating}, #{content}, #{userId})
+	</insert>
+
 </mapper>

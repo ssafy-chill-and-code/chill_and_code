@@ -1,13 +1,20 @@
 package com.ssafy.chillandcode.controller.review;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.chillandcode.common.ApiResponse;
+import com.ssafy.chillandcode.model.dto.review.PlaceReviewCreateRequest;
 import com.ssafy.chillandcode.model.dto.review.PlaceReviewSummaryResponse;
 import com.ssafy.chillandcode.model.service.review.ReviewService;
 
@@ -29,6 +36,18 @@ public class ReviewController {
         PlaceReviewSummaryResponse summary = reviewService.getPlaceReviewSummary(placeName.trim(), region);
 
         return ResponseEntity.ok(ApiResponse.success(summary));
+    }
+
+    @PostMapping("/reviews")
+    @Operation(summary = "장소 리뷰 작성", description = "장소에 대한 리뷰(별점 + 내용)를 작성합니다.")
+    public ResponseEntity<?> createReview(
+            @AuthenticationPrincipal Long userId,
+            @RequestBody PlaceReviewCreateRequest request) {
+
+        Long reviewId = reviewService.insertReview(request, userId);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("리뷰가 성공적으로 등록되었습니다.", Map.of("reviewId", reviewId)));
     }
 }
 

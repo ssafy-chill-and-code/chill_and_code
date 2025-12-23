@@ -7,7 +7,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.chillandcode.exception.ApiException;
+import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.review.ReviewDao;
+import com.ssafy.chillandcode.model.dto.review.PlaceReview;
+import com.ssafy.chillandcode.model.dto.review.PlaceReviewCreateRequest;
 import com.ssafy.chillandcode.model.dto.review.PlaceReviewResponse;
 import com.ssafy.chillandcode.model.dto.review.PlaceReviewSummaryResponse;
 
@@ -47,6 +51,36 @@ public class ReviewServiceImpl implements ReviewService {
             reviewCount,
             reviews
         );
+    }
+
+    @Override
+    public Long insertReview(PlaceReviewCreateRequest request, Long userId) {
+        // placeName 필수 검증
+        if (request.getPlaceName() == null || request.getPlaceName().trim().isEmpty()) {
+            throw new ApiException(ErrorCode.MISSING_REQUIRED_PARAMETER, "장소명은 필수입니다.");
+        }
+
+        // rating 범위 검증 (1~5)
+        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 5) {
+            throw new ApiException(ErrorCode.INVALID_RATING);
+        }
+
+        // Entity 생성
+        PlaceReview review = new PlaceReview();
+        review.setPlaceName(request.getPlaceName().trim());
+        review.setRegion(request.getRegion());
+        review.setRating(request.getRating());
+        review.setContent(request.getContent());
+        review.setUserId(userId);
+
+        // DB 저장
+        int rows = reviewDao.insert(review);
+
+        if (rows != 1) {
+            throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "리뷰 작성에 실패했습니다.");
+        }
+
+        return review.getId();
     }
 }
 
