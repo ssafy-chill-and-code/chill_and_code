@@ -19,30 +19,20 @@ const editingContent = ref('')
 const comments = computed(() => commentStore.commentsByPost[postId] || [])
 
 const hashtags = computed(() => {
-  const text = (postStore.post?.content || '').trim()
+  const title = (postStore.post?.title || '').trim()
+  const content = (postStore.post?.content || '').trim()
   const region = (postStore.post?.region || '').trim()
 
-  const explicit = text.match(/#[^\s#]+/g) || []
-  const tagSet = new Set(explicit)
+  // 제목과 내용에서 사용자가 직접 작성한 #태그만 추출
+  const titleTags = title.match(/#[^\s#]+/g) || []
+  const contentTags = content.match(/#[^\s#]+/g) || []
+  const allTags = [...titleTags, ...contentTags]
+  
+  const tagSet = new Set(allTags)
 
-  if (explicit.length === 0 && text) {
-    const stop = new Set([
-      '그리고','하지만','그러나','또는','또','또한','등','및','그','이','저','것','수','등등','때','처럼','같이','같은','그냥','정말','진짜','너무','매우','아주','많이','조금','좀','더','이제','먼저','먼저는','그래서','그래도','그러면','해서','하면','하고','하는','했다','했다가','있다','있어요','없다','합니다','합니다만','입니다','있습니다','였습니다','였다','가','이','은','는','을','를','에','의','와','과','로','도','다','요'
-    ])
-    const tokens = (text.match(/[가-힣A-Za-z]{2,12}/g) || [])
-      .filter(w => !stop.has(w) && !/^\d+$/.test(w))
-
-    const freq = new Map()
-    for (const t of tokens) freq.set(t, (freq.get(t) || 0) + 1)
-    const auto = Array.from(freq.entries())
-      .filter(([_w,c]) => c >= 2)
-      .sort((a,b) => b[1]-a[1] || b[0].length-a[0].length)
-      .slice(0, 2)
-      .map(([w]) => `#${w}`)
-    for (const t of auto) tagSet.add(t)
-  }
-
+  // 지역 태그 추가
   if (region) tagSet.add(`#${region}`)
+  
   return Array.from(tagSet)
 })
 
