@@ -223,9 +223,11 @@ onMounted(load)
         </div>
 
         <!-- 본문 -->
-        <div class="mb-6" style="white-space: pre-wrap; line-height: 1.7; color: #374151; font-size: 0.95rem;">
-          {{ postStore.post ? postStore.post.content : '게시글 내용' }}
-        </div>
+        <div 
+          class="mb-6 post-content" 
+          style="white-space: pre-wrap; line-height: 1.7; color: #374151; font-size: 0.95rem;"
+          v-html="postStore.post ? postStore.post.content : '게시글 내용'"
+        ></div>
 
         <!-- 지도 링크 카드 -->
         <a 
@@ -417,3 +419,13 @@ onMounted(load)
     </div>
   </div>
 </template>
+
+<style scoped>
+.post-content :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+</style>

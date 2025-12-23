@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePostStore } from '@/stores/post'
+import api from '@/api/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,6 +14,8 @@ const content = ref('')
 const category = ref('')
 const placeUrl = ref('')
 const showPlaceInput = ref(false)
+const uploadedImages = ref([])
+const uploadingImage = ref(false)
 const message = ref('')
 const loading = ref(false)
 const initialLoading = ref(true)
@@ -52,6 +55,44 @@ onMounted(async () => {
   }
 })
 
+async function handleImageUpload(event) {
+  const files = event.target.files
+  if (!files || files.length === 0) return
+
+  uploadingImage.value = true
+  try {
+    for (const file of files) {
+      // 파일 크기 체크 (5MB 제한)
+      if (file.size > 5 * 1024 * 1024) {
+        message.value = '이미지 크기는 5MB 이하여야 합니다.'
+        continue
+      }
+
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await api.post('/files/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      const imageUrl = response.data.data.url
+      uploadedImages.value.push(imageUrl)
+    }
+  } catch (e) {
+    message.value = e?.response?.data?.message || '이미지 업로드에 실패했습니다.'
+  } finally {
+    uploadingImage.value = false
+    // input 초기화
+    event.target.value = ''
+  }
+}
+
+function removeImage(index) {
+  uploadedImages.value.splice(index, 1)
+}
+
 async function save() {
   message.value = ''
   if (!title.value.trim() || !content.value.trim()) {
@@ -66,11 +107,18 @@ async function save() {
     if (category.value && !finalTitle.includes(`[${category.value}]`) && !finalTitle.includes(category.value)) {
       finalTitle = `[${category.value}] ${finalTitle}`
     }
+
+    // 새로 업로드된 이미지 URL들을 content에 추가
+    let finalContent = content.value
+    if (uploadedImages.value.length > 0) {
+      const imageHtml = uploadedImages.value.map(url => `<img src="${url}" alt="게시글 이미지">`).join('\n')
+      finalContent = finalContent + '\n\n' + imageHtml
+    }
     
     await postStore.updatePost(route.params.postId, { 
       title: finalTitle, 
       region: region.value, 
-      content: content.value,
+      content: finalContent,
       placeUrl: placeUrl.value || null
     })
     router.push({ name: 'post-detail', params: { postId: route.params.postId } })
@@ -252,6 +300,63 @@ function cancel() {
               :disabled="loading"
               class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-all resize-y text-base leading-relaxed"
             ></textarea>
+          </div>
+
+          <!-- 이미지 업로드 (추가) -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">
+              이미지 추가
+              <span class="text-gray-400 text-xs font-normal ml-2">(선택사항, 최대 5MB)</span>
+            </label>
+            
+            <!-- 업로드 버튼 -->
+            <div class="mb-3">
+              <label 
+                for="image-upload-edit"
+                class="inline-flex items-center gap-2 px-5 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all cursor-pointer font-semibold text-sm"
+                :class="{'opacity-50 cursor-not-allowed': loading || uploadingImage}"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span v-if="uploadingImage">업로드 중...</span>
+                <span v-else>이미지 선택</span>
+              </label>
+              <input
+                id="image-upload-edit"
+                type="file"
+                accept="image/*"
+                multiple
+                @change="handleImageUpload"
+                :disabled="loading || uploadingImage"
+                class="hidden"
+              />
+            </div>
+
+            <!-- 업로드된 이미지 미리보기 -->
+            <div v-if="uploadedImages.length > 0" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div 
+                v-for="(imageUrl, index) in uploadedImages" 
+                :key="index"
+                class="relative group"
+              >
+                <img 
+                  :src="imageUrl" 
+                  alt="업로드된 이미지"
+                  class="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+                />
+                <button
+                  type="button"
+                  @click="removeImage(index)"
+                  class="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center"
+                  title="이미지 삭제"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- 수정 안내 -->
