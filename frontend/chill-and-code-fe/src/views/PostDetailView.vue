@@ -59,7 +59,7 @@ const derivedCategory = computed(() => {
     title.includes('동행') || content.includes('동행') ||
     title.includes('모집') || content.includes('모집')
   ) return '동행모집'
-  return '일반'
+  return null // 카테고리 없음
 })
 
 function avatarUrl() {
@@ -179,11 +179,11 @@ onMounted(load)
         <!-- 상단: 카테고리/지역 + 수정/삭제 버튼 -->
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-2">
-            <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+            <span v-if="derivedCategory" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
               {{ derivedCategory }}
             </span>
-            <span v-if="postStore.post?.region" class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
-              {{ postStore.post.region }}
+            <span class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
+              {{ postStore.post?.region || '전국' }}
             </span>
           </div>
           

@@ -138,7 +138,7 @@ function deriveCategoryForPost(p) {
       title.includes('정보') || content.includes('정보')) return '정보공유'
   if (title.includes('동행') || content.includes('동행') ||
       title.includes('모집') || content.includes('모집')) return '동행모집'
-  return '일반'
+  return null // 카테고리 없음
 }
 </script>
 
@@ -244,11 +244,11 @@ function deriveCategoryForPost(p) {
               >
                 <!-- 카테고리/지역 라벨 -->
                 <div class="flex gap-2 mb-3">
-                  <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+                  <span v-if="deriveCategoryForPost(p)" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
                     {{ deriveCategoryForPost(p) }}
                   </span>
-                  <span v-if="p.region" class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
-                    {{ p.region }}
+                  <span class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
+                    {{ p.region || '전국' }}
                   </span>
                 </div>
 
