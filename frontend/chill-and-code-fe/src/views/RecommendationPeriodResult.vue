@@ -47,9 +47,17 @@
             <div class="reason-title">📝 추천 이유</div>
             <div class="reason-text">{{ result.reason || '이 기간이 가장 적합합니다.' }}</div>
           </div>
-          <button class="btn-select primary" @click="goPlace(result.primary)">
-            <span>✓</span> 이 기간으로 선택하기
-          </button>
+          <div class="button-group">
+            <button class="btn-select primary" @click="goPlace(result.primary)">
+              <span>✓</span> 이 기간으로 선택하기
+            </button>
+            <button class="btn-select edit" @click="showEditModal = true">
+              <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              기간 수정하기
+            </button>
+          </div>
         </div>
 
         <!-- 대안 추천 -->
@@ -74,18 +82,75 @@
             </div>
           </div>
         </div>
+
+      </div>
+    </div>
+
+    <!-- 기간 수정 모달 -->
+    <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">기간 수정</h2>
+          <button class="modal-close" @click="showEditModal = false">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">시작 날짜 <span class="required">*</span></label>
+            <input 
+              v-model="editedStartDate" 
+              type="date" 
+              class="form-input"
+              :min="minDate"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">종료 날짜 <span class="required">*</span></label>
+            <input 
+              v-model="editedEndDate" 
+              type="date" 
+              class="form-input"
+              :min="editedStartDate || minDate"
+            />
+          </div>
+
+          <div v-if="editedDuration" class="duration-preview">
+            총 {{ editedDuration }}일간의 워케이션
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancel" @click="showEditModal = false">
+            이전으로
+          </button>
+          <button class="btn-continue" @click="handleContinue" :disabled="!isValidPeriod">
+            이 기간으로 계속하기
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecommendationStore } from '@/stores/recommendation'
 
 const router = useRouter()
 const recommendationStore = useRecommendationStore()
+
+const showEditModal = ref(false)
+const editedStartDate = ref('')
+const editedEndDate = ref('')
+
+// 오늘 날짜를 YYYY-MM-DD 형식으로
+const minDate = new Date().toISOString().split('T')[0]
 
 const result = computed(() => {
   const res = recommendationStore.result
@@ -103,6 +168,33 @@ watch(result, (newVal) => {
   console.log('🔄 result 변경됨:', newVal)
 }, { deep: true, immediate: true })
 
+// 모달 열 때 현재 추천 기간으로 초기화
+watch(showEditModal, (isOpen) => {
+  if (isOpen && result.value?.primary) {
+    const primary = result.value.primary
+    editedStartDate.value = formatDateForInput(primary.startDate)
+    editedEndDate.value = formatDateForInput(primary.endDate)
+  }
+})
+
+// 수정된 기간의 일수 계산
+const editedDuration = computed(() => {
+  if (!editedStartDate.value || !editedEndDate.value) return null
+  const start = new Date(editedStartDate.value)
+  const end = new Date(editedEndDate.value)
+  const diffTime = Math.abs(end - start)
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+  return diffDays
+})
+
+// 유효한 기간인지 확인
+const isValidPeriod = computed(() => {
+  if (!editedStartDate.value || !editedEndDate.value) return false
+  const start = new Date(editedStartDate.value)
+  const end = new Date(editedEndDate.value)
+  return end >= start
+})
+
 function formatDate(dateString) {
   if (!dateString) return ''
   const date = new Date(dateString)
@@ -112,12 +204,41 @@ function formatDate(dateString) {
   return `${year}.${month}.${day}`
 }
 
+function formatDateForInput(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 function goPlace(period) {
   console.log('📍 선택된 기간:', period)
   // 선택한 기간을 스토어에 저장하고 장소 선택 화면으로 이동
   recommendationStore.updateSelection({
     selectedPeriod: period
   })
+  router.push('/recommend/place')
+}
+
+function handleContinue() {
+  if (!isValidPeriod.value) return
+  
+  // 수정된 기간으로 PeriodCandidate 객체 생성
+  const editedPeriod = {
+    startDate: editedStartDate.value,
+    endDate: editedEndDate.value,
+    durationDays: editedDuration.value,
+    type: 'CUSTOM' // 사용자 커스텀 기간
+  }
+  
+  // 수정된 기간을 스토어에 저장하고 장소 선택 화면으로 이동
+  recommendationStore.updateSelection({
+    selectedPeriod: editedPeriod
+  })
+  
+  showEditModal.value = false
   router.push('/recommend/place')
 }
 </script>
@@ -370,6 +491,33 @@ function goPlace(period) {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-select.edit {
+  background: white;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.btn-select.edit:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 .btn-select.secondary {
   background: white;
   color: #334155;
@@ -465,6 +613,177 @@ function goPlace(period) {
   }
 }
 
+
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.modal-close {
+  appearance: none;
+  border: none;
+  background: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modal-close svg {
+  width: 24px;
+  height: 24px;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1e293b;
+  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+.duration-preview {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn-cancel,
+.btn-continue {
+  flex: 1;
+  appearance: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.875rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel {
+  background: white;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+}
+
+.btn-cancel:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.btn-continue {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+}
+
+.btn-continue:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 41, 59, 0.4);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.btn-continue:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 576px) {
   .period-result-wrapper {
     padding-top: 2rem;
@@ -486,6 +805,25 @@ function goPlace(period) {
   
   .date-text {
     font-size: 1.25rem;
+  }
+
+  .modal-content {
+    margin: 1rem;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-continue {
+    width: 100%;
   }
 }
 </style>
