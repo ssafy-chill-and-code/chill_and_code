@@ -326,9 +326,9 @@ const goToRecommend = () => {
 }
 
 // 모바일에서 좌측 패널 토글
-const showSidebar = ref(false)
+const mobileMenuOpen = ref(false)
 const toggleSidebar = () => {
-  showSidebar.value = !showSidebar.value
+  mobileMenuOpen.value = !mobileMenuOpen.value
 }
 </script>
 
@@ -342,28 +342,10 @@ const toggleSidebar = () => {
         <p class="mt-1 text-sm text-gray-600">워케이션을 위한 스마트한 일정 분석</p>
       </div>
 
-      <!-- 모바일 필터 버튼 -->
-      <div class="lg:hidden mb-6">
-        <button
-          @click="toggleSidebar"
-          class="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 rounded-lg px-4 py-3 font-medium text-sm hover:bg-gray-50 transition-all shadow-sm"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-          </svg>
-          필터 및 분석
-        </button>
-      </div>
-
       <div class="flex flex-col lg:flex-row gap-6">
-        <!-- 좌측 패널 (데스크톱: 항상 표시, 모바일: 토글) -->
-        <aside 
-          :class="[
-            'w-full lg:w-80 flex-shrink-0 space-y-6',
-            showSidebar ? 'block' : 'hidden lg:block'
-          ]"
-        >
-          <!-- 미니 캘린더 -->
+        <!-- 좌측 패널 (데스크톱: 일반 레이아웃, 모바일: 숨김) -->
+        <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6">
+          <!-- 현재 월 선택 -->
           <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
             <div class="flex items-center gap-2 mb-4">
               <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,6 +519,149 @@ const toggleSidebar = () => {
             </div>
           </div>
         </main>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button
+      @click="toggleSidebar"
+      class="lg:hidden fixed bottom-8 right-8 w-16 h-16 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center z-30 hover:bg-slate-900 transition-all"
+    >
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+      </svg>
+    </button>
+
+    <!-- Mobile Drawer -->
+    <div 
+      v-if="mobileMenuOpen" 
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+      @click="mobileMenuOpen = false"
+    ></div>
+    <div 
+      :class="[
+        'fixed top-0 left-0 bottom-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      ]"
+    >
+      <div class="p-8 border-b border-gray-200 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">필터 및 분석</h2>
+        <button 
+          @click="mobileMenuOpen = false"
+          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="p-6 space-y-6">
+        <!-- 현재 월 선택 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 class="text-sm font-semibold text-gray-900">현재 월</h3>
+          </div>
+          <button 
+            @click="openMonthPicker"
+            class="w-full text-center py-3 hover:bg-gray-50 rounded-lg transition-all group"
+          >
+            <div class="text-xl font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">{{ currentYearMonth }}</div>
+            <p class="text-xs text-gray-500 group-hover:text-indigo-500">클릭하여 월 선택</p>
+          </button>
+        </div>
+
+        <!-- 일정 유형 필터 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            <h3 class="text-sm font-semibold text-gray-900">필터</h3>
+          </div>
+          <div class="space-y-2">
+            <label 
+              v-for="type in scheduleTypes" 
+              :key="type.value"
+              class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+              <input 
+                type="checkbox" 
+                :value="type.value"
+                v-model="selectedTypes"
+                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <div class="flex items-center gap-2 flex-1">
+                <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: type.color }"></div>
+                <span class="text-sm font-medium text-gray-700">{{ type.label }}</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 이번 달 요약 분석 -->
+        <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 rounded-lg shadow-sm p-5 text-white">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <h3 class="text-sm font-semibold">이번 달 요약</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-3 rounded-lg bg-white/10 backdrop-blur-sm">
+              <span class="text-sm font-medium text-white/80">전체 일정</span>
+              <span class="text-xl font-bold">{{ monthSummary.totalCount }}개</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-lg bg-white/10 backdrop-blur-sm">
+              <span class="text-sm font-medium text-white/80">업무 시간</span>
+              <span class="text-xl font-bold">{{ monthSummary.workHours }}h</span>
+            </div>
+            <div class="pt-3 border-t border-white/20">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-white/80">여유도</span>
+                <span 
+                  :class="[monthSummary.statusColor, monthSummary.statusBg]"
+                  class="px-3 py-1 rounded-lg text-xs font-bold"
+                >
+                  {{ monthSummary.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-white/20">
+            <p class="text-xs text-white/60 italic">
+              💡 분석 기능은 백엔드 API 연동 후 고도화 예정
+            </p>
+          </div>
+        </div>
+
+        <!-- CTA 버튼 -->
+        <button
+          @click="goToRecommend"
+          class="w-full bg-slate-800 text-white rounded-lg px-5 py-4 font-semibold text-sm hover:bg-slate-900 transition-all shadow-sm"
+        >
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>워케이션 가능 기간 분석</span>
+          </div>
+        </button>
+
+        <!-- 일정 추가 버튼 -->
+        <button
+          @click="openCreateModal"
+          class="w-full bg-white border border-gray-300 text-gray-700 rounded-lg px-5 py-4 font-semibold text-sm hover:bg-gray-50 transition-all shadow-sm"
+        >
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>일정 추가</span>
+          </div>
+        </button>
       </div>
     </div>
 
