@@ -21,7 +21,7 @@
 		p.region,
 		p.created_at,
 		u.nickname,
-		0 AS view_count,
+		COALESCE(p.view_count, 0) AS view_count,
 		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
 		FROM post p
 		LEFT JOIN users u ON p.user_id = u.user_id
@@ -70,7 +70,7 @@
 		p.region,
 		p.created_at,
 		u.nickname,
-		0 AS view_count,
+		COALESCE(p.view_count, 0) AS view_count,
 		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
 		FROM
 		post p
@@ -89,7 +89,7 @@
 		p.region,
 		p.created_at,
 		u.nickname,
-		0 AS view_count,
+		COALESCE(p.view_count, 0) AS view_count,
 		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
 		FROM post p
 		LEFT JOIN users u ON p.user_id = u.user_id
@@ -137,5 +137,12 @@
             LIMIT #{limit}
         </if>
     </select>
+
+	<!-- 조회수 증가 -->
+	<update id="incrementViewCount" parameterType="Long">
+		UPDATE post
+		SET view_count = COALESCE(view_count, 0) + 1
+		WHERE post_id = #{postId}
+	</update>
 
 </mapper>

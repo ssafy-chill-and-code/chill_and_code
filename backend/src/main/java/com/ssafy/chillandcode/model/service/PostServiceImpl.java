@@ -49,6 +49,9 @@ public class PostServiceImpl implements PostService {
 			throw new ApiException(ErrorCode.POST_NOT_FOUND);
 		}
 
+		// 조회수 증가
+		postDao.incrementViewCount(postId);
+
 		return post;
 	}
 

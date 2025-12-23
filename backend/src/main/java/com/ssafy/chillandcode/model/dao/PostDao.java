@@ -50,4 +50,9 @@ public interface PostDao {
 	 */
 	List<RegionRank> selectRegionRank(Map<String, Object> params);
 
+	/**
+	 * 조회수 증가
+	 */
+	int incrementViewCount(Long postId);
+
 }
