@@ -39,6 +39,7 @@ const scheduleTypeOptions = [
 // 초기값 설정
 const initForm = () => {
   if (props.schedule) {
+    // 수정 모드: 기존 일정 정보로 채우기
     title.value = props.schedule.title || ''
     scheduleType.value = props.schedule.scheduleType || 'PERSONAL'
     
@@ -55,6 +56,32 @@ const initForm = () => {
       endDate.value = endDT.toISOString().split('T')[0]
       endTime.value = endDT.toTimeString().slice(0, 5)
     }
+  } else if (scheduleStore.prefilledPlace) {
+    // 장소 추천에서 넘어온 경우: 장소 정보로 자동 채우기
+    const place = scheduleStore.prefilledPlace
+    const period = scheduleStore.prefilledPeriod
+    
+    // 제목: "[장소명] - 워케이션" 형식
+    title.value = `${place.name} - 워케이션`
+    
+    // 일정 유형: 워케이션으로 자동 설정
+    scheduleType.value = 'WORKATION'
+    
+    // 날짜: 추천받은 기간으로 설정
+    if (period && period.startDate && period.endDate) {
+      startDate.value = period.startDate
+      endDate.value = period.endDate
+      startTime.value = '09:00'
+      endTime.value = '18:00'
+    } else {
+      // 기간 정보가 없으면 오늘로 설정
+      const today = new Date().toISOString().split('T')[0]
+      startDate.value = today
+      endDate.value = today
+    }
+    
+    // 사용 후 초기화 (다음 일정 생성 시 중복 방지)
+    scheduleStore.clearPrefilledPlace()
   } else {
     // 기본값: 오늘 날짜
     const today = new Date().toISOString().split('T')[0]

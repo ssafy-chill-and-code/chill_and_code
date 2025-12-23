@@ -318,6 +318,12 @@ const monthSummary = computed(() => {
 // 초기 로드
 onMounted(() => {
   fetchSchedules(formatMonth(currentDate.value))
+  
+  // 장소 추천에서 넘어온 경우 자동으로 일정 생성 모달 열기
+  if (scheduleStore.prefilledPlace) {
+    editingSchedule.value = null
+    showFormModal.value = true
+  }
 })
 
 // 워케이션 추천 화면으로 이동

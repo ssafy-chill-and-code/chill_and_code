@@ -105,10 +105,12 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
 import { useRecommendationStore } from '@/stores/recommendation'
+import { useScheduleStore } from '@/stores/schedule'
 
 const router = useRouter()
 const placeStore = usePlaceRecommendationStore()
 const recommendationStore = useRecommendationStore()
+const scheduleStore = useScheduleStore()
 
 const places = computed(() => {
   const result = placeStore.result || []
@@ -158,8 +160,12 @@ function formatPrice(score) {
 }
 
 function goSchedule(place) {
-  // 선택한 장소로 일정 만들기
-  router.push('/schedule/create')
+  // 선택한 장소와 기간 정보를 scheduleStore에 저장
+  const period = selectedPeriod.value
+  scheduleStore.setPrefilledPlace(place, period)
+  
+  // 일정 페이지로 이동 (자동으로 모달이 열림)
+  router.push('/schedule')
 }
 </script>
 
