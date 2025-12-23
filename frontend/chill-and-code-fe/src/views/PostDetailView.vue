@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePostStore } from '@/stores/post'
 import { useCommentStore } from '@/stores/comment'
+import api from '@/api/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -11,6 +12,10 @@ const commentStore = useCommentStore()
 
 const postId = route.params.postId
 const message = ref('')
+const isLiked = ref(false)
+const likeCount = ref(0)
+const likeLoading = ref(false)
+const shareMessage = ref('')
 
 const newComment = ref('')
 const editingId = ref(null)
@@ -19,30 +24,16 @@ const editingContent = ref('')
 const comments = computed(() => commentStore.commentsByPost[postId] || [])
 
 const hashtags = computed(() => {
-  const text = (postStore.post?.content || '').trim()
-  const region = (postStore.post?.region || '').trim()
+  const title = (postStore.post?.title || '').trim()
+  const content = (postStore.post?.content || '').trim()
 
-  const explicit = text.match(/#[^\s#]+/g) || []
-  const tagSet = new Set(explicit)
-
-  if (explicit.length === 0 && text) {
-    const stop = new Set([
-      '그리고','하지만','그러나','또는','또','또한','등','및','그','이','저','것','수','등등','때','처럼','같이','같은','그냥','정말','진짜','너무','매우','아주','많이','조금','좀','더','이제','먼저','먼저는','그래서','그래도','그러면','해서','하면','하고','하는','했다','했다가','있다','있어요','없다','합니다','합니다만','입니다','있습니다','였습니다','였다','가','이','은','는','을','를','에','의','와','과','로','도','다','요'
-    ])
-    const tokens = (text.match(/[가-힣A-Za-z]{2,12}/g) || [])
-      .filter(w => !stop.has(w) && !/^\d+$/.test(w))
-
-    const freq = new Map()
-    for (const t of tokens) freq.set(t, (freq.get(t) || 0) + 1)
-    const auto = Array.from(freq.entries())
-      .filter(([_w,c]) => c >= 2)
-      .sort((a,b) => b[1]-a[1] || b[0].length-a[0].length)
-      .slice(0, 2)
-      .map(([w]) => `#${w}`)
-    for (const t of auto) tagSet.add(t)
-  }
-
-  if (region) tagSet.add(`#${region}`)
+  // 제목과 내용에서 사용자가 직접 작성한 #태그만 추출
+  const titleTags = title.match(/#[^\s#]+/g) || []
+  const contentTags = content.match(/#[^\s#]+/g) || []
+  const allTags = [...titleTags, ...contentTags]
+  
+  const tagSet = new Set(allTags)
+  
   return Array.from(tagSet)
 })
 
@@ -50,7 +41,6 @@ const derivedCategory = computed(() => {
   const p = postStore.post || {}
   const title = p.title || ''
   const content = p.content || ''
-  if ((p.region || '').trim() !== '') return '지역별'
   if (title.includes('후기') || content.includes('후기')) return '후기'
   if (
     title.includes('정보공유') || content.includes('정보공유') ||
@@ -60,11 +50,15 @@ const derivedCategory = computed(() => {
     title.includes('동행') || content.includes('동행') ||
     title.includes('모집') || content.includes('모집')
   ) return '동행모집'
-  return '전체'
+  return null // 카테고리 없음
 })
 
 function avatarUrl() {
   const p = postStore.post || {}
+  // 사용자가 설정한 프로필 이미지가 있으면 그것을 사용, 없으면 dicebear
+  if (p.profileImageUrl) {
+    return p.profileImageUrl
+  }
   const seed = p.userId ?? p.title ?? 'user'
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(String(seed))}`
 }
@@ -78,9 +72,78 @@ function formatDate(input) {
   return `${m}월 ${dd}일`
 }
 
+function commentAvatarUrl(comment) {
+  // 사용자가 설정한 프로필 이미지가 있으면 그것을 사용, 없으면 dicebear
+  if (comment?.profileImageUrl) {
+    return comment.profileImageUrl
+  }
+  const seed = comment?.userId ?? 'user'
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(String(seed))}`
+}
+
+async function loadLikeInfo() {
+  try {
+    const response = await api.get(`/posts/${postId}/likes`)
+    isLiked.value = response.data.data.isLiked
+    likeCount.value = response.data.data.likeCount
+  } catch (e) {
+    console.error('좋아요 정보 로드 실패:', e)
+  }
+}
+
+async function toggleLike() {
+  if (likeLoading.value) return
+  
+  likeLoading.value = true
+  try {
+    const response = await api.post(`/posts/${postId}/likes`)
+    isLiked.value = response.data.data.isLiked
+    likeCount.value = response.data.data.likeCount
+  } catch (e) {
+    message.value = e?.response?.data?.message || '좋아요 처리에 실패했습니다.'
+  } finally {
+    likeLoading.value = false
+  }
+}
+
+async function sharePost() {
+  const url = window.location.href
+  
+  try {
+    await navigator.clipboard.writeText(url)
+    shareMessage.value = '링크가 클립보드에 복사되었습니다!'
+    
+    // 3초 후 메시지 자동 제거
+    setTimeout(() => {
+      shareMessage.value = ''
+    }, 3000)
+  } catch (e) {
+    // 클립보드 API 지원하지 않는 경우 fallback
+    const textArea = document.createElement('textarea')
+    textArea.value = url
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-999999px'
+    document.body.appendChild(textArea)
+    textArea.select()
+    
+    try {
+      document.execCommand('copy')
+      shareMessage.value = '링크가 클립보드에 복사되었습니다!'
+      setTimeout(() => {
+        shareMessage.value = ''
+      }, 3000)
+    } catch (err) {
+      shareMessage.value = '링크 복사에 실패했습니다.'
+    } finally {
+      document.body.removeChild(textArea)
+    }
+  }
+}
+
 async function load() {
   await postStore.fetchPostDetail(postId)
   await commentStore.fetchCommentsByPost(postId)
+  await loadLikeInfo()
 }
 
 function toList() {
@@ -167,11 +230,11 @@ onMounted(load)
         <!-- 상단: 카테고리/지역 + 수정/삭제 버튼 -->
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-2">
-            <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+            <span v-if="derivedCategory" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
               {{ derivedCategory }}
             </span>
-            <span v-if="postStore.post?.region" class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
-              {{ postStore.post.region }}
+            <span class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
+              {{ postStore.post?.region || '전국' }}
             </span>
           </div>
           
@@ -225,9 +288,31 @@ onMounted(load)
         </div>
 
         <!-- 본문 -->
-        <div class="mb-6" style="white-space: pre-wrap; line-height: 1.7; color: #374151; font-size: 0.95rem;">
-          {{ postStore.post ? postStore.post.content : '게시글 내용' }}
-        </div>
+        <div 
+          class="mb-6 post-content" 
+          style="white-space: pre-wrap; line-height: 1.7; color: #374151; font-size: 0.95rem;"
+          v-html="postStore.post ? postStore.post.content : '게시글 내용'"
+        ></div>
+
+        <!-- 지도 링크 카드 -->
+        <a 
+          v-if="postStore.post?.placeUrl" 
+          :href="postStore.post.placeUrl" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="block mb-6 p-4 bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md transition-all group"
+        >
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-bold text-slate-900 group-hover:text-slate-700 transition-colors">
+              플레이스 바로가기
+            </div>
+            <div class="flex-shrink-0 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </a>
 
         <!-- 태그 -->
         <div v-if="hashtags.length" class="flex flex-wrap gap-1.5 mb-6">
@@ -245,22 +330,37 @@ onMounted(load)
           <!-- 좋아요 버튼 -->
           <button 
             type="button" 
-            class="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-gray-500 transition-colors cursor-not-allowed"
-            disabled
-            title="준비중입니다"
+            @click="toggleLike"
+            :disabled="likeLoading"
+            class="inline-flex items-center gap-1.5 px-3 py-2 transition-all"
+            :class="isLiked 
+              ? 'text-red-500 hover:text-red-600' 
+              : 'text-gray-400 hover:text-red-500'"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="18" 
+              height="18" 
+              viewBox="0 0 24 24" 
+              :fill="isLiked ? 'currentColor' : 'none'" 
+              stroke="currentColor" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+              class="transition-transform"
+              :class="{'scale-110': isLiked}"
+            >
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
             </svg>
-            <span class="text-xs font-medium">좋아요</span>
+            <span class="text-xs font-medium">{{ likeCount }}</span>
           </button>
 
           <!-- 공유 버튼 -->
           <button 
             type="button" 
-            class="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-gray-500 transition-colors cursor-not-allowed"
-            disabled
-            title="준비중입니다"
+            @click="sharePost"
+            class="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-blue-500 transition-colors"
+            :class="{'text-blue-500': shareMessage}"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/>
@@ -292,6 +392,12 @@ onMounted(load)
         </div>
         <div v-if="message" class="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-yellow-700 text-sm">
           {{ message }}
+        </div>
+        <div v-if="shareMessage" class="mt-4 bg-green-50 border border-green-200 rounded-xl p-3 text-green-700 text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          {{ shareMessage }}
         </div>
       </article>
 
@@ -332,6 +438,7 @@ onMounted(load)
                 <div class="mb-3 text-gray-900 leading-relaxed text-sm">{{ c.content }}</div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <img :src="commentAvatarUrl(c)" alt="avatar" class="w-5 h-5 rounded-full" />
                     <span class="font-medium text-gray-700">{{ c.nickname || c.userId }}</span>
                     <span>·</span>
                     <span>{{ formatDate(c.createdAt) }}</span>
@@ -398,3 +505,13 @@ onMounted(load)
     </div>
   </div>
 </template>
+
+<style scoped>
+.post-content :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+</style>

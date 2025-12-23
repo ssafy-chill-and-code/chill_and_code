@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePostStore } from '@/stores/post'
+import api from '@/api/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -10,18 +11,42 @@ const postStore = usePostStore()
 const title = ref('')
 const region = ref('')
 const content = ref('')
+const category = ref('')
+const placeUrl = ref('')
+const showPlaceInput = ref(false)
+const uploadedImages = ref([])
+const uploadingImage = ref(false)
 const message = ref('')
 const loading = ref(false)
 const initialLoading = ref(true)
+
+const categories = [
+  { value: '후기', label: '후기' },
+  { value: '정보공유', label: '정보공유' },
+  { value: '동행모집', label: '동행모집' },
+]
 
 onMounted(async () => {
   try {
     await postStore.fetchPostDetail(route.params.postId)
     const p = postStore.post
     if (p) {
-      title.value = p.title || ''
+      // 제목에서 카테고리 태그 추출
+      let originalTitle = p.title || ''
+      const categoryMatch = originalTitle.match(/^\[([^\]]+)\]\s*/)
+      if (categoryMatch) {
+        const extractedCategory = categoryMatch[1]
+        if (['후기', '정보공유', '동행모집'].includes(extractedCategory)) {
+          category.value = extractedCategory
+          originalTitle = originalTitle.replace(/^\[([^\]]+)\]\s*/, '')
+        }
+      }
+      
+      title.value = originalTitle
       region.value = p.region || ''
       content.value = p.content || ''
+      placeUrl.value = p.placeUrl || ''
+      showPlaceInput.value = !!p.placeUrl
     }
   } catch (e) {
     message.value = '게시글을 불러오는데 실패했습니다.'
@@ -29,6 +54,44 @@ onMounted(async () => {
     initialLoading.value = false
   }
 })
+
+async function handleImageUpload(event) {
+  const files = event.target.files
+  if (!files || files.length === 0) return
+
+  uploadingImage.value = true
+  try {
+    for (const file of files) {
+      // 파일 크기 체크 (5MB 제한)
+      if (file.size > 5 * 1024 * 1024) {
+        message.value = '이미지 크기는 5MB 이하여야 합니다.'
+        continue
+      }
+
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await api.post('/files/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      const imageUrl = response.data.data.url
+      uploadedImages.value.push(imageUrl)
+    }
+  } catch (e) {
+    message.value = e?.response?.data?.message || '이미지 업로드에 실패했습니다.'
+  } finally {
+    uploadingImage.value = false
+    // input 초기화
+    event.target.value = ''
+  }
+}
+
+function removeImage(index) {
+  uploadedImages.value.splice(index, 1)
+}
 
 async function save() {
   message.value = ''
@@ -39,10 +102,24 @@ async function save() {
   
   loading.value = true
   try {
+    // 카테고리가 선택되었으면 제목에 태그 추가
+    let finalTitle = title.value.trim()
+    if (category.value && !finalTitle.includes(`[${category.value}]`) && !finalTitle.includes(category.value)) {
+      finalTitle = `[${category.value}] ${finalTitle}`
+    }
+
+    // 새로 업로드된 이미지 URL들을 content에 추가
+    let finalContent = content.value
+    if (uploadedImages.value.length > 0) {
+      const imageHtml = uploadedImages.value.map(url => `<img src="${url}" alt="게시글 이미지">`).join('\n')
+      finalContent = finalContent + '\n\n' + imageHtml
+    }
+    
     await postStore.updatePost(route.params.postId, { 
-      title: title.value, 
+      title: finalTitle, 
       region: region.value, 
-      content: content.value 
+      content: finalContent,
+      placeUrl: placeUrl.value || null
     })
     router.push({ name: 'post-detail', params: { postId: route.params.postId } })
   } catch (e) {
@@ -110,6 +187,30 @@ function cancel() {
             />
           </div>
 
+          <!-- 카테고리 선택 -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">
+              카테고리
+              <span class="text-gray-400 text-xs font-normal ml-2">(선택사항)</span>
+            </label>
+            <div class="flex flex-wrap gap-3">
+              <button
+                v-for="cat in categories"
+                :key="cat.value"
+                type="button"
+                @click="category = (category === cat.value ? '' : cat.value)"
+                :disabled="loading"
+                class="px-5 py-3 rounded-xl text-sm font-semibold transition-all"
+                :class="category === cat.value 
+                  ? 'bg-slate-800 text-white shadow-md' 
+                  : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-slate-400 hover:bg-gray-50'"
+              >
+                {{ cat.label }}
+              </button>
+            </div>
+            <p v-if="!category" class="mt-2 text-xs text-gray-500">카테고리를 선택하지 않으면 일반 게시글로 유지됩니다.</p>
+          </div>
+
           <!-- 지역 선택 -->
           <div>
             <label for="region" class="block text-sm font-semibold text-gray-700 mb-3">
@@ -143,6 +244,48 @@ function cancel() {
             </select>
           </div>
 
+          <!-- 장소 수정 -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <label class="block text-sm font-semibold text-gray-700">
+                장소 링크
+                <span class="text-gray-400 text-xs font-normal ml-2">(선택사항)</span>
+              </label>
+              <button
+                type="button"
+                @click="showPlaceInput = !showPlaceInput"
+                :disabled="loading"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all"
+                :class="showPlaceInput 
+                  ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' 
+                  : 'bg-slate-800 text-white hover:bg-slate-900'"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {{ showPlaceInput ? '장소 취소' : (placeUrl ? '장소 수정' : '장소 추가') }}
+              </button>
+            </div>
+            <transition name="slide">
+              <div v-if="showPlaceInput" class="space-y-3">
+                <input
+                  v-model="placeUrl"
+                  type="url"
+                  placeholder="지도 링크를 붙여넣으세요 (네이버/카카오/구글 지도)"
+                  :disabled="loading"
+                  class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-all text-base"
+                />
+                <p v-if="placeUrl" class="flex items-center gap-2 text-sm text-green-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  장소 링크가 추가되었습니다
+                </p>
+              </div>
+            </transition>
+          </div>
+
           <!-- 내용 입력 -->
           <div>
             <label for="content" class="block text-sm font-semibold text-gray-700 mb-3">
@@ -157,6 +300,63 @@ function cancel() {
               :disabled="loading"
               class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-all resize-y text-base leading-relaxed"
             ></textarea>
+          </div>
+
+          <!-- 이미지 업로드 (추가) -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">
+              이미지 추가
+              <span class="text-gray-400 text-xs font-normal ml-2">(선택사항, 최대 5MB)</span>
+            </label>
+            
+            <!-- 업로드 버튼 -->
+            <div class="mb-3">
+              <label 
+                for="image-upload-edit"
+                class="inline-flex items-center gap-2 px-5 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all cursor-pointer font-semibold text-sm"
+                :class="{'opacity-50 cursor-not-allowed': loading || uploadingImage}"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span v-if="uploadingImage">업로드 중...</span>
+                <span v-else>이미지 선택</span>
+              </label>
+              <input
+                id="image-upload-edit"
+                type="file"
+                accept="image/*"
+                multiple
+                @change="handleImageUpload"
+                :disabled="loading || uploadingImage"
+                class="hidden"
+              />
+            </div>
+
+            <!-- 업로드된 이미지 미리보기 -->
+            <div v-if="uploadedImages.length > 0" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div 
+                v-for="(imageUrl, index) in uploadedImages" 
+                :key="index"
+                class="relative group"
+              >
+                <img 
+                  :src="imageUrl" 
+                  alt="업로드된 이미지"
+                  class="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+                />
+                <button
+                  type="button"
+                  @click="removeImage(index)"
+                  class="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center"
+                  title="이미지 삭제"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- 수정 안내 -->
@@ -178,7 +378,15 @@ function cancel() {
               </li>
               <li class="flex items-start gap-2">
                 <span class="text-slate-400 mt-0.5">•</span>
+                <span>카테고리 변경 시 제목 태그가 업데이트됩니다. (다시 클릭하면 해제)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-slate-400 mt-0.5">•</span>
                 <span>지역 변경 시 게시글 분류가 함께 변경됩니다.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-slate-400 mt-0.5">•</span>
+                <span>장소 링크를 추가/수정하면 게시글에 지도 보기 카드가 표시됩니다.</span>
               </li>
             </ul>
           </div>
@@ -213,3 +421,17 @@ function cancel() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.slide-enter-active, .slide-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>

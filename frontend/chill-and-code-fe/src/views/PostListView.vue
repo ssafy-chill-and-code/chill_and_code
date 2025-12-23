@@ -12,16 +12,13 @@ const sort = ref('latest')
 const page = ref(1)
 const size = ref(10)
 
-const categories = ['전체', '지역별', '후기', '정보공유', '동행모집']
+const categories = ['전체', '후기', '정보공유', '동행모집']
 const selectedCategory = ref('전체')
 
 const filteredPosts = computed(() => {
   const list = postStore.posts || []
   const cat = selectedCategory.value
   if (cat === '전체') return list
-  if (cat === '지역별') {
-    return list.filter(p => (p.region || '').trim() !== '')
-  }
   if (cat === '후기') {
     return list.filter(p =>
       (p.title && p.title.includes('후기')) || (p.content && p.content.includes('후기'))
@@ -52,6 +49,13 @@ async function load() {
   })
 }
 
+function goToPage(newPage) {
+  if (newPage < 1 || newPage > postStore.totalPages) return
+  page.value = newPage
+  load()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 function goCreate() {
   router.push({ name: 'post-create' })
 }
@@ -63,52 +67,28 @@ function open(postId) {
 onMounted(() => {
   load()
   postStore.fetchRegionRank({ limit: 5 })
-})
-
-const popularKeywords = computed(() => {
-  const counts = new Map()
-  for (const p of filteredPosts.value) {
-    const tags = extractTags(p)
-    const regionTag = (p.region && p.region.trim()) ? `#${p.region.trim()}` : null
-    for (const t of tags) {
-      if (regionTag && t === regionTag) continue
-      counts.set(t, (counts.get(t) || 0) + 1)
-    }
-  }
-  return Array.from(counts.entries())
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
-    .slice(0, 8)
+  postStore.fetchHashtagRank({ limit: 10, windowDays: 7 }) // 최근 7일, 10개
 })
 
 function extractTags(p) {
-  const text = (p?.content || '').trim()
-  const region = (p?.region || '').trim()
-  const explicit = text.match(/#[^\s#]+/g) || []
-  const set = new Set(explicit)
-
-  if (explicit.length === 0 && text) {
-    const stop = new Set([
-      '그리고','하지만','그러나','또는','또','또한','등','및','그','이','저','것','수','등등','때','처럼','같이','같은','그냥','정말','진짜','너무','매우','아주','많이','조금','좀','더','이제','먼저','먼저는','그래서','그래도','그러면','해서','하면','하고','하는','했다','했다가','있다','있어요','없다','합니다','합니다만','입니다','있습니다','였습니다','였다','가','이','은','는','을','를','에','의','와','과','로','도','다','요'
-    ])
-    const tokens = (text.match(/[가-힣A-Za-z]{2,12}/g) || [])
-      .filter(w => !stop.has(w) && !/^\d+$/.test(w))
-
-    const freq = new Map()
-    for (const t of tokens) freq.set(t, (freq.get(t) || 0) + 1)
-    const auto = Array.from(freq.entries())
-      .filter(([_w,c]) => c >= 2)
-      .sort((a,b) => b[1]-a[1] || b[0].length-a[0].length)
-      .slice(0, 2)
-      .map(([w]) => `#${w}`)
-    for (const t of auto) set.add(t)
-  }
-
-  if (region) set.add(`#${region}`)
+  const title = (p?.title || '').trim()
+  const content = (p?.content || '').trim()
+  
+  // 제목과 내용에서 사용자가 직접 작성한 #태그만 추출
+  const titleTags = title.match(/#[^\s#]+/g) || []
+  const contentTags = content.match(/#[^\s#]+/g) || []
+  const allTags = [...titleTags, ...contentTags]
+  
+  const set = new Set(allTags)
+  
   return Array.from(set)
 }
 
 function avatarUrl(p) {
+  // 사용자가 설정한 프로필 이미지가 있으면 그것을 사용, 없으면 dicebear
+  if (p?.profileImageUrl) {
+    return p.profileImageUrl
+  }
   const seed = p?.userId ?? p?.title ?? 'user'
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(String(seed))}`
 }
@@ -123,7 +103,6 @@ function formatDate(input) {
 }
 
 function deriveCategoryForPost(p) {
-  if ((p.region || '').trim() !== '') return '지역별'
   const title = p.title || ''
   const content = p.content || ''
   if (title.includes('후기') || content.includes('후기')) return '후기'
@@ -131,7 +110,7 @@ function deriveCategoryForPost(p) {
       title.includes('정보') || content.includes('정보')) return '정보공유'
   if (title.includes('동행') || content.includes('동행') ||
       title.includes('모집') || content.includes('모집')) return '동행모집'
-  return '전체'
+  return null // 카테고리 없음
 }
 </script>
 
@@ -235,25 +214,40 @@ function deriveCategoryForPost(p) {
                 @click="open(p.postId)"
                 @keydown.enter="open(p.postId)"
               >
-                <!-- 카테고리/지역 라벨 -->
-                <div class="flex gap-2 mb-3">
-                  <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
-                    {{ deriveCategoryForPost(p) }}
-                  </span>
-                  <span v-if="p.region" class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
-                    {{ p.region }}
-                  </span>
+                <!-- 상단: 카테고리/지역 + 썸네일 -->
+                <div class="flex items-start gap-4 mb-3">
+                  <div class="flex-1">
+                    <!-- 카테고리/지역 라벨 -->
+                    <div class="flex gap-2 mb-3">
+                      <span v-if="deriveCategoryForPost(p)" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+                        {{ deriveCategoryForPost(p) }}
+                      </span>
+                      <span class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
+                        {{ p.region || '전국' }}
+                      </span>
+                    </div>
+
+                    <!-- 제목 -->
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 leading-snug">
+                      {{ p.title }}
+                    </h3>
+
+                    <!-- 요약 내용 -->
+                    <p v-if="p.content" class="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+                      {{ p.content }}
+                    </p>
+                  </div>
+
+                  <!-- 썸네일 이미지 -->
+                  <div v-if="p.thumbnailUrl" class="flex-shrink-0">
+                    <img 
+                      :src="p.thumbnailUrl" 
+                      :alt="p.title"
+                      class="w-24 h-24 object-cover rounded-lg"
+                      @error="$event.target.style.display='none'"
+                    />
+                  </div>
                 </div>
-
-                <!-- 제목 -->
-                <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 leading-snug">
-                  {{ p.title }}
-                </h3>
-
-                <!-- 요약 내용 -->
-                <p v-if="p.content" class="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
-                  {{ p.content }}
-                </p>
 
                 <!-- 태그 -->
                 <div v-if="extractTags(p).length" class="flex flex-wrap gap-1.5 mb-3">
@@ -284,17 +278,24 @@ function deriveCategoryForPost(p) {
                     </svg>
                     <span>{{ p.viewCount || 0 }}</span>
                   </div>
-                  <div class="flex items-center gap-1 opacity-40">
+                  <div class="flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                     </svg>
-                    <span>준비중</span>
+                    <span>{{ p.likeCount || 0 }}</span>
                   </div>
                   <div class="flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
                     </svg>
                     <span>{{ p.commentCount || 0 }}</span>
+                  </div>
+                  <div v-if="p.placeUrl" class="flex items-center gap-1 text-slate-700" title="장소 링크 포함">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span class="font-medium">지도</span>
                   </div>
                 </div>
               </article>
@@ -319,6 +320,82 @@ function deriveCategoryForPost(p) {
             <!-- Error State -->
             <div v-if="postStore.error" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-red-700 text-sm">
               {{ postStore.error }}
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div v-if="!postStore.loading && filteredPosts.length > 0 && postStore.totalPages > 1" class="flex items-center justify-center gap-2 mt-8">
+              <!-- 첫 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === 1 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === 1"
+                @click="goToPage(1)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/>
+                </svg>
+              </button>
+
+              <!-- 이전 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === 1 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === 1"
+                @click="goToPage(postStore.currentPage - 1)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+
+              <!-- 페이지 번호들 -->
+              <template v-for="pageNum in Array.from({ length: Math.min(5, postStore.totalPages) }, (_, i) => {
+                const start = Math.max(1, Math.min(postStore.currentPage - 2, postStore.totalPages - 4))
+                return start + i
+              })" :key="pageNum">
+                <button
+                  v-if="pageNum <= postStore.totalPages"
+                  class="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                  :class="pageNum === postStore.currentPage 
+                    ? 'bg-slate-800 text-white shadow-md' 
+                    : 'text-gray-700 hover:bg-gray-100'"
+                  @click="goToPage(pageNum)"
+                >
+                  {{ pageNum }}
+                </button>
+              </template>
+
+              <!-- 다음 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === postStore.totalPages 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === postStore.totalPages"
+                @click="goToPage(postStore.currentPage + 1)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+
+              <!-- 마지막 페이지 -->
+              <button 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                :class="postStore.currentPage === postStore.totalPages 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'"
+                :disabled="postStore.currentPage === postStore.totalPages"
+                @click="goToPage(postStore.totalPages)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m13 17 5-5-5-5"/><path d="m6 17 5-5-5-5"/>
+                </svg>
+              </button>
             </div>
           </div>
         </section>
@@ -372,22 +449,25 @@ function deriveCategoryForPost(p) {
             </ul>
           </div>
 
-          <!-- 주요 키워드 -->
-          <div v-if="popularKeywords.length > 0" class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
+          <!-- 실시간 트렌드 -->
+          <div v-if="postStore.hashtagRanks.length > 0" class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
             <h3 class="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-700">
-                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
-              주요 키워드
+              실시간 트렌드
+              <span class="ml-auto text-xs text-gray-500 font-normal">최근 7일</span>
             </h3>
             <div class="flex flex-wrap gap-2">
-              <span
-                v-for="kw in popularKeywords"
-                :key="kw.tag"
-                class="px-3 py-1.5 bg-slate-50 text-slate-700 rounded-lg text-xs font-medium border border-slate-200 hover:bg-slate-100 transition-colors"
+              <button
+                v-for="tag in postStore.hashtagRanks"
+                :key="tag.hashtag"
+                @click="search = tag.hashtag; load()"
+                class="px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center gap-1.5"
               >
-                {{ kw.tag }}
-              </span>
+                <span>{{ tag.hashtag }}</span>
+                <span class="text-indigo-500 font-semibold">{{ tag.count }}</span>
+              </button>
             </div>
           </div>
         </aside>
