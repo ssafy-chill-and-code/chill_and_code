@@ -1,5 +1,7 @@
 package com.ssafy.chillandcode.recommend.dto;
 
+import java.time.LocalDate;
+
 import com.ssafy.chillandcode.recommend.UserStyle;
 
 public class RecommendPeriodRequest {
@@ -8,6 +10,7 @@ public class RecommendPeriodRequest {
 	Integer maxDays;	//null 가능
 	
 	boolean remoteWorkAllowed;
+	LocalDate startDate;	//null 가능
 	
 	public RecommendPeriodRequest() {
 
@@ -53,10 +56,18 @@ public class RecommendPeriodRequest {
 		this.remoteWorkAllowed = remoteWorkAllowed;
 	}
 
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
 	@Override
 	public String toString() {
 		return "RecommendPeriodRequest [style=" + style + ", minDays=" + minDays + ", maxDays=" + maxDays
-				+ ", remoteWorkAllowed=" + remoteWorkAllowed + "]";
+				+ ", remoteWorkAllowed=" + remoteWorkAllowed + ", startDate=" + startDate + "]";
 	}
 
 }
