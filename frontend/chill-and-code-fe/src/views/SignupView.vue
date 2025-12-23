@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
 
@@ -9,9 +9,32 @@ const nickname = ref('')
 const region = ref('')
 const loading = ref(false)
 const error = ref(null)
+const randomImage = ref('')
 
 const userStore = useUserStore()
 const router = useRouter()
+
+// 랜덤 이미지 선택
+const images = [
+  'login_signup.jpg',
+  'login_signup_1.jpg',
+  'login_signup_2.jpg',
+  'login_signup_3.jpg',
+  'login_signup_4.jpg',
+  'login_signup_5.jpg',
+  'login_signup_6.jpg',
+  'login_signup_7.jpg',
+  'login_signup_8.jpg',
+  'login_signup_9.jpg',
+  'login_signup_10.jpg',
+  'login_signup_11.jpg',
+  'login_signup_12.jpg'
+]
+
+onMounted(() => {
+  const randomIndex = Math.floor(Math.random() * images.length)
+  randomImage.value = images[randomIndex]
+})
 
 // 유효성 검증
 const validateEmail = (email) => {
@@ -78,27 +101,27 @@ const regions = [
 </script>
 
 <template>
-  <div class="min-h-screen flex">
-    <!-- 좌측 영역: 브랜딩 영역 (PC만 표시) -->
-    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 text-white p-12 flex-col justify-center items-center">
-      <div class="text-center space-y-4 opacity-90">
-        <h1 class="text-6xl font-light tracking-tight">Chill & Code</h1>
-        <p class="text-lg text-slate-300 font-light">워케이션의 새로운 기준</p>
+  <div class="min-h-screen flex bg-[#EEF3F5]">
+    <!-- 좌측 영역: 이미지 영역 (PC만 표시) -->
+    <div class="hidden lg:flex lg:w-1/2 p-8 flex-col justify-center items-center">
+      <div v-if="randomImage" class="w-full h-full rounded-3xl overflow-hidden shadow-2xl">
+        <img 
+          :src="`/src/assets/login/${randomImage}`"
+          alt="Workation" 
+          class="w-full h-full object-cover"
+        />
       </div>
     </div>
 
     <!-- 우측 영역: 폼 영역 -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
       <div class="w-full max-w-md">
         <!-- 뒤로가기 버튼 -->
         <RouterLink 
           to="/" 
           class="inline-flex items-center gap-2 text-gray-600 hover:text-slate-900 transition-colors mb-8 group"
         >
-          <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-          </svg>
-          <span class="text-sm font-medium">홈으로 돌아가기</span>
+          <img src="@/assets/arrow/back_arrow.png" alt="뒤로 가기" class="w-6 h-6 transition-transform group-hover:-translate-x-1" />
         </RouterLink>
 
         <!-- 모바일 헤더 (모바일만 표시) -->

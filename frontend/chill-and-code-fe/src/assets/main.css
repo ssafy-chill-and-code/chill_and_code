@@ -108,3 +108,288 @@ a,
 }
 .navbar-right { display: flex; gap: 12px; }
 
+/* 글래스모피즘 효과 */
+.glass {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+}
+
+/* 다크모드 스타일 */
+.dark {
+  color-scheme: dark;
+  /* CSS 변수 오버라이드 */
+  --color-background: #1a1a1a;
+  --color-background-soft: #2a2a2a;
+  --color-background-mute: #3a3a3a;
+}
+
+.dark body {
+  background-color: #1a1a1a;
+  color: #e5e5e5;
+}
+
+.dark #app {
+  background-color: #1a1a1a;
+}
+
+.dark .home-wrapper,
+.dark .bg-white,
+.dark [style*="background"] {
+  background-color: #1a1a1a !important;
+}
+
+/* 추천 페이지 래퍼들 */
+.dark .style-select-wrapper,
+.dark .period-select-wrapper,
+.dark .place-select-wrapper,
+.dark .period-result-wrapper,
+.dark .place-result-wrapper {
+  background-color: #1a1a1a !important;
+}
+
+.dark .text-gray-700 {
+  color: #d1d1d1 !important;
+}
+
+.dark .text-gray-900 {
+  color: #e5e5e5 !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #404040 !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #2a2a2a !important;
+}
+
+.dark .hover\:bg-slate-50:hover {
+  background-color: #2a2a2a !important;
+}
+
+.dark .bg-gradient-to-br {
+  filter: brightness(0.8);
+}
+
+/* 다크모드 글래스모피즘 */
+.dark .glass {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  color: #e5e5e5;
+}
+
+.dark .glass-card {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  color: #e5e5e5;
+}
+
+.dark .glass-strong {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+  color: #e5e5e5;
+}
+
+/* 다크모드 텍스트 색상 */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #f5f5f5 !important;
+}
+
+.dark p,
+.dark span,
+.dark div {
+  color: #e5e5e5;
+}
+
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #e5e5e5 !important;
+}
+
+/* ===== 다크모드 제거: 홈, 추천, 일정, 커뮤니티 ===== */
+
+/* 메인 화면 다크모드 제거 */
+.dark .home-wrapper {
+  background: var(--brand-50) !important;
+}
+
+.dark .home-wrapper h1,
+.dark .home-wrapper h2,
+.dark .home-wrapper h3,
+.dark .home-wrapper h4,
+.dark .home-wrapper h5,
+.dark .home-wrapper h6 {
+  color: #0f172a !important;
+}
+
+.dark .home-wrapper p,
+.dark .home-wrapper span:not(.hero-title),
+.dark .home-wrapper div {
+  color: #334155 !important;
+}
+
+.dark .home-wrapper .text-gray-900,
+.dark .home-wrapper .text-gray-800,
+.dark .home-wrapper .text-gray-700,
+.dark .home-wrapper .text-gray-600 {
+  color: #334155 !important;
+}
+
+.dark .home-wrapper .glass-card {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #334155 !important;
+}
+
+/* 히어로 타이틀은 여전히 흰색 */
+.dark .home-wrapper .hero-title {
+  color: white !important;
+}
+
+/* 일정 페이지 다크모드 제거 */
+.dark .schedule-view {
+  background: var(--brand-50) !important;
+}
+
+.dark .schedule-view h1,
+.dark .schedule-view h2,
+.dark .schedule-view h3,
+.dark .schedule-view h4,
+.dark .schedule-view h5,
+.dark .schedule-view h6 {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view p,
+.dark .schedule-view span,
+.dark .schedule-view div {
+  color: #334155 !important;
+}
+
+.dark .schedule-view .text-gray-900,
+.dark .schedule-view .text-gray-800,
+.dark .schedule-view .text-gray-700,
+.dark .schedule-view .text-gray-600,
+.dark .schedule-view .text-gray-500 {
+  color: #64748b !important;
+}
+
+.dark .schedule-view .glass-card {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #334155 !important;
+}
+
+/* 추천 페이지들 다크모드 제거 */
+.dark .style-select-wrapper,
+.dark .period-select-wrapper,
+.dark .place-select-wrapper,
+.dark .period-result-wrapper,
+.dark .place-result-wrapper {
+  background-color: var(--brand-50) !important;
+}
+
+.dark .style-select-wrapper h1,
+.dark .style-select-wrapper h2,
+.dark .style-select-wrapper h3,
+.dark .period-select-wrapper h1,
+.dark .period-select-wrapper h2,
+.dark .period-select-wrapper h3,
+.dark .place-select-wrapper h1,
+.dark .place-select-wrapper h2,
+.dark .place-select-wrapper h3,
+.dark .period-result-wrapper h1,
+.dark .period-result-wrapper h2,
+.dark .period-result-wrapper h3,
+.dark .place-result-wrapper h1,
+.dark .place-result-wrapper h2,
+.dark .place-result-wrapper h3 {
+  color: #0f172a !important;
+}
+
+.dark .style-select-wrapper p,
+.dark .style-select-wrapper span,
+.dark .style-select-wrapper div,
+.dark .period-select-wrapper p,
+.dark .period-select-wrapper span,
+.dark .period-select-wrapper div,
+.dark .place-select-wrapper p,
+.dark .place-select-wrapper span,
+.dark .place-select-wrapper div,
+.dark .period-result-wrapper p,
+.dark .period-result-wrapper span,
+.dark .period-result-wrapper div,
+.dark .place-result-wrapper p,
+.dark .place-result-wrapper span,
+.dark .place-result-wrapper div {
+  color: #334155 !important;
+}
+
+.dark .style-select-wrapper .glass-card,
+.dark .period-select-wrapper .glass-card,
+.dark .place-select-wrapper .glass-card,
+.dark .period-result-wrapper .glass-card,
+.dark .place-result-wrapper .glass-card {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #334155 !important;
+}
+
+/* 커뮤니티 페이지 다크모드 제거 */
+.dark .community-view {
+  background: var(--brand-50) !important;
+}
+
+.dark .community-view h1,
+.dark .community-view h2,
+.dark .community-view h3,
+.dark .community-view h4,
+.dark .community-view h5,
+.dark .community-view h6 {
+  color: #0f172a !important;
+}
+
+.dark .community-view p,
+.dark .community-view span,
+.dark .community-view div {
+  color: #334155 !important;
+}
+
+.dark .community-view .text-gray-900,
+.dark .community-view .text-gray-800,
+.dark .community-view .text-gray-700,
+.dark .community-view .text-gray-600 {
+  color: #334155 !important;
+}
+
+.dark .community-view .glass-card {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #334155 !important;
+}
+

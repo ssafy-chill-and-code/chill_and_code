@@ -339,10 +339,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="min-h-screen" style="background: var(--color-background);">
     <div class="flex">
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:block w-80 border-r border-gray-200 fixed left-0 top-16 bottom-0 overflow-y-auto bg-white">
+      <aside class="hidden lg:block w-80 border-r border-gray-200 fixed left-0 top-16 bottom-0 overflow-y-auto glass-card">
         <div class="p-10">
           <h2 class="text-2xl font-bold text-gray-900 mb-10">마이페이지</h2>
           <nav class="space-y-3">
@@ -395,7 +395,7 @@ onMounted(async () => {
       ></div>
       <div 
         :class="[
-          'fixed top-0 left-0 bottom-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
+          'fixed top-0 left-0 bottom-0 w-80 glass-card shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         ]"
       >
@@ -494,15 +494,15 @@ onMounted(async () => {
 
             <!-- Stats (Coming Soon) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 text-center opacity-40">
+              <div class="glass-card rounded-2xl p-6 text-center opacity-40">
                 <div class="text-xs text-gray-500 mb-1 font-medium">워케이션 생성</div>
                 <div class="text-lg font-bold text-gray-400">준비중</div>
               </div>
-              <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 text-center opacity-40">
+              <div class="glass-card rounded-2xl p-6 text-center opacity-40">
                 <div class="text-xs text-gray-500 mb-1 font-medium">추천 이용</div>
                 <div class="text-lg font-bold text-gray-400">준비중</div>
               </div>
-              <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 text-center opacity-40">
+              <div class="glass-card rounded-2xl p-6 text-center opacity-40">
                 <div class="text-xs text-gray-500 mb-1 font-medium">워케이션 스타일</div>
                 <div class="text-lg font-bold text-gray-400">준비중</div>
               </div>
@@ -528,7 +528,7 @@ onMounted(async () => {
               <span class="text-gray-600 font-medium">불러오는 중...</span>
             </div>
 
-            <div v-else-if="myPosts.length === 0" class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-16 text-center">
+            <div v-else-if="myPosts.length === 0" class="glass-card rounded-2xl p-16 text-center">
               <h3 class="text-2xl font-bold text-gray-900 mb-3">작성한 게시글이 없습니다</h3>
               <p class="text-gray-600 mb-8 text-lg">첫 게시글을 작성해보세요!</p>
               <button
@@ -543,7 +543,7 @@ onMounted(async () => {
               <div
                 v-for="post in myPosts"
                 :key="post.postId"
-                class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 hover:shadow-xl transition-all cursor-pointer"
+                class="glass-card rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer"
                 @click="$router.push(`/posts/${post.postId}`)"
               >
                 <h3 class="text-lg font-bold text-gray-900 mb-2">{{ post.title }}</h3>
@@ -578,7 +578,7 @@ onMounted(async () => {
               <span class="text-gray-600 font-medium">불러오는 중...</span>
             </div>
 
-            <div v-else-if="myComments.length === 0" class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-16 text-center">
+            <div v-else-if="myComments.length === 0" class="glass-card rounded-2xl p-16 text-center">
               <h3 class="text-2xl font-bold text-gray-900 mb-3">작성한 댓글이 없습니다</h3>
               <p class="text-gray-600 text-lg">커뮤니티에서 활동해보세요!</p>
             </div>

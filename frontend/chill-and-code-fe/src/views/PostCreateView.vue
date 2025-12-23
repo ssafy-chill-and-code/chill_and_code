@@ -109,7 +109,7 @@ function cancel() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white py-8 lg:py-12">
+  <div class="community-view min-h-screen py-8 lg:py-12" style="background: var(--color-background);">
     <div class="max-w-4xl mx-auto px-4 lg:px-8">
       <!-- 상단 네비게이션 -->
       <div class="mb-8">
@@ -125,7 +125,7 @@ function cancel() {
       </div>
 
       <!-- 메인 카드 -->
-      <div class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-8 lg:p-12">
+      <div class="glass-card rounded-2xl p-8 lg:p-12">
         <!-- 페이지 타이틀 -->
         <header class="mb-10">
           <h1 class="text-3xl font-bold text-gray-900 mb-3">게시글 작성</h1>

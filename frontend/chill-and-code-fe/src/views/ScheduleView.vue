@@ -389,7 +389,7 @@ const toggleSidebar = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="schedule-view min-h-screen" style="background: var(--color-background);">
     <!-- 메인 컨텐츠 -->
     <div class="w-full px-4 lg:px-8 py-6 lg:py-8">
       <!-- 페이지 헤더 -->
@@ -402,7 +402,7 @@ const toggleSidebar = () => {
         <!-- 좌측 패널 (데스크톱: 일반 레이아웃, 모바일: 숨김) -->
         <aside class="hidden lg:block w-64 flex-shrink-0 space-y-4">
           <!-- 현재 월 선택 -->
-          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div class="glass-card rounded-lg p-4">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -492,7 +492,7 @@ const toggleSidebar = () => {
 
         <!-- 메인 캘린더 영역 -->
         <main class="flex-1 min-w-0 space-y-6">
-          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="glass-card rounded-lg overflow-hidden">
             <!-- 캘린더 상단 컨트롤 -->
             <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
               <div class="flex items-center justify-between">
