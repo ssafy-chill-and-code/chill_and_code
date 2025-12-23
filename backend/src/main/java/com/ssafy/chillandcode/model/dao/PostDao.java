@@ -6,6 +6,8 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.chillandcode.model.dto.post.Post;
+import com.ssafy.chillandcode.model.dto.post.PostSummaryResponse;
+import com.ssafy.chillandcode.model.dto.post.PostDetailResponse;
 import com.ssafy.chillandcode.model.dto.post.RegionRank;
 import com.ssafy.chillandcode.model.dto.post.HashtagRank;
 
@@ -24,17 +26,17 @@ public interface PostDao {
 	/**
 	 * 게시글 목록 조회
 	 */
-	List<Post> selectAll(Map<String, Object> region);
+	List<PostSummaryResponse> selectAll(Map<String, Object> region);
 
 	/**
 	 * 내가 쓴 게시글 조회
 	 */
-	List<Post> selectByUserId(Long userId);
+	List<PostSummaryResponse> selectByUserId(Long userId);
 
 	/**
 	 * 게시글 상세조회
 	 */
-	Post selectById(Long postId);
+	PostDetailResponse selectById(Long postId);
 
 	/**
 	 * 게시글 수정

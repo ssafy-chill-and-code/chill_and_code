@@ -14,7 +14,7 @@
 	</insert>
 
 	<!-- 댓글 목록 조회 -->
-	<select id="selectByPostId" resultType="Comment">
+	<select id="selectByPostId" resultType="com.ssafy.chillandcode.model.dto.comment.CommentResponse">
 		SELECT c.comment_id,
 		c.post_id, c.user_id, c.content, u.nickname,
 		u.profile_image_url,
@@ -26,7 +26,7 @@
 
 	<!-- 내가 쓴 댓글 조회 -->
 	<select id="selectByUserId" parameterType="Long"
-		resultType="Comment">
+		resultType="com.ssafy.chillandcode.model.dto.comment.CommentResponse">
 		SELECT
 		c.comment_id,
 		c.post_id,

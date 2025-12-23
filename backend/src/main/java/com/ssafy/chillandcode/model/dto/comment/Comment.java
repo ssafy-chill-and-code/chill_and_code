@@ -3,21 +3,16 @@ package com.ssafy.chillandcode.model.dto.comment;
 import java.time.LocalDateTime;
 
 /**
- * Comment는 게시글에 작성된 댓글 정보를 담는 DTO 입니다.
+ * Comment는 댓글 Entity (DB 매핑용)입니다.
+ * 조회 결과는 CommentResponse 사용
  */
 public class Comment {
-
-	private Long commentId; // 댓글 ID 
-	private Long postId; // 소속 게시글 ID 
-	private Long userId; // 작성자 ID 
-
-	private String content; // 댓글 내용
-	private LocalDateTime createdAt; // 작성 시간
-	private String postTitle; // 게시글 제목
-
-	// JOIN 결과
-	private String nickname; // 작성자 닉네임
-	private String profileImageUrl; // 작성자 프로필 이미지 URL 
+	// DB 컬럼만
+	private Long commentId;
+	private Long postId;
+	private Long userId;
+	private String content;
+	private LocalDateTime createdAt; 
 
 	public Long getCommentId() {
 		return commentId;
@@ -57,29 +52,5 @@ public class Comment {
 
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
-	}
-
-	public String getProfileImageUrl() {
-		return profileImageUrl;
-	}
-
-	public void setProfileImageUrl(String profileImageUrl) {
-		this.profileImageUrl = profileImageUrl;
-	}
-
-	public String getPostTitle() {
-		return postTitle;
-	}
-
-	public void setPostTitle(String postTitle) {
-		this.postTitle = postTitle;
 	}
 }
