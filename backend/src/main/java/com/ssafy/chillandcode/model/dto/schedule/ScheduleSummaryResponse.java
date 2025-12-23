@@ -19,7 +19,7 @@ public class ScheduleSummaryResponse {
 	private int totalDays;
 	private int mixedDayCount;
 	private int flexibleDayCount;
-	private int mostBusyWeek;
+	private int mostBusyWeek;	// 없으면 -1
 	private List<Integer> recommendWeeks;
 	private Map<ScheduleType, Double> scheduleTypeRatio;
 	private String summaryComment;
@@ -41,7 +41,8 @@ public class ScheduleSummaryResponse {
 		this.scheduleTypeRatio = scheduleTypeRatio;
 		this.summaryComment = summaryComment;
 	}
-
+	
+	//getter, setter
 	public YearMonth getMonth() {
 		return month;
 	}
@@ -121,5 +122,6 @@ public class ScheduleSummaryResponse {
 				+ ", mostBusyWeek=" + mostBusyWeek + ", recommendWeeks=" + recommendWeeks + ", scheduleTypeRatio="
 				+ scheduleTypeRatio + ", summaryComment=" + summaryComment + "]";
 	}
+
 
 }

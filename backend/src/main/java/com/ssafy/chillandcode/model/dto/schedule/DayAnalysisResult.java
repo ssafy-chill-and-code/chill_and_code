@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 하루 단위 일정 분석 결과 DTO
  *
- * - 월/주 분석의 최소 단위
+ * - 월/주 분석의 최소 단위 
  * - "왜 이 날이 이렇게 판단됐는지"를 설명하기 위한 구조
  */
 public class DayAnalysisResult {
@@ -25,6 +25,28 @@ public class DayAnalysisResult {
 		this.reasonTags = reasonTags;
 	}
 
+	// 정적 팩토리 메서드
+	public static DayAnalysisResult busy(LocalDate date, String reasonTag) {
+		return create(date, AnalysisStatus.BUSY, reasonTag);
+	}
+
+	public static DayAnalysisResult mixed(LocalDate date, String reasonTag) {
+		return create(date, AnalysisStatus.MIXED, reasonTag);
+	}
+
+	public static DayAnalysisResult flexible(LocalDate date, String reasonTag) {
+		return create(date, AnalysisStatus.FLEXIBLE, reasonTag);
+	}
+
+	private static DayAnalysisResult create(LocalDate date, AnalysisStatus status, String reasonTag) {
+
+		List<String> reasons = new ArrayList<>();
+		reasons.add(reasonTag);
+
+		return new DayAnalysisResult(date, status, reasons);
+	}
+
+	// getter, setter
 	public LocalDate getDate() {
 		return date;
 	}
