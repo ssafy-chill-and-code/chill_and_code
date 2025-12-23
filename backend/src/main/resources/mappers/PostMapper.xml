@@ -7,8 +7,8 @@
 	<!-- 게시글 작성 -->
 	<insert id="insert" parameterType="Post" useGeneratedKeys="true"
 		keyProperty="postId">
-		INSERT INTO post(user_id, title, content, region)
-		VALUES(#{userId}, #{title}, #{content}, #{region})
+		INSERT INTO post(user_id, title, content, region, tags)
+		VALUES(#{userId}, #{title}, #{content}, #{region}, #{tags})
 	</insert>
 
 	<!-- 게시글 목록 조회 -->
@@ -113,6 +113,9 @@
 			<if test="region != null and region != ''">
 				region = #{region},
 			</if>
+			<if test="tags != null">
+				tags = #{tags},
+			</if>
 		</set>
 		WHERE post_id = #{postId}
 	</update>
@@ -164,6 +167,28 @@
 				OR p.content LIKE CONCAT('%', #{search}, '%'))
 			</if>
 		</where>
+	</select>
+
+	<!-- 해시태그별 게시글 수 랭킹 조회 -->
+	<select id="selectHashtagRank" parameterType="map" resultType="com.ssafy.chillandcode.model.dto.post.HashtagRank">
+		SELECT 
+			tag.hashtag AS hashtag,
+			COUNT(*) AS count
+		FROM post p
+		CROSS JOIN JSON_TABLE(
+			p.tags,
+			'$[*]' COLUMNS(hashtag VARCHAR(200) PATH '$')
+		) AS tag
+		WHERE p.tags IS NOT NULL 
+		  AND p.tags != '[]'
+		<if test="windowDays != null">
+			AND p.created_at &gt;= DATE_SUB(NOW(), INTERVAL #{windowDays} DAY)
+		</if>
+		GROUP BY tag.hashtag
+		ORDER BY count DESC
+		<if test="limit != null">
+			LIMIT #{limit}
+		</if>
 	</select>
 
 </mapper>

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.chillandcode.model.dto.post.Post;
 import com.ssafy.chillandcode.model.dto.post.RegionRank;
+import com.ssafy.chillandcode.model.dto.post.HashtagRank;
 
 /**
  * PostDao는 게시글 정보에 대한 DB접근을 담당하는 MyBatis 매퍼 인터페이스입니다.
@@ -59,5 +60,10 @@ public interface PostDao {
 	 * 게시글 총 개수 조회 (검색 조건 포함)
 	 */
 	int countAll(Map<String, Object> params);
+
+	/**
+	 * 해시태그별 게시글 수 랭킹 조회 (옵션: 기간, 제한 개수)
+	 */
+	List<HashtagRank> selectHashtagRank(Map<String, Object> params);
 
 }

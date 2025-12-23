@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ssafy.chillandcode.model.dto.post.Post;
 import com.ssafy.chillandcode.model.dto.post.RegionRank;
+import com.ssafy.chillandcode.model.dto.post.HashtagRank;
 
 /**
  * PostService는 게시글 정보에 대한 비즈니스 로직을 처리하는 서비스 인터페이스입니다.
@@ -49,5 +50,10 @@ public interface PostService {
 	 * 게시글 총 개수 조회 (검색 조건 포함)
 	 */
 	int countAll(Map<String, Object> params);
+
+	/**
+	 * 해시태그별 게시글 수 랭킹 조회 (옵션: 기간, 제한 개수)
+	 */
+	List<HashtagRank> selectHashtagRank(Map<String, Object> params);
 
 }

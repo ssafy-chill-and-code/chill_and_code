@@ -16,6 +16,7 @@ public class Post {
     private Integer viewCount; // 조회수
     private Integer commentCount; // 댓글 개수
     private String profileImageUrl; // 작성자 프로필 이미지 URL
+    private String tags; // 해시태그 (JSON 배열 문자열)
 
     public Long getPostId() {
         return postId;
@@ -95,6 +96,14 @@ public class Post {
 
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
 }

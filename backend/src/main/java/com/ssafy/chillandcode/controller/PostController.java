@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.chillandcode.common.ApiResponse;
 import com.ssafy.chillandcode.model.dto.post.Post;
 import com.ssafy.chillandcode.model.dto.post.RegionRank;
+import com.ssafy.chillandcode.model.dto.post.HashtagRank;
 import com.ssafy.chillandcode.model.service.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -85,6 +86,22 @@ public class PostController {
 		params.put("limit", limit);
 
 		List<RegionRank> ranks = postService.selectRegionRank(params);
+		return ResponseEntity.ok(ApiResponse.success(Map.of("ranks", ranks)));
+	}
+
+	// 해시태그별 게시글 수 랭킹 조회 (windowDays: 최근 N일, limit: 최대 개수)
+	@GetMapping("/posts/hashtag-rank")
+	@Operation(summary = "해시태그 랭킹", description = "최근 N일 간 해시태그별 게시글 수 Top N")
+    public ResponseEntity<?> hashtagRank(
+            @RequestParam(required = false) Integer windowDays,
+            @RequestParam(defaultValue = "10") Integer limit
+    ) {
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("windowDays", windowDays); // null이면 전체 기간
+		params.put("limit", limit);
+
+		List<HashtagRank> ranks = postService.selectHashtagRank(params);
 		return ResponseEntity.ok(ApiResponse.success(Map.of("ranks", ranks)));
 	}
 

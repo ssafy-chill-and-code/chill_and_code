@@ -11,6 +11,8 @@ import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.PostDao;
 import com.ssafy.chillandcode.model.dto.post.Post;
 import com.ssafy.chillandcode.model.dto.post.RegionRank;
+import com.ssafy.chillandcode.model.dto.post.HashtagRank;
+import com.ssafy.chillandcode.util.HashtagExtractor;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -21,6 +23,13 @@ public class PostServiceImpl implements PostService {
 	// 게시글 등록
 	@Override
 	public void insert(Post post) {
+		// 해시태그 자동 추출 및 저장
+		String tags = HashtagExtractor.extractAndSerialize(
+			post.getTitle(), 
+			post.getContent(), 
+			post.getRegion()
+		);
+		post.setTags(tags);
 
 		int rows = postDao.insert(post);
 
@@ -65,6 +74,15 @@ public class PostServiceImpl implements PostService {
 		if (!original.getUserId().equals(userId)) {
 			throw new ApiException(ErrorCode.FORBIDDEN_ACTION, "게시글 작성자만 수정할 수 있습니다.");
 		}
+		
+		// 해시태그 자동 추출 및 저장
+		String title = post.getTitle() != null ? post.getTitle() : original.getTitle();
+		String content = post.getContent() != null ? post.getContent() : original.getContent();
+		String region = post.getRegion() != null ? post.getRegion() : original.getRegion();
+		
+		String tags = HashtagExtractor.extractAndSerialize(title, content, region);
+		post.setTags(tags);
+		
 		int rows = postDao.update(post);
 		if (rows != 1) {
 			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "게시글 수정에 실패했습니다.");
@@ -97,6 +115,12 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public int countAll(Map<String, Object> params) {
 		return postDao.countAll(params);
+	}
+
+	// 해시태그별 게시글 수 랭킹 조회 (옵션: 기간, 제한 개수)
+	@Override
+	public List<HashtagRank> selectHashtagRank(Map<String, Object> params) {
+		return postDao.selectHashtagRank(params);
 	}
 
 }

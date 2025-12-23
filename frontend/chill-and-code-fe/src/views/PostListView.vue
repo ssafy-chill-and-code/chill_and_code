@@ -67,6 +67,7 @@ function open(postId) {
 onMounted(() => {
   load()
   postStore.fetchRegionRank({ limit: 5 })
+  postStore.fetchHashtagRank({ limit: 10, windowDays: 7 }) // 최근 7일, 10개
 })
 
 const popularKeywords = computed(() => {
@@ -444,6 +445,28 @@ function deriveCategoryForPost(p) {
                 표시할 지역이 없습니다.
               </li>
             </ul>
+          </div>
+
+          <!-- 실시간 트렌드 -->
+          <div v-if="postStore.hashtagRanks.length > 0" class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
+            <h3 class="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              실시간 트렌드
+              <span class="ml-auto text-xs text-gray-500 font-normal">최근 7일</span>
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="tag in postStore.hashtagRanks"
+                :key="tag.hashtag"
+                @click="search = tag.hashtag; load()"
+                class="px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center gap-1.5"
+              >
+                <span>{{ tag.hashtag }}</span>
+                <span class="text-indigo-500 font-semibold">{{ tag.count }}</span>
+              </button>
+            </div>
           </div>
 
           <!-- 주요 키워드 -->

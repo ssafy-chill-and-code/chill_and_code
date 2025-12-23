@@ -7,6 +7,7 @@ export const usePostStore = defineStore('post', () => {
   const myPosts = ref([])
   const post = ref(null)
   const regionRanks = ref([])
+  const hashtagRanks = ref([])
   const loading = ref(false)
   const error = ref('')
   const total = ref(0)
@@ -41,6 +42,18 @@ export const usePostStore = defineStore('post', () => {
     } catch (e) {
       // 랭킹 실패는 전체 로딩에 영향 주지 않도록 에러만 보관
       console.error('fetchRegionRank error:', e?.response?.data?.message || e.message)
+      return []
+    }
+  }
+
+  async function fetchHashtagRank(params = {}) {
+    try {
+      const { data } = await api.get('/posts/hashtag-rank', { params })
+      hashtagRanks.value = data?.data?.ranks || []
+      return hashtagRanks.value
+    } catch (e) {
+      // 랭킹 실패는 전체 로딩에 영향 주지 않도록 에러만 보관
+      console.error('fetchHashtagRank error:', e?.response?.data?.message || e.message)
       return []
     }
   }
@@ -110,6 +123,8 @@ export const usePostStore = defineStore('post', () => {
     updatePost,
     deletePost,
     regionRanks,
+    hashtagRanks,
     fetchRegionRank,
+    fetchHashtagRank,
   }
 })
