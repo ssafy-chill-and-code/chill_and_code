@@ -1,11 +1,11 @@
-package com.ssafy.chillcode.recommend.dto;
+package com.ssafy.chillandcode.recommend.dto;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.ssafy.chillcode.recommend.period.PeriodCandidate;
-import com.ssafy.chillcode.recommend.period.PeriodRecommendationResult;
+import com.ssafy.chillandcode.recommend.period.PeriodCandidate;
+import com.ssafy.chillandcode.recommend.period.PeriodRecommendationResult;
 
 public class RecommendPeriodResponse {
 

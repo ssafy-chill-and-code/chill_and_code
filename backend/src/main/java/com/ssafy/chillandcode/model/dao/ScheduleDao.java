@@ -25,7 +25,7 @@ public interface ScheduleDao {
 			@Param("type") List<ScheduleType> type);
 	
 	//일정 수정
-	int updateSchedule(ScheduleUpdateRequest req);
+	int updateSchedule(Schedule schedule);
 	
 	//일정 삭제
     int deleteSchedule(

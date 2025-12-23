@@ -1,4 +1,4 @@
-package com.ssafy.chillcode.recommend.period;
+package com.ssafy.chillandcode.recommend.period;
 
 import java.time.LocalDate;
 

@@ -1,6 +1,6 @@
-package com.ssafy.chillcode.recommend.dto;
+package com.ssafy.chillandcode.recommend.dto;
 
-import com.ssafy.chillcode.recommend.UserStyle;
+import com.ssafy.chillandcode.recommend.UserStyle;
 
 public class RecommendPeriodRequest {
 	UserStyle style;	//null 가능

@@ -57,7 +57,7 @@
 	</select>
 	
 	<!--일정 수정-->
-	<update id="updateSchedule" parameterType="ScheduleUpdateRequest">
+	<update id="updateSchedule" parameterType="Schedule">
 		UPDATE schedule
 		<set>
 			<if test="title != null">
@@ -71,6 +71,9 @@
 			</if>
 			<if test="endDateTime != null">
 				end_datetime = #{endDateTime},
+			</if>
+			<if test="autoTag != null">
+				auto_tag = #{autoTag},
 			</if>
 			<if test="userTag != null">
 				user_tag = #{userTag},

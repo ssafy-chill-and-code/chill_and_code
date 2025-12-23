@@ -12,6 +12,7 @@ import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.ScheduleDao;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
+import com.ssafy.chillandcode.model.dto.schedule.Schedule.Tag;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleCreateRequest;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleResponse;
 import com.ssafy.chillandcode.model.dto.schedule.ScheduleUpdateRequest;
@@ -21,6 +22,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Autowired
 	private ScheduleDao scheduleDao;
+	
+	@Autowired
+	private ScheduleTagResolver scheduleTagResolver;
 
 	// 일정 등록
 	@Override
@@ -34,7 +38,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 			throw new ApiException(ErrorCode.INVALID_SCHEDULE_TIME);
 		}
 		
-		int rows = scheduleDao.insertSchedule(req.toEntity());
+		Schedule schedule = req.toEntity();
+		
+		Tag autoTag = scheduleTagResolver.resolveAutoTag(schedule);
+		schedule.setAutoTag(autoTag);
+		
+		int rows = scheduleDao.insertSchedule(schedule);
 		if(rows != 1) {
 			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "일정 등록에 실패했습니다.");
 		}
@@ -67,8 +76,15 @@ public class ScheduleServiceImpl implements ScheduleService {
 		if (!target.getUserId().equals(userId)) {
 			throw new ApiException(ErrorCode.FORBIDDEN_ACTION, "본인의 일정만 수정할 수 있습니다.");
 		}
-
-		int rows = scheduleDao.updateSchedule(req);
+		
+		// 변경 사항 반영
+		Schedule updated = req.applyTo(target);
+		
+		// autoTag 재계산
+		Tag newAutoTag = scheduleTagResolver.resolveAutoTag(updated);
+		target.setAutoTag(newAutoTag);
+		
+		int rows = scheduleDao.updateSchedule(updated);
 		if (rows != 1) {
 			throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR, "일정 수정에 실패했습니다.");
 		}

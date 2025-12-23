@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.chillandcode.model.dao.ScheduleDao;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
-import com.ssafy.chillcode.recommend.UserStyle;
-import com.ssafy.chillcode.recommend.dto.RecommendPeriodRequest;
-import com.ssafy.chillcode.recommend.dto.RecommendPeriodResponse;
-import com.ssafy.chillcode.recommend.period.PeriodCandidate;
-import com.ssafy.chillcode.recommend.period.PeriodRecommendationContext;
-import com.ssafy.chillcode.recommend.period.PeriodRecommendationEngine;
-import com.ssafy.chillcode.recommend.period.PeriodRecommendationResult;
-import com.ssafy.chillcode.recommend.period.PeriodScoringEngine;
-import com.ssafy.chillcode.recommend.period.SearchWindow;
+import com.ssafy.chillandcode.recommend.UserStyle;
+import com.ssafy.chillandcode.recommend.dto.RecommendPeriodRequest;
+import com.ssafy.chillandcode.recommend.dto.RecommendPeriodResponse;
+import com.ssafy.chillandcode.recommend.period.PeriodCandidate;
+import com.ssafy.chillandcode.recommend.period.PeriodRecommendationContext;
+import com.ssafy.chillandcode.recommend.period.PeriodRecommendationEngine;
+import com.ssafy.chillandcode.recommend.period.PeriodRecommendationResult;
+import com.ssafy.chillandcode.recommend.period.PeriodScoringEngine;
+import com.ssafy.chillandcode.recommend.period.SearchWindow;
 
 /**
  * 1. userId + search window로 일정 조회 
