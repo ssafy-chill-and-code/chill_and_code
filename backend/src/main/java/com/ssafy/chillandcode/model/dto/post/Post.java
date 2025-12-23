@@ -12,6 +12,9 @@ public class Post {
     private String content; // 내용
     private String region;  // 지역별 게시판 필터링
     private LocalDateTime createdAt; // 작성일
+    private String nickname; // 작성자 닉네임
+    private Integer viewCount; // 조회수
+    private Integer commentCount; // 댓글 개수
 
     public Long getPostId() {
         return postId;
@@ -59,6 +62,30 @@ public class Post {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
     }
 
 }
