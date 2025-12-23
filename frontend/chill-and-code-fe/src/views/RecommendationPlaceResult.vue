@@ -1,5 +1,10 @@
 <template>
-  <div class="place-result-wrapper">
+  <div 
+    :class="[
+      'place-result-wrapper',
+      isDarkMode ? 'dark' : ''
+    ]"
+  >
     <div class="container-custom py-5">
       <!-- 헤더 -->
       <header class="text-center mb-5">
@@ -103,11 +108,15 @@ import { useRouter } from 'vue-router'
 import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
 import { useRecommendationStore } from '@/stores/recommendation'
 import { useScheduleStore } from '@/stores/schedule'
+import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
 const placeStore = usePlaceRecommendationStore()
 const recommendationStore = useRecommendationStore()
 const scheduleStore = useScheduleStore()
+const themeStore = useThemeStore()
+
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const places = computed(() => {
   const result = placeStore.result || []
@@ -166,6 +175,11 @@ function goSchedule(place) {
   padding-top: 4rem;
   padding-bottom: 4rem;
   width: 100%;
+  transition: background 0.3s ease;
+}
+
+.dark.place-result-wrapper {
+  background: #0f172a;
 }
 
 .container-custom {
@@ -195,6 +209,11 @@ function goSchedule(place) {
   color: #0f172a;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  transition: color 0.3s ease;
+}
+
+.dark .page-title {
+  color: #ffffff !important;
 }
 
 .page-subtitle {
@@ -202,6 +221,11 @@ function goSchedule(place) {
   color: #64748b;
   margin-bottom: 0;
   font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.dark .page-subtitle {
+  color: #e2e8f0 !important;
 }
 
 /* Loading */
@@ -224,6 +248,11 @@ function goSchedule(place) {
   font-size: 1.125rem;
   color: #64748b;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.dark .loading-text {
+  color: #e2e8f0 !important;
 }
 
 /* Error & Empty */
@@ -237,6 +266,16 @@ function goSchedule(place) {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   max-width: 500px;
   margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.dark .error-card,
+.dark .empty-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .error-icon,
@@ -251,6 +290,13 @@ function goSchedule(place) {
   justify-content: center;
   border-radius: 16px;
   border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.dark .error-icon,
+.dark .empty-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .error-title,
@@ -260,6 +306,12 @@ function goSchedule(place) {
   color: #0f172a;
   margin-bottom: 0.75rem;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .error-title,
+.dark .empty-title {
+  color: #ffffff !important;
 }
 
 .error-message,
@@ -267,6 +319,12 @@ function goSchedule(place) {
   color: #64748b;
   margin-bottom: 2rem;
   font-size: 0.9375rem;
+  transition: color 0.3s ease;
+}
+
+.dark .error-message,
+.dark .empty-message {
+  color: #e2e8f0 !important;
 }
 
 .btn-retry {
@@ -311,6 +369,13 @@ function goSchedule(place) {
   gap: 2rem;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.dark .summary-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 .summary-item {
@@ -324,6 +389,11 @@ function goSchedule(place) {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+}
+
+.dark .summary-label {
+  color: #cbd5e1 !important;
 }
 
 .summary-value {
@@ -331,12 +401,22 @@ function goSchedule(place) {
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .summary-value {
+  color: #ffffff !important;
 }
 
 .summary-divider {
   width: 1px;
   height: 40px;
   background: #e2e8f0;
+  transition: background 0.3s ease;
+}
+
+.dark .summary-divider {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Places Section */
@@ -375,10 +455,21 @@ function goSchedule(place) {
   flex-direction: column;
 }
 
+.dark .place-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
 .place-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
   border-color: #cbd5e1;
+}
+
+.dark .place-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .place-image {
@@ -431,12 +522,22 @@ function goSchedule(place) {
   color: #0f172a;
   margin-bottom: 0.375rem;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .place-name {
+  color: #ffffff !important;
 }
 
 .place-region {
   font-size: 0.875rem;
   color: #64748b;
   margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.dark .place-region {
+  color: #cbd5e1 !important;
 }
 
 .place-tags {
@@ -454,6 +555,13 @@ function goSchedule(place) {
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.dark .place-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .reason-box {
@@ -463,6 +571,12 @@ function goSchedule(place) {
   padding: 0.875rem 1rem;
   margin-bottom: 1.25rem;
   flex: 1;
+  transition: all 0.3s ease;
+}
+
+.dark .reason-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .reason-title {
@@ -470,16 +584,26 @@ function goSchedule(place) {
   font-weight: 600;
   color: #0f172a;
   margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.dark .reason-title {
+  color: #ffffff !important;
 }
 
 .reason-text {
   font-size: 0.875rem;
   color: #64748b;
   line-height: 1.6;
+  transition: color 0.3s ease;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.dark .reason-text {
+  color: #e2e8f0 !important;
 }
 
 .btn-select {

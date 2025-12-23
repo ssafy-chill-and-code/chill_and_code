@@ -1,5 +1,10 @@
 <template>
-  <div class="period-select-wrapper">
+  <div 
+    :class="[
+      'period-select-wrapper',
+      isDarkMode ? 'dark' : ''
+    ]"
+  >
     <div class="container py-5">
       <!-- 헤더 -->
       <header class="mb-5">
@@ -124,12 +129,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecommendationStore } from '@/stores/recommendation'
+import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
 const recommendationStore = useRecommendationStore()
+const themeStore = useThemeStore()
+
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const minDays = ref(2)
 const maxDays = ref(5)
@@ -179,6 +188,11 @@ async function goResult() {
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
+  transition: background 0.3s ease;
+}
+
+.dark.period-select-wrapper {
+  background: #0f172a;
 }
 
 .back-link {
@@ -199,9 +213,17 @@ async function goResult() {
   cursor: pointer;
 }
 
+.dark .back-link {
+  color: #cbd5e1;
+}
+
 .back-link:hover {
   background: #f8fafc;
   transform: translateX(-4px);
+}
+
+.dark .back-link:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .back-arrow-img {
@@ -237,6 +259,14 @@ async function goResult() {
   background-clip: text;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  transition: all 0.3s ease;
+}
+
+.dark .page-title {
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .page-subtitle {
@@ -244,6 +274,11 @@ async function goResult() {
   color: #64748b;
   margin-bottom: 0;
   font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.dark .page-subtitle {
+  color: #cbd5e1;
 }
 
 .form-container {
@@ -261,9 +296,22 @@ async function goResult() {
   transition: all 0.2s ease;
 }
 
+.dark .form-section {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .form-section:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border-color: #d1d5db;
+}
+
+.dark .form-section:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .section-header {
@@ -271,6 +319,11 @@ async function goResult() {
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #f1f5f9;
   position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.dark .section-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-header::after {
@@ -290,6 +343,11 @@ async function goResult() {
   margin: 0;
   letter-spacing: 0.025em;
   text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.dark .section-title {
+  color: #ffffff !important;
 }
 
 .required {
@@ -302,6 +360,11 @@ async function goResult() {
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: none;
+  transition: color 0.3s ease;
+}
+
+.dark .optional {
+  color: #e2e8f0;
 }
 
 .period-grid {
@@ -319,10 +382,21 @@ async function goResult() {
   transition: all 0.2s ease;
 }
 
+.dark .input-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .input-card:hover {
   border-color: #d1d5db;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dark .input-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .input-label {
@@ -332,6 +406,11 @@ async function goResult() {
   color: #334155;
   margin-bottom: 1rem;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .input-label {
+  color: #ffffff;
 }
 
 .input-group-custom {
@@ -356,6 +435,12 @@ async function goResult() {
   letter-spacing: -0.02em;
 }
 
+.dark .form-control-custom {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
 .form-control-custom:focus {
   outline: none;
   border-color: #6366f1;
@@ -363,20 +448,40 @@ async function goResult() {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+.dark .form-control-custom:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
 .form-control-custom::placeholder {
   color: #cbd5e1;
+}
+
+.dark .form-control-custom::placeholder {
+  color: #94a3b8;
 }
 
 .input-suffix {
   font-size: 1.125rem;
   font-weight: 600;
   color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.dark .input-suffix {
+  color: #e2e8f0 !important;
 }
 
 .input-hint {
   font-size: 0.75rem;
   color: #94a3b8;
   padding-left: 0.125rem;
+  transition: color 0.3s ease;
+}
+
+.dark .input-hint {
+  color: #e2e8f0 !important;
 }
 
 /* 원격 근무 옵션 */
@@ -388,10 +493,21 @@ async function goResult() {
   transition: all 0.2s ease;
 }
 
+.dark .option-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .option-card:hover {
   border-color: #d1d5db;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dark .option-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .option-header {
@@ -415,6 +531,11 @@ async function goResult() {
   height: 20px;
   color: #475569;
   flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.dark .option-icon {
+  color: #e2e8f0;
 }
 
 .option-label-text {
@@ -422,6 +543,11 @@ async function goResult() {
   font-weight: 600;
   color: #334155;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .option-label-text {
+  color: #ffffff !important;
 }
 
 .option-hint {
@@ -430,6 +556,11 @@ async function goResult() {
   line-height: 1.5;
   margin: 0;
   padding-left: 1.875rem;
+  transition: color 0.3s ease;
+}
+
+.dark .option-hint {
+  color: #e2e8f0 !important;
 }
 
 /* Toggle Switch */
@@ -494,6 +625,14 @@ async function goResult() {
   padding: 1rem 1.25rem;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.dark .info-banner {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .info-icon {
@@ -501,6 +640,11 @@ async function goResult() {
   height: 18px;
   color: #475569;
   flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.dark .info-icon {
+  color: #e2e8f0;
 }
 
 .info-text {
@@ -509,6 +653,11 @@ async function goResult() {
   color: #475569;
   letter-spacing: -0.01em;
   line-height: 1.5;
+  transition: color 0.3s ease;
+}
+
+.dark .info-text {
+  color: #e2e8f0 !important;
 }
 
 .error-alert {
@@ -524,12 +673,24 @@ async function goResult() {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.dark .error-alert {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
 }
 
 .error-icon-svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.dark .error-icon-svg {
+  color: #fca5a5;
 }
 
 .submit-section {

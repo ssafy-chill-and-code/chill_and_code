@@ -1,5 +1,10 @@
 <template>
-  <div class="style-select-wrapper">
+  <div 
+    :class="[
+      'style-select-wrapper',
+      isDarkMode ? 'dark' : ''
+    ]"
+  >
     <div class="container py-5">
       <!-- 헤더 -->
       <header class="mb-5">
@@ -91,14 +96,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecommendationStore } from '@/stores/recommendation'
+import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
 const recommendationStore = useRecommendationStore()
+const themeStore = useThemeStore()
 
 const selectedStyle = ref('')
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 function goPeriod(styleType) {
   selectedStyle.value = styleType
@@ -114,6 +122,11 @@ function goPeriod(styleType) {
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
+  transition: background 0.3s ease;
+}
+
+.dark.style-select-wrapper {
+  background: #0f172a;
 }
 
 .back-link {
@@ -137,6 +150,10 @@ function goPeriod(styleType) {
 .back-link:hover {
   background: #f8fafc;
   transform: translateX(-4px);
+}
+
+.dark .back-link:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .back-arrow-img {
@@ -172,6 +189,14 @@ function goPeriod(styleType) {
   background-clip: text;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  transition: all 0.3s ease;
+}
+
+.dark .page-title {
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .page-subtitle {
@@ -179,6 +204,11 @@ function goPeriod(styleType) {
   color: #64748b;
   margin-bottom: 0;
   font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.dark .page-subtitle {
+  color: #cbd5e1;
 }
 
 .form-container {
@@ -196,9 +226,22 @@ function goPeriod(styleType) {
   transition: all 0.2s ease;
 }
 
+.dark .form-section {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .form-section:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border-color: #d1d5db;
+}
+
+.dark .form-section:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .section-header {
@@ -206,6 +249,11 @@ function goPeriod(styleType) {
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #f1f5f9;
   position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.dark .section-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-header::after {
@@ -225,6 +273,11 @@ function goPeriod(styleType) {
   margin: 0;
   letter-spacing: 0.025em;
   text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.dark .section-title {
+  color: #ffffff;
 }
 
 .required {
@@ -256,11 +309,23 @@ function goPeriod(styleType) {
   transition: all 0.2s ease;
 }
 
+.dark .style-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .style-card:hover {
   border-color: #1e293b;
   background: #f9fafb;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
+}
+
+.dark .style-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .style-card:active {
@@ -320,6 +385,11 @@ function goPeriod(styleType) {
   filter: grayscale(0.2);
 }
 
+.dark .icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .style-card:hover .icon {
   background: #f1f5f9;
   transform: scale(1.05);
@@ -337,6 +407,11 @@ function goPeriod(styleType) {
   color: #111827;
   margin-bottom: 1.25rem;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .card-title {
+  color: #ffffff;
 }
 
 .card-features {
@@ -360,9 +435,18 @@ function goPeriod(styleType) {
   transition: all 0.2s ease;
 }
 
+.dark .card-features li {
+  color: #cbd5e1;
+}
+
 .style-card:hover .card-features li {
   background: #f8fafc;
   color: #334155;
+}
+
+.dark .style-card:hover .card-features li {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
 }
 
 .style-card.selected {
@@ -371,8 +455,18 @@ function goPeriod(styleType) {
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
+.dark .style-card.selected {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3), 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
 .style-card.selected .card-features li {
   color: #475569;
+}
+
+.dark .style-card.selected .card-features li {
+  color: #e2e8f0;
 }
 
 .card-features li span {
