@@ -19,9 +19,9 @@ const error = ref(null)
 // 일정 유형 정보
 const scheduleTypeInfo = computed(() => {
   const types = {
-    PERSONAL: { label: '개인 일정', color: '#93c5fd', bgColor: '#dbeafe' },
-    WORK: { label: '업무 일정', color: '#64748b', bgColor: '#e2e8f0' },
-    WORKATION: { label: '워케이션 일정', color: '#0ea5e9', bgColor: '#bae6fd' }
+    PERSONAL: { label: '개인 일정', color: '#fde68a', bgColor: '#fffbeb' },
+    WORK: { label: '업무 일정', color: '#fca5a5', bgColor: '#fef2f2' },
+    WORKATION: { label: '워케이션 일정', color: '#93c5fd', bgColor: '#eff6ff' }
   }
   return types[props.schedule.scheduleType] || types.PERSONAL
 })

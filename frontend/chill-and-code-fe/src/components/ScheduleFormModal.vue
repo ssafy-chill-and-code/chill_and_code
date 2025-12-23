@@ -6,6 +6,10 @@ const props = defineProps({
   schedule: {
     type: Object,
     default: null
+  },
+  initialDate: {
+    type: String,
+    default: null
   }
 })
 
@@ -20,6 +24,7 @@ const startDate = ref('')
 const startTime = ref('09:00')
 const endDate = ref('')
 const endTime = ref('10:00')
+const userTag = ref(null)
 const loading = ref(false)
 const error = ref(null)
 
@@ -31,16 +36,30 @@ const modalTitle = computed(() => isEdit.value ? '일정 수정' : '일정 추�
 
 // 일정 유형 옵션
 const scheduleTypeOptions = [
-  { value: 'PERSONAL', label: '개인 일정', color: '#93c5fd' },
-  { value: 'WORK', label: '업무 일정', color: '#64748b' },
-  { value: 'WORKATION', label: '워케이션 일정', color: '#0ea5e9' }
+  { value: 'PERSONAL', label: '개인 일정', color: '#fde68a', bgColor: '#fffbeb' },
+  { value: 'WORK', label: '업무 일정', color: '#fca5a5', bgColor: '#fef2f2' },
+  { value: 'WORKATION', label: '워케이션 일정', color: '#93c5fd', bgColor: '#eff6ff' }
 ]
+
+// 태그 옵션
+const tagOptions = [
+  { value: null, label: '자동 태그 사용', description: '시스템이 자동으로 태그를 지정합니다' },
+  { value: 'HIGH_PRIORITY', label: '높은 우선순위', description: '반드시 참석해야 하는 일정 (병원, 면접, 시험 등)' },
+  { value: 'REMOTE_POSSIBLE', label: '원격 가능', description: '원격으로 진행 가능한 업무 일정' },
+  { value: 'PERSONAL_FLEX', label: '개인 일정 (유연)', description: '시간 조율이 가능한 개인 일정 (식사, 약속 등)' },
+  { value: 'ALL_DAY_EVENT', label: '종일 일정', description: '하루 종일 진행되는 일정' },
+  { value: 'UNKNOWN', label: '미분류', description: '태그를 지정하지 않음' }
+]
+
+// 현재 일정의 autoTag (수정 모드에서만 표시)
+const autoTag = computed(() => props.schedule?.autoTag || null)
 
 // 초기값 설정
 const initForm = () => {
   if (props.schedule) {
     title.value = props.schedule.title || ''
     scheduleType.value = props.schedule.scheduleType || 'PERSONAL'
+    userTag.value = props.schedule.userTag || null
     
     // startDateTime 파싱
     if (props.schedule.startDateTime) {
@@ -56,23 +75,36 @@ const initForm = () => {
       endTime.value = endDT.toTimeString().slice(0, 5)
     }
   } else {
-    // 기본값: 오늘 날짜
-    const today = new Date().toISOString().split('T')[0]
-    startDate.value = today
-    endDate.value = today
+    // initialDate가 있으면 사용, 없으면 오늘 날짜
+    const dateToUse = props.initialDate || new Date().toISOString().split('T')[0]
+    startDate.value = dateToUse
+    endDate.value = dateToUse
+    userTag.value = null
   }
 }
 
 initForm()
 
+// props 변경 시 폼 재초기화
+watch(() => [props.schedule, props.initialDate], () => {
+  initForm()
+}, { deep: true })
+
 // 백엔드 API 형식으로 변환
 const buildPayload = () => {
-  return {
+  const payload = {
     title: title.value,
     scheduleType: scheduleType.value,
     startDateTime: `${startDate.value}T${startTime.value}:00`,
     endDateTime: `${endDate.value}T${endTime.value}:00`
   }
+  
+  // userTag가 선택된 경우에만 포함
+  if (userTag.value !== null) {
+    payload.userTag = userTag.value
+  }
+  
+  return payload
 }
 
 // 유효성 검증
@@ -209,8 +241,12 @@ const handleOverlayClick = (e) => {
               <label
                 v-for="option in scheduleTypeOptions"
                 :key="option.value"
-                class="relative flex items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-slate-400"
-                :class="scheduleType === option.value ? 'border-slate-700 bg-slate-50' : 'border-gray-200'"
+                class="relative flex items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all"
+                :class="scheduleType === option.value ? 'border-opacity-100' : 'border-gray-200 border-opacity-50'"
+                :style="scheduleType === option.value ? { 
+                  borderColor: option.color, 
+                  backgroundColor: option.bgColor 
+                } : {}"
               >
                 <input
                   type="radio"
@@ -227,7 +263,7 @@ const handleOverlayClick = (e) => {
                   v-if="scheduleType === option.value"
                   class="absolute top-2 right-2"
                 >
-                  <svg class="w-5 h-5 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-5 h-5" :style="{ color: option.color }" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
                 </div>
@@ -284,6 +320,57 @@ const handleOverlayClick = (e) => {
                 :disabled="loading"
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-all text-gray-900"
               />
+            </div>
+          </div>
+
+          <!-- 태그 선택 -->
+          <div>
+            <label class="block text-sm font-bold text-gray-900 mb-2">
+              일정 태그
+            </label>
+            
+            <!-- 수정 모드에서 autoTag 표시 -->
+            <div v-if="isEdit && autoTag" class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex-1">
+                  <div class="text-xs font-semibold text-blue-800 mb-1">시스템 자동 태그</div>
+                  <div class="text-sm text-blue-700">
+                    {{ tagOptions.find(t => t.value === autoTag)?.label || autoTag }}
+                  </div>
+                  <div class="text-xs text-blue-600 mt-1">
+                    {{ tagOptions.find(t => t.value === autoTag)?.description || '' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- userTag 선택 드롭다운 -->
+            <select
+              v-model="userTag"
+              :disabled="loading"
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-all text-gray-900 bg-white"
+            >
+              <option 
+                v-for="option in tagOptions" 
+                :key="option.value" 
+                :value="option.value"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+            
+            <!-- 선택된 태그 설명 -->
+            <div v-if="userTag && tagOptions.find(t => t.value === userTag)" class="mt-2 text-xs text-gray-600 px-1">
+              {{ tagOptions.find(t => t.value === userTag)?.description }}
+            </div>
+            
+            <!-- 안내 문구 -->
+            <div class="mt-2 text-xs text-gray-500 px-1">
+              <p>태그를 선택하면 워케이션 기간 추천 시 해당 태그가 우선적으로 사용됩니다.</p>
+              <p v-if="isEdit && autoTag" class="mt-1">자동 태그가 마음에 들지 않으면 위에서 다른 태그를 선택하세요.</p>
             </div>
           </div>
 

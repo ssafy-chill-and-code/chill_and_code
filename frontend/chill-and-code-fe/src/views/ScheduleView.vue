@@ -22,6 +22,7 @@ const showFormModal = ref(false)
 const showDetailModal = ref(false)
 const selectedSchedule = ref(null)
 const editingSchedule = ref(null)
+const initialDate = ref(null) // 캘린더에서 클릭한 날짜
 const lastFetchedMonth = ref(null) // 중복 호출 방지
 const showMonthPicker = ref(false) // 월 선택 모달
 
@@ -30,9 +31,9 @@ const calendarRef = ref(null)
 
 // 일정 유형 정의
 const scheduleTypes = [
-  { value: 'PERSONAL', label: '개인 일정', color: '#fbbf24', bgColor: '#fef9c3' }, // 노란 계열 (채도 낮춤)
-  { value: 'WORK', label: '업무 일정', color: '#f87171', bgColor: '#fee2e2' }, // 붉은 계열 (채도 낮춤)
-  { value: 'WORKATION', label: '워케이션 일정', color: '#60a5fa', bgColor: '#dbeafe' } // 푸른 계열 (채도 낮춤)
+  { value: 'PERSONAL', label: '개인 일정', color: '#fde68a', bgColor: '#fffbeb' }, // 노란 계열 (더 연한 톤)
+  { value: 'WORK', label: '업무 일정', color: '#fca5a5', bgColor: '#fef2f2' }, // 붉은 계열 (더 연한 톤)
+  { value: 'WORKATION', label: '워케이션 일정', color: '#93c5fd', bgColor: '#eff6ff' } // 푸른 계열 (더 연한 톤)
 ]
 
 // 월 포맷
@@ -195,6 +196,7 @@ const calendarOptions = computed(() => ({
     today: '오늘'
   },
   dayHeaderFormat: { weekday: 'short' },
+  displayEventTime: false, // 시간 숨기기, 제목만 표시
   eventTimeFormat: {
     hour: '2-digit',
     minute: '2-digit',
@@ -282,12 +284,24 @@ const handleEventClick = (info) => {
 // 날짜 클릭 - 새 일정 추가
 const handleDateClick = (info) => {
   editingSchedule.value = null
+  // 클릭한 날짜를 YYYY-MM-DD 형식으로 저장
+  if (info.dateStr) {
+    initialDate.value = info.dateStr
+  } else {
+    // dateStr이 없으면 date 객체에서 추출
+    const date = info.date
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    initialDate.value = `${year}-${month}-${day}`
+  }
   showFormModal.value = true
 }
 
 // 일정 추가 버튼
 const openCreateModal = () => {
   editingSchedule.value = null
+  initialDate.value = null // 버튼으로 열 때는 날짜 초기화
   showFormModal.value = true
 }
 
@@ -341,6 +355,7 @@ const handleDelete = async (scheduleId) => {
 // 폼 모달에서 저장 완료
 const handleSaved = async () => {
   showFormModal.value = false
+  initialDate.value = null // 모달 닫을 때 초기화
   const month = formatMonth(currentDate.value)
   await Promise.all([
     fetchSchedules(month),
@@ -696,7 +711,8 @@ const toggleSidebar = () => {
     <ScheduleFormModal
       v-if="showFormModal"
       :schedule="editingSchedule"
-      @close="showFormModal = false"
+      :initialDate="initialDate"
+      @close="showFormModal = false; initialDate = null"
       @saved="handleSaved"
     />
 
@@ -851,21 +867,21 @@ const toggleSidebar = () => {
 
 /* 일정 유형별 색상 강제 적용 */
 :deep(.fc-event.schedule-type-personal) {
-  background-color: #fef9c3 !important;
-  border-color: #eab308 !important;
-  border-left-color: #eab308 !important;
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+  border-left-color: #fde68a !important;
 }
 
 :deep(.fc-event.schedule-type-work) {
-  background-color: #fee2e2 !important;
-  border-color: #dc2626 !important;
-  border-left-color: #dc2626 !important;
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+  border-left-color: #fca5a5 !important;
 }
 
 :deep(.fc-event.schedule-type-workation) {
-  background-color: #dbeafe !important;
-  border-color: #2563eb !important;
-  border-left-color: #2563eb !important;
+  background-color: #eff6ff !important;
+  border-color: #93c5fd !important;
+  border-left-color: #93c5fd !important;
 }
 
 :deep(.fc-event:hover) {
