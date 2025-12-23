@@ -214,25 +214,40 @@ function deriveCategoryForPost(p) {
                 @click="open(p.postId)"
                 @keydown.enter="open(p.postId)"
               >
-                <!-- 카테고리/지역 라벨 -->
-                <div class="flex gap-2 mb-3">
-                  <span v-if="deriveCategoryForPost(p)" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
-                    {{ deriveCategoryForPost(p) }}
-                  </span>
-                  <span class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
-                    {{ p.region || '전국' }}
-                  </span>
+                <!-- 상단: 카테고리/지역 + 썸네일 -->
+                <div class="flex items-start gap-4 mb-3">
+                  <div class="flex-1">
+                    <!-- 카테고리/지역 라벨 -->
+                    <div class="flex gap-2 mb-3">
+                      <span v-if="deriveCategoryForPost(p)" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+                        {{ deriveCategoryForPost(p) }}
+                      </span>
+                      <span class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold">
+                        {{ p.region || '전국' }}
+                      </span>
+                    </div>
+
+                    <!-- 제목 -->
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 leading-snug">
+                      {{ p.title }}
+                    </h3>
+
+                    <!-- 요약 내용 -->
+                    <p v-if="p.content" class="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+                      {{ p.content }}
+                    </p>
+                  </div>
+
+                  <!-- 썸네일 이미지 -->
+                  <div v-if="p.thumbnailUrl" class="flex-shrink-0">
+                    <img 
+                      :src="p.thumbnailUrl" 
+                      :alt="p.title"
+                      class="w-24 h-24 object-cover rounded-lg"
+                      @error="$event.target.style.display='none'"
+                    />
+                  </div>
                 </div>
-
-                <!-- 제목 -->
-                <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 leading-snug">
-                  {{ p.title }}
-                </h3>
-
-                <!-- 요약 내용 -->
-                <p v-if="p.content" class="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
-                  {{ p.content }}
-                </p>
 
                 <!-- 태그 -->
                 <div v-if="extractTags(p).length" class="flex flex-wrap gap-1.5 mb-3">

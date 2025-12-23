@@ -237,7 +237,7 @@ onMounted(load)
         >
           <div class="flex items-center justify-between">
             <div class="text-sm font-bold text-slate-900 group-hover:text-slate-700 transition-colors">
-              위치 정보:
+              플레이스 바로가기
             </div>
             <div class="flex-shrink-0 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

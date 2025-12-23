@@ -17,6 +17,7 @@ import com.ssafy.chillandcode.model.dto.post.PostDetailResponse;
 import com.ssafy.chillandcode.model.dto.post.RegionRank;
 import com.ssafy.chillandcode.model.dto.post.HashtagRank;
 import com.ssafy.chillandcode.util.HashtagExtractor;
+import com.ssafy.chillandcode.util.ImageExtractor;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -54,13 +55,33 @@ public class PostServiceImpl implements PostService {
 	// 게시글 목록 조회
 	@Override
 	public List<PostSummaryResponse> selectAll(Map<String, Object> params) {
-		return postDao.selectAll(params);
+		List<PostSummaryResponse> posts = postDao.selectAll(params);
+		
+		// 각 게시글의 content에서 첫 번째 이미지 URL 추출하여 썸네일로 설정
+		for (PostSummaryResponse post : posts) {
+			if (post.getContent() != null) {
+				String thumbnailUrl = ImageExtractor.extractFirstImageUrl(post.getContent());
+				post.setThumbnailUrl(thumbnailUrl);
+			}
+		}
+		
+		return posts;
 	}
 
 	// 내가 쓴 게시글 조회
 	@Override
 	public List<PostSummaryResponse> findByUserId(Long userId) {
-		return postDao.selectByUserId(userId);
+		List<PostSummaryResponse> posts = postDao.selectByUserId(userId);
+		
+		// 각 게시글의 content에서 첫 번째 이미지 URL 추출하여 썸네일로 설정
+		for (PostSummaryResponse post : posts) {
+			if (post.getContent() != null) {
+				String thumbnailUrl = ImageExtractor.extractFirstImageUrl(post.getContent());
+				post.setThumbnailUrl(thumbnailUrl);
+			}
+		}
+		
+		return posts;
 	}
 
 	// 게시글 상세조회

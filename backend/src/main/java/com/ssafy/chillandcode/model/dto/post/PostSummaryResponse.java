@@ -11,6 +11,7 @@ public class PostSummaryResponse {
     private String content;      // 요약용 (일부만)
     private String region;
     private String placeUrl;
+    private String thumbnailUrl; // 첫 번째 이미지 URL
     private String nickname;
     private String profileImageUrl;
     private Integer viewCount;
@@ -57,6 +58,14 @@ public class PostSummaryResponse {
 
     public void setPlaceUrl(String placeUrl) {
         this.placeUrl = placeUrl;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public String getNickname() {
