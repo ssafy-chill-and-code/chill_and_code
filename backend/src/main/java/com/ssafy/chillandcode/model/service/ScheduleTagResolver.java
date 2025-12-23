@@ -3,6 +3,8 @@ package com.ssafy.chillandcode.model.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Component;
+
 import com.ssafy.chillandcode.model.dto.schedule.Schedule;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.ScheduleType;
 import com.ssafy.chillandcode.model.dto.schedule.Schedule.Tag;
@@ -13,6 +15,7 @@ import com.ssafy.chillandcode.model.dto.schedule.Schedule.Tag;
  * 핵심 역할: - 일정 등록/수정 시 autoTag를 계산한다 - 추천/분석/BusyDayEvaluator에서 공통으로 신뢰하는 Tag를
  * 생성한다
  */
+@Component
 public class ScheduleTagResolver {
 	
 	private static final List<String> HIGH_PRIORITY_KEYWORDS = List.of("병원", "면접", "발표", "회의", "미팅", "시험", "상담");
