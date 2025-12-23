@@ -223,36 +223,14 @@ a,
 
 /* ===== 다크모드 제거: 홈, 추천, 일정, 커뮤니티 ===== */
 
-/* 메인 화면 다크모드 제거 */
+/* 메인 화면 다크모드 제거 (히어로 섹션만) */
 .dark .home-wrapper {
   background: var(--brand-50) !important;
 }
 
-.dark .home-wrapper h1,
-.dark .home-wrapper h2,
-.dark .home-wrapper h3,
-.dark .home-wrapper h4,
-.dark .home-wrapper h5,
-.dark .home-wrapper h6 {
-  color: #0f172a !important;
-}
-
-.dark .home-wrapper p,
-.dark .home-wrapper span:not(.hero-title),
-.dark .home-wrapper div {
-  color: #334155 !important;
-}
-
-.dark .home-wrapper .text-gray-900,
-.dark .home-wrapper .text-gray-800,
-.dark .home-wrapper .text-gray-700,
-.dark .home-wrapper .text-gray-600 {
-  color: #334155 !important;
-}
-
-.dark .home-wrapper .glass-card {
-  background: rgba(255, 255, 255, 0.6) !important;
-  color: #334155 !important;
+/* main-content 영역은 다크모드 적용 */
+.dark .home-wrapper .main-content {
+  background: #0f172a !important;
 }
 
 /* 히어로 타이틀은 여전히 흰색 */
