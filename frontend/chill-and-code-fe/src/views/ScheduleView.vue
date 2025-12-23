@@ -7,6 +7,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import ScheduleFormModal from '@/components/ScheduleFormModal.vue'
 import ScheduleDetailModal from '@/components/ScheduleDetailModal.vue'
+import ScheduleAnalysisSummary from '@/components/ScheduleAnalysisSummary.vue'
+import ScheduleAnalysisDetail from '@/components/ScheduleAnalysisDetail.vue'
 
 const router = useRouter()
 const scheduleStore = useScheduleStore()
@@ -28,9 +30,9 @@ const calendarRef = ref(null)
 
 // 일정 유형 정의
 const scheduleTypes = [
-  { value: 'PERSONAL', label: '개인 일정', color: '#eab308', bgColor: '#fef9c3' }, // 노란 계열
-  { value: 'WORK', label: '업무 일정', color: '#dc2626', bgColor: '#fee2e2' }, // 붉은 계열
-  { value: 'WORKATION', label: '워케이션 일정', color: '#2563eb', bgColor: '#dbeafe' } // 푸른 계열
+  { value: 'PERSONAL', label: '개인 일정', color: '#fbbf24', bgColor: '#fef9c3' }, // 노란 계열 (채도 낮춤)
+  { value: 'WORK', label: '업무 일정', color: '#f87171', bgColor: '#fee2e2' }, // 붉은 계열 (채도 낮춤)
+  { value: 'WORKATION', label: '워케이션 일정', color: '#60a5fa', bgColor: '#dbeafe' } // 푸른 계열 (채도 낮춤)
 ]
 
 // 월 포맷
@@ -47,21 +49,76 @@ const currentYearMonth = computed(() => {
   return `${y}년 ${m}월`
 })
 
-// 월 선택기용 년/월 리스트
-const availableYears = computed(() => {
-  const currentYear = new Date().getFullYear()
-  const years = []
-  // 과거 5년부터 미래 5년까지 (총 11년)
-  for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-    years.push(i)
+// 작은 달력 데이터 생성
+const miniCalendar = computed(() => {
+  const date = currentDate.value
+  const year = date.getFullYear()
+  const month = date.getMonth()
+  
+  // 현재 월의 첫 번째 날과 마지막 날
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+  const daysInMonth = lastDay.getDate()
+  
+  // 첫 번째 날의 요일 (0 = 일요일)
+  const firstDayOfWeek = firstDay.getDay()
+  
+  // 작은 달력 배열 생성
+  const weeks = []
+  let week = []
+  
+  // 첫 주의 빈 칸 채우기
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    week.push(null)
   }
-  return years
+  
+  // 날짜 채우기
+  for (let day = 1; day <= daysInMonth; day++) {
+    week.push(day)
+    if (week.length === 7) {
+      weeks.push(week)
+      week = []
+    }
+  }
+  
+  // 마지막 주의 빈 칸 채우기
+  if (week.length > 0) {
+    while (week.length < 7) {
+      week.push(null)
+    }
+    weeks.push(week)
+  }
+  
+  return weeks
 })
+
+// 오늘 날짜 확인
+const isToday = (day) => {
+  if (!day) return false
+  const today = new Date()
+  return (
+    today.getFullYear() === currentDate.value.getFullYear() &&
+    today.getMonth() === currentDate.value.getMonth() &&
+    today.getDate() === day
+  )
+}
+
+// 요일 라벨
+const weekDays = ['일', '월', '화', '수', '목', '금', '토']
 
 const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 const selectedYear = ref(currentDate.value.getFullYear())
 const selectedMonth = ref(currentDate.value.getMonth() + 1)
+
+// 연도 증감 함수
+const decreaseYear = () => {
+  selectedYear.value--
+}
+
+const increaseYear = () => {
+  selectedYear.value++
+}
 
 // 월 선택 모달 열기
 const openMonthPicker = () => {
@@ -274,46 +331,23 @@ const handleEdit = (schedule) => {
 // 상세 모달에서 삭제 요청
 const handleDelete = async (scheduleId) => {
   showDetailModal.value = false
-  await fetchSchedules(formatMonth(currentDate.value))
+  const month = formatMonth(currentDate.value)
+  await Promise.all([
+    fetchSchedules(month),
+    scheduleStore.fetchSummary(month)
+  ])
 }
 
 // 폼 모달에서 저장 완료
 const handleSaved = async () => {
   showFormModal.value = false
-  await fetchSchedules(formatMonth(currentDate.value))
+  const month = formatMonth(currentDate.value)
+  await Promise.all([
+    fetchSchedules(month),
+    scheduleStore.fetchSummary(month)
+  ])
 }
 
-// 이번 달 요약 통계 (COMING SOON - 백엔드 API 필요)
-const monthSummary = computed(() => {
-  const schedules = scheduleStore.schedules.filter(s => selectedTypes.value.includes(s.scheduleType))
-  const totalCount = schedules.length
-  
-  // 업무 시간 총합 계산 (간단 구현 - 실제는 백엔드에서)
-  const workSchedules = schedules.filter(s => s.scheduleType === 'WORK')
-  const workHours = workSchedules.reduce((sum, s) => {
-    const start = new Date(s.startDateTime)
-    const end = new Date(s.endDateTime)
-    const hours = (end - start) / (1000 * 60 * 60)
-    return sum + hours
-  }, 0)
-
-  // 여유도 계산 (임시 로직)
-  let status = '여유'
-  let statusColor = 'text-emerald-600'
-  let statusBg = 'bg-emerald-50'
-  
-  if (workHours > 120) {
-    status = '바쁨'
-    statusColor = 'text-red-600'
-    statusBg = 'bg-red-50'
-  } else if (workHours > 80) {
-    status = '보통'
-    statusColor = 'text-amber-600'
-    statusBg = 'bg-amber-50'
-  }
-
-  return { totalCount, workHours: Math.round(workHours), status, statusColor, statusBg }
-})
 
 // 초기 로드
 onMounted(() => {
@@ -330,6 +364,7 @@ const mobileMenuOpen = ref(false)
 const toggleSidebar = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
+
 </script>
 
 <template>
@@ -344,117 +379,98 @@ const toggleSidebar = () => {
 
       <div class="flex flex-col lg:flex-row gap-6">
         <!-- 좌측 패널 (데스크톱: 일반 레이아웃, 모바일: 숨김) -->
-        <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6">
+        <aside class="hidden lg:block w-64 flex-shrink-0 space-y-4">
           <!-- 현재 월 선택 -->
-          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-            <div class="flex items-center gap-2 mb-4">
-              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <h3 class="text-sm font-semibold text-gray-900">현재 월</h3>
-            </div>
-            <button 
-              @click="openMonthPicker"
-              class="w-full text-center py-3 hover:bg-gray-50 rounded-lg transition-all group"
-            >
-              <div class="text-xl font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">{{ currentYearMonth }}</div>
-              <p class="text-xs text-gray-500 group-hover:text-indigo-500">클릭하여 월 선택</p>
-            </button>
-          </div>
-
-          <!-- 일정 유형 필터 -->
-          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-            <div class="flex items-center gap-2 mb-4">
-              <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              <h3 class="text-sm font-semibold text-gray-900">필터</h3>
-            </div>
-            <div class="space-y-2">
-              <label 
-                v-for="type in scheduleTypes" 
-                :key="type.value"
-                class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <h3 class="text-sm font-semibold text-gray-900">{{ currentYearMonth }}</h3>
+              </div>
+              <button 
+                @click="openMonthPicker"
+                class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                title="월 선택"
               >
-                <input 
-                  type="checkbox" 
-                  :value="type.value"
-                  v-model="selectedTypes"
-                  class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <div class="flex items-center gap-2 flex-1">
-                  <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: type.color }"></div>
-                  <span class="text-sm font-medium text-gray-700">{{ type.label }}</span>
-                </div>
-              </label>
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
             </div>
-          </div>
-
-          <!-- 이번 달 요약 분석 -->
-          <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 rounded-lg shadow-sm p-5 text-white">
-            <div class="flex items-center gap-2 mb-4">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <h3 class="text-sm font-semibold">이번 달 요약</h3>
-            </div>
-            <div class="space-y-4">
-              <div class="flex items-center justify-between p-3 rounded-lg bg-white/10 backdrop-blur-sm">
-                <span class="text-sm font-medium text-white/80">전체 일정</span>
-                <span class="text-xl font-bold">{{ monthSummary.totalCount }}개</span>
-              </div>
-              <div class="flex items-center justify-between p-3 rounded-lg bg-white/10 backdrop-blur-sm">
-                <span class="text-sm font-medium text-white/80">업무 시간</span>
-                <span class="text-xl font-bold">{{ monthSummary.workHours }}h</span>
-              </div>
-              <div class="pt-3 border-t border-white/20">
-                <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-white/80">여유도</span>
-                  <span 
-                    :class="[monthSummary.statusColor, monthSummary.statusBg]"
-                    class="px-3 py-1 rounded-lg text-xs font-bold"
-                  >
-                    {{ monthSummary.status }}
-                  </span>
+            
+            <!-- 작은 달력 -->
+            <div class="space-y-1">
+              <!-- 요일 헤더 -->
+              <div class="grid grid-cols-7 gap-1 mb-1">
+                <div 
+                  v-for="(day, index) in weekDays" 
+                  :key="index"
+                  class="text-center text-xs font-medium"
+                  :class="index === 0 ? 'text-red-500' : index === 6 ? 'text-blue-500' : 'text-gray-500'"
+                >
+                  {{ day }}
                 </div>
               </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-white/20">
-              <p class="text-xs text-white/60 italic">
-                💡 분석 기능은 백엔드 API 연동 후 고도화 예정
-              </p>
+              
+              <!-- 날짜 그리드 -->
+              <div 
+                v-for="(week, weekIndex) in miniCalendar" 
+                :key="weekIndex"
+                class="grid grid-cols-7 gap-1"
+              >
+                <div
+                  v-for="(day, dayIndex) in week"
+                  :key="dayIndex"
+                  class="aspect-square flex items-center justify-center text-xs"
+                  :class="[
+                    !day ? 'text-transparent' : '',
+                    isToday(day) 
+                      ? 'bg-indigo-600 text-white rounded-full font-bold' 
+                      : day 
+                        ? 'text-gray-700 hover:bg-gray-100 rounded cursor-pointer' 
+                        : ''
+                  ]"
+                >
+                  {{ day }}
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- CTA 버튼 -->
           <button
             @click="goToRecommend"
-            class="w-full bg-slate-800 text-white rounded-lg px-5 py-4 font-semibold text-sm hover:bg-slate-900 transition-all shadow-sm"
+            class="w-full bg-slate-800 text-white rounded-lg px-4 py-3 font-semibold text-sm hover:bg-slate-900 transition-all shadow-sm"
           >
             <div class="flex items-center justify-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <span>워케이션 가능 기간 분석</span>
+              <span>워케이션 분석</span>
             </div>
           </button>
 
           <!-- 일정 추가 버튼 -->
           <button
             @click="openCreateModal"
-            class="w-full bg-white border border-gray-300 text-gray-700 rounded-lg px-5 py-4 font-semibold text-sm hover:bg-gray-50 transition-all shadow-sm"
+            class="w-full bg-white border border-gray-300 text-gray-700 rounded-lg px-4 py-3 font-semibold text-sm hover:bg-gray-50 transition-all shadow-sm"
           >
             <div class="flex items-center justify-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
               <span>일정 추가</span>
             </div>
           </button>
+
+          <!-- 일정 분석 상세 리포트 -->
+          <ScheduleAnalysisDetail :month="formatMonth(currentDate)" />
         </aside>
 
         <!-- 메인 캘린더 영역 -->
-        <main class="flex-1 min-w-0">
+        <main class="flex-1 min-w-0 space-y-6">
           <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <!-- 캘린더 상단 컨트롤 -->
             <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
@@ -497,6 +513,30 @@ const toggleSidebar = () => {
               </div>
             </div>
 
+            <!-- 일정 유형 필터 (캘린더 위 여백) -->
+            <div class="px-6 py-3 bg-white">
+              <div class="flex items-center justify-end">
+                <div class="flex items-center gap-3">
+                  <label 
+                    v-for="type in scheduleTypes" 
+                    :key="type.value"
+                    class="flex items-center gap-2 cursor-pointer group"
+                  >
+                    <input 
+                      type="checkbox" 
+                      :value="type.value"
+                      v-model="selectedTypes"
+                      class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <div class="flex items-center gap-1.5">
+                      <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: type.color }"></div>
+                      <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">{{ type.label }}</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <!-- 에러 메시지 -->
             <div v-if="error" class="mx-6 mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-sm shadow-sm">
               <div class="flex items-center gap-2">
@@ -518,6 +558,9 @@ const toggleSidebar = () => {
               <FullCalendar ref="calendarRef" :options="calendarOptions" />
             </div>
           </div>
+
+          <!-- 일정 분석 요약 (캘린더 하단) -->
+          <ScheduleAnalysisSummary :month="formatMonth(currentDate)" />
         </main>
       </div>
     </div>
@@ -558,84 +601,63 @@ const toggleSidebar = () => {
       <div class="p-6 space-y-6">
         <!-- 현재 월 선택 -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-          <div class="flex items-center gap-2 mb-4">
-            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <h3 class="text-sm font-semibold text-gray-900">현재 월</h3>
-          </div>
-          <button 
-            @click="openMonthPicker"
-            class="w-full text-center py-3 hover:bg-gray-50 rounded-lg transition-all group"
-          >
-            <div class="text-xl font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">{{ currentYearMonth }}</div>
-            <p class="text-xs text-gray-500 group-hover:text-indigo-500">클릭하여 월 선택</p>
-          </button>
-        </div>
-
-        <!-- 일정 유형 필터 -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-          <div class="flex items-center gap-2 mb-4">
-            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            <h3 class="text-sm font-semibold text-gray-900">필터</h3>
-          </div>
-          <div class="space-y-2">
-            <label 
-              v-for="type in scheduleTypes" 
-              :key="type.value"
-              class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <h3 class="text-sm font-semibold text-gray-900">{{ currentYearMonth }}</h3>
+            </div>
+            <button 
+              @click="openMonthPicker"
+              class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              title="월 선택"
             >
-              <input 
-                type="checkbox" 
-                :value="type.value"
-                v-model="selectedTypes"
-                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <div class="flex items-center gap-2 flex-1">
-                <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: type.color }"></div>
-                <span class="text-sm font-medium text-gray-700">{{ type.label }}</span>
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- 작은 달력 -->
+          <div class="space-y-1">
+            <!-- 요일 헤더 -->
+            <div class="grid grid-cols-7 gap-1 mb-1">
+              <div 
+                v-for="(day, index) in weekDays" 
+                :key="index"
+                class="text-center text-xs font-medium"
+                :class="index === 0 ? 'text-red-500' : index === 6 ? 'text-blue-500' : 'text-gray-500'"
+              >
+                {{ day }}
               </div>
-            </label>
+            </div>
+            
+            <!-- 날짜 그리드 -->
+            <div 
+              v-for="(week, weekIndex) in miniCalendar" 
+              :key="weekIndex"
+              class="grid grid-cols-7 gap-1"
+            >
+              <div
+                v-for="(day, dayIndex) in week"
+                :key="dayIndex"
+                class="aspect-square flex items-center justify-center text-xs"
+                :class="[
+                  !day ? 'text-transparent' : '',
+                  isToday(day) 
+                    ? 'bg-indigo-600 text-white rounded-full font-bold' 
+                    : day 
+                      ? 'text-gray-700 hover:bg-gray-100 rounded cursor-pointer' 
+                      : ''
+                ]"
+              >
+                {{ day }}
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 이번 달 요약 분석 -->
-        <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 rounded-lg shadow-sm p-5 text-white">
-          <div class="flex items-center gap-2 mb-4">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <h3 class="text-sm font-semibold">이번 달 요약</h3>
-          </div>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between p-3 rounded-lg bg-white/10 backdrop-blur-sm">
-              <span class="text-sm font-medium text-white/80">전체 일정</span>
-              <span class="text-xl font-bold">{{ monthSummary.totalCount }}개</span>
-            </div>
-            <div class="flex items-center justify-between p-3 rounded-lg bg-white/10 backdrop-blur-sm">
-              <span class="text-sm font-medium text-white/80">업무 시간</span>
-              <span class="text-xl font-bold">{{ monthSummary.workHours }}h</span>
-            </div>
-            <div class="pt-3 border-t border-white/20">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-white/80">여유도</span>
-                <span 
-                  :class="[monthSummary.statusColor, monthSummary.statusBg]"
-                  class="px-3 py-1 rounded-lg text-xs font-bold"
-                >
-                  {{ monthSummary.status }}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="mt-4 pt-4 border-t border-white/20">
-            <p class="text-xs text-white/60 italic">
-              💡 분석 기능은 백엔드 API 연동 후 고도화 예정
-            </p>
-          </div>
-        </div>
 
         <!-- CTA 버튼 -->
         <button
@@ -662,6 +684,11 @@ const toggleSidebar = () => {
             <span>일정 추가</span>
           </div>
         </button>
+
+        <!-- 일정 분석 요약 (모바일) -->
+        <div class="lg:hidden">
+          <ScheduleAnalysisSummary :month="formatMonth(currentDate)" />
+        </div>
       </div>
     </div>
 
@@ -704,51 +731,49 @@ const toggleSidebar = () => {
 
         <!-- 모달 바디 -->
         <div class="p-8 space-y-6">
-          <!-- 년도 선택 -->
+          <!-- 년도 선택 (화살표 + 중앙 연도) -->
           <div>
-            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Year</label>
-            <div class="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-1">
+            <div class="flex items-center justify-center gap-4">
               <button
-                v-for="year in availableYears"
-                :key="year"
-                @click="selectedYear = year"
-                :class="[
-                  'py-2 px-4 text-sm font-semibold rounded-lg transition-all',
-                  selectedYear === year
-                    ? 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-600'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                ]"
+                @click="decreaseYear"
+                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="이전 년도"
               >
-                {{ year }}
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div class="text-2xl font-bold text-gray-900 min-w-[120px] text-center">
+                {{ selectedYear }}년
+              </div>
+              <button
+                @click="increaseYear"
+                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="다음 년도"
+              >
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             </div>
           </div>
 
-          <!-- 월 선택 -->
+          <!-- 월 선택 (4 * 3 그리드) -->
           <div>
-            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Month</label>
-            <div class="grid grid-cols-6 gap-2">
+            <div class="grid grid-cols-4 gap-3">
               <button
                 v-for="month in months"
                 :key="month"
                 @click="selectedMonth = month"
                 :class="[
-                  'py-2 text-sm font-semibold rounded-lg transition-all',
+                  'py-3 text-sm font-semibold rounded-lg transition-all',
                   selectedMonth === month
                     ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                 ]"
               >
-                {{ month }}
+                {{ month }}월
               </button>
-            </div>
-          </div>
-
-          <!-- 선택된 월 미리보기 -->
-          <div class="pt-4 border-t border-gray-200">
-            <div class="text-center">
-              <p class="text-xs text-gray-500 mb-1">선택된 날짜</p>
-              <p class="text-lg font-bold text-slate-900">{{ selectedYear }}년 {{ selectedMonth }}월</p>
             </div>
           </div>
         </div>
