@@ -12,6 +12,7 @@ import com.ssafy.chillandcode.exception.ErrorCode;
 import com.ssafy.chillandcode.model.dao.CommentDao;
 import com.ssafy.chillandcode.model.dao.PostDao;
 import com.ssafy.chillandcode.model.dto.comment.Comment;
+import com.ssafy.chillandcode.model.dto.comment.CommentResponse;
 
 @Service
 public class CommentServiceImpl implements CommentService {
