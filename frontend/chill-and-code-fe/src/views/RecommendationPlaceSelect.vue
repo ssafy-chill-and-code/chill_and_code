@@ -2,11 +2,11 @@
   <div class="place-select-wrapper">
     <div class="container py-5">
       <!-- 헤더 -->
-      <header class="text-center mb-5">
+      <header class="mb-5">
         <button class="back-link" @click="goBack">
-          <span>←</span> 이전 단계로
+          <img src="@/assets/arrow/back_arrow.png" alt="뒤로 가기" class="back-arrow-img" />
         </button>
-        <div class="header-content">
+        <div class="header-content text-center">
           <div class="step-indicator">STEP 3 of 3</div>
           <h1 class="page-title">당신의 선호도를 알려주세요</h1>
           <p class="page-subtitle">{{ periodText }}의 워케이션을 위한 옵션을 선택하세요</p>
@@ -72,7 +72,7 @@
         <!-- 예산 -->
         <section class="form-section">
           <div class="section-header">
-            <h3 class="section-title">💰 월간 예산 <span class="required">*</span></h3>
+            <h3 class="section-title">💰 예산 <span class="required">*</span></h3>
           </div>
           <div class="budget-grid">
             <button 
@@ -216,7 +216,7 @@ const placeStore = usePlaceRecommendationStore()
 const recommendationStore = useRecommendationStore()
 
 const selectedStyle = ref('')
-const budget = ref('적당한') // '가성비', '적당한', '프리미엄' 중 하나
+const budget = ref('') // '가성비', '적당한', '프리미엄' 중 하나
 const transport = ref('')
 const selectedRegions = ref([])
 const hoveredRegion = ref(null)
@@ -631,7 +631,7 @@ async function goResult() {
   }
   
   if (!budget.value) {
-    errorMessage.value = '월간 예산을 선택해주세요.'
+    errorMessage.value = '예산을 선택해주세요.'
     return
   }
   
@@ -662,7 +662,7 @@ function goBack() {
 
 <style scoped>
 .place-select-wrapper {
-  background: white;
+  background: var(--color-background);
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
@@ -682,7 +682,7 @@ function goBack() {
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border-radius: 8px;
   transition: all 0.3s ease;
   margin-bottom: 2rem;
@@ -691,7 +691,13 @@ function goBack() {
 
 .back-link:hover {
   background: #f8fafc;
-  color: #1e293b;
+  transform: translateX(-4px);
+}
+
+.back-arrow-img {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s ease;
 }
 
 .header-content {
@@ -736,12 +742,14 @@ function goBack() {
 }
 
 .form-section {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 1rem;
   padding: 2rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   transition: all 0.2s ease;
   /* SVG hover 효과가 잘리지 않도록 overflow visible */
   overflow: visible;

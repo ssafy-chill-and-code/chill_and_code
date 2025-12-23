@@ -1,4 +1,5 @@
 @import './base.css';
+@import './glassmorphism.css';
 
 /* Tailwind CSS */
 @tailwind base;
@@ -107,4 +108,585 @@ a,
   display: flex; gap: 20px; list-style: none; margin: 0; padding: 0;
 }
 .navbar-right { display: flex; gap: 12px; }
+
+/* 추가 유틸리티 클래스 */
+.glass {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+}
+
+/* 다크모드 스타일 */
+.dark {
+  color-scheme: dark;
+  /* CSS 변수 오버라이드 */
+  --color-background: #1a1a1a;
+  --color-background-soft: #2a2a2a;
+  --color-background-mute: #3a3a3a;
+}
+
+.dark body {
+  background-color: #1a1a1a;
+  color: #e5e5e5;
+}
+
+.dark #app {
+  background-color: #1a1a1a;
+}
+
+.dark .home-wrapper,
+.dark .bg-white,
+.dark [style*="background"] {
+  background-color: #1a1a1a !important;
+}
+
+/* 추천 페이지 래퍼들 */
+.dark .style-select-wrapper,
+.dark .period-select-wrapper,
+.dark .place-select-wrapper,
+.dark .period-result-wrapper,
+.dark .place-result-wrapper {
+  background-color: #1a1a1a !important;
+}
+
+.dark .text-gray-700 {
+  color: #d1d1d1 !important;
+}
+
+.dark .text-gray-900 {
+  color: #e5e5e5 !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #404040 !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #2a2a2a !important;
+}
+
+.dark .hover\:bg-slate-50:hover {
+  background-color: #2a2a2a !important;
+}
+
+.dark .bg-gradient-to-br {
+  filter: brightness(0.8);
+}
+
+/* 다크모드 추가 유틸리티 */
+.dark .glass {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  color: #e5e5e5;
+}
+
+.dark .glass-strong {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+  color: #e5e5e5;
+}
+
+/* 다크모드 텍스트 색상 */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #f5f5f5 !important;
+}
+
+.dark p,
+.dark span,
+.dark div {
+  color: #e5e5e5;
+}
+
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #e5e5e5 !important;
+}
+
+/* ===== 다크모드 제거: 홈, 추천, 일정, 커뮤니티 ===== */
+
+/* 메인 화면 다크모드 제거 */
+.dark .home-wrapper {
+  background: var(--brand-50) !important;
+}
+
+.dark .home-wrapper h1,
+.dark .home-wrapper h2,
+.dark .home-wrapper h3,
+.dark .home-wrapper h4,
+.dark .home-wrapper h5,
+.dark .home-wrapper h6 {
+  color: #0f172a !important;
+}
+
+.dark .home-wrapper p,
+.dark .home-wrapper span:not(.hero-title),
+.dark .home-wrapper div {
+  color: #334155 !important;
+}
+
+.dark .home-wrapper .text-gray-900,
+.dark .home-wrapper .text-gray-800,
+.dark .home-wrapper .text-gray-700,
+.dark .home-wrapper .text-gray-600 {
+  color: #334155 !important;
+}
+
+.dark .home-wrapper .glass-card {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #334155 !important;
+}
+
+/* 히어로 타이틀은 여전히 흰색 */
+.dark .home-wrapper .hero-title {
+  color: white !important;
+}
+
+/* CTA 버튼 텍스트 흰색 */
+.dark .home-wrapper .preview-cta-button span {
+  color: white !important;
+}
+
+/* 일정 페이지 다크모드 */
+.dark .schedule-view {
+  background-color: #1a1a1a !important;
+  min-height: 100vh;
+}
+
+.dark .schedule-view h1,
+.dark .schedule-view h2,
+.dark .schedule-view h3,
+.dark .schedule-view h4,
+.dark .schedule-view h5,
+.dark .schedule-view h6 {
+  color: #f5f5f5 !important;
+}
+
+.dark .schedule-view p,
+.dark .schedule-view span,
+.dark .schedule-view div {
+  color: #e5e5e5 !important;
+}
+
+.dark .schedule-view .text-gray-900,
+.dark .schedule-view .text-gray-800,
+.dark .schedule-view .text-gray-700,
+.dark .schedule-view .text-gray-600,
+.dark .schedule-view .text-gray-500 {
+  color: #e5e5e5 !important;
+}
+
+.dark .schedule-view .glass-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 일정 페이지 버튼 스타일 */
+.dark .schedule-view button {
+  color: white !important;
+}
+
+/* 워케이션 분석 버튼 */
+.dark .schedule-view .bg-slate-800 {
+  background-color: white !important;
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .bg-slate-800:hover {
+  background-color: #f8fafc !important;
+}
+
+.dark .schedule-view .bg-slate-800 span {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .border-gray-300 {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark .schedule-view .hover\:bg-gray-100:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .schedule-view .hover\:bg-gray-50:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 일정 분석 상세 텍스트 흰색 */
+.dark .schedule-view .text-gray-900 {
+  color: white !important;
+}
+
+.dark .schedule-view .text-gray-700 {
+  color: white !important;
+}
+
+.dark .schedule-view .text-gray-600 {
+  color: white !important;
+}
+
+.dark .schedule-view .text-gray-500 {
+  color: white !important;
+}
+
+/* 여유로운 주 텍스트 검정색 */
+.dark .schedule-view .text-emerald-900 {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .text-emerald-700 {
+  color: #0f172a !important;
+}
+
+/* 판단 기준 버튼 텍스트 */
+.dark .schedule-view .bg-gray-50 .text-gray-700 {
+  color: #0f172a !important;
+}
+
+/* 판단 기준 드롭다운 박스 */
+.dark .schedule-view .bg-blue-50 {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .bg-blue-50 .text-blue-900,
+.dark .schedule-view .bg-blue-50 .text-blue-800,
+.dark .schedule-view .bg-blue-50 .text-gray-700 {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .text-blue-900 {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .text-blue-800 {
+  color: #0f172a !important;
+}
+
+/* 일정 추가 버튼 텍스트 검정색 */
+.dark .schedule-view .bg-white.border.border-gray-300.text-gray-700 {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .bg-white.border.border-gray-300.text-gray-700 span {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view button.bg-white.text-gray-700 {
+  color: #0f172a !important;
+}
+
+/* 달력 요일 (일,월,화,수,목,금,토) 모두 검정색 */
+.dark .schedule-view .text-red-500 {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .text-blue-500 {
+  color: #0f172a !important;
+}
+
+/* 2025년 12월 같은 텍스트 */
+.dark .schedule-view .text-xl,
+.dark .schedule-view .text-2xl {
+  color: #0f172a !important;
+}
+
+/* 월 선택 팝업 - 1월~12월은 검정색 유지 (이전 설정) */
+.dark .schedule-view .text-sm.font-semibold {
+  color: #0f172a !important;
+}
+
+/* 월 선택 팝업 - 흰색으로 변경할 요소들 */
+/* 1. "월 선택" 제목 (이미 흰색이지만 명시) */
+.dark .schedule-view .text-xl.font-bold.text-white {
+  color: white !important;
+}
+
+/* 2. "2025년" 텍스트 */
+.dark .schedule-view .text-2xl.font-bold.text-gray-900 {
+  color: white !important;
+}
+
+/* 3. "취소" 버튼 - 텍스트만 검정색, 배경/테두리는 라이트모드 유지 */
+.dark .schedule-view .bg-white.border.border-gray-300 {
+  color: #0f172a !important;
+  background-color: white !important;
+  border-color: #d1d5db !important;
+}
+
+/* "오늘" 버튼 텍스트 흰색 */
+.dark .schedule-view button.px-4.py-2.text-sm.font-semibold.text-gray-700.bg-white {
+  color: white !important;
+}
+
+/* 화살표 버튼의 SVG 검정색 */
+.dark .schedule-view button svg.text-gray-600 {
+  color: #0f172a !important;
+}
+
+/* 캘린더 스타일 */
+.dark .schedule-view .fc {
+  color: #e5e5e5 !important;
+}
+
+.dark .schedule-view .fc-theme-standard td,
+.dark .schedule-view .fc-theme-standard th {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .schedule-view .fc-col-header-cell {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* FullCalendar 요일 헤더 (일월화수목금토) 검정색 */
+.dark .schedule-view .fc-col-header-cell-cushion {
+  color: #0f172a !important;
+}
+
+.dark .schedule-view .fc-daygrid-day {
+  background-color: transparent !important;
+}
+
+.dark .schedule-view .fc-daygrid-day:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 추천 페이지들 다크모드 적용 */
+.dark .style-select-wrapper,
+.dark .period-select-wrapper,
+.dark .place-select-wrapper,
+.dark .period-result-wrapper,
+.dark .place-result-wrapper {
+  background-color: #1a1a1a !important;
+  min-height: 100vh;
+}
+
+.dark .style-select-wrapper h1,
+.dark .style-select-wrapper h2,
+.dark .style-select-wrapper h3,
+.dark .period-select-wrapper h1,
+.dark .period-select-wrapper h2,
+.dark .period-select-wrapper h3,
+.dark .place-select-wrapper h1,
+.dark .place-select-wrapper h2,
+.dark .place-select-wrapper h3,
+.dark .period-result-wrapper h1,
+.dark .period-result-wrapper h2,
+.dark .period-result-wrapper h3,
+.dark .place-result-wrapper h1,
+.dark .place-result-wrapper h2,
+.dark .place-result-wrapper h3 {
+  color: #0f172a !important;
+}
+
+/* 추천 페이지 헤더 텍스트 흰색 */
+.dark .style-select-wrapper .step-indicator,
+.dark .style-select-wrapper .page-title,
+.dark .style-select-wrapper .page-subtitle,
+.dark .period-select-wrapper .step-indicator,
+.dark .period-select-wrapper .page-title,
+.dark .period-select-wrapper .page-subtitle,
+.dark .period-result-wrapper .step-indicator,
+.dark .period-result-wrapper .page-title,
+.dark .period-result-wrapper .page-subtitle,
+.dark .place-select-wrapper .step-indicator,
+.dark .place-select-wrapper .page-title,
+.dark .place-select-wrapper .page-subtitle {
+  color: white !important;
+}
+
+.dark .style-select-wrapper p,
+.dark .style-select-wrapper span,
+.dark .style-select-wrapper div,
+.dark .period-select-wrapper p,
+.dark .period-select-wrapper span,
+.dark .period-select-wrapper div,
+.dark .place-select-wrapper p,
+.dark .place-select-wrapper span,
+.dark .place-select-wrapper div,
+.dark .period-result-wrapper p,
+.dark .period-result-wrapper span,
+.dark .period-result-wrapper div,
+.dark .place-result-wrapper p,
+.dark .place-result-wrapper span,
+.dark .place-result-wrapper div {
+  color: #334155 !important;
+}
+
+.dark .style-select-wrapper .text-gray-900,
+.dark .style-select-wrapper .text-gray-700,
+.dark .style-select-wrapper .text-gray-600,
+.dark .period-select-wrapper .text-gray-900,
+.dark .period-select-wrapper .text-gray-700,
+.dark .period-select-wrapper .text-gray-600,
+.dark .place-select-wrapper .text-gray-900,
+.dark .place-select-wrapper .text-gray-700,
+.dark .place-select-wrapper .text-gray-600,
+.dark .period-result-wrapper .text-gray-900,
+.dark .period-result-wrapper .text-gray-700,
+.dark .period-result-wrapper .text-gray-600,
+.dark .place-result-wrapper .text-gray-900,
+.dark .place-result-wrapper .text-gray-700,
+.dark .place-result-wrapper .text-gray-600 {
+  color: #334155 !important;
+}
+
+.dark .style-select-wrapper .glass-card,
+.dark .period-select-wrapper .glass-card,
+.dark .place-select-wrapper .glass-card,
+.dark .period-result-wrapper .glass-card,
+.dark .place-result-wrapper .glass-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #334155 !important;
+}
+
+/* 최우선 추천 배지 텍스트 흰색 유지 */
+.dark .period-result-wrapper .card-badge,
+.dark .place-result-wrapper .card-badge {
+  color: white !important;
+}
+
+/* 지도 툴팁 텍스트 흰색 유지 */
+.dark .place-select-wrapper .region-tooltip {
+  color: white !important;
+}
+
+/* 장소 결과 페이지 다크모드 */
+/* 헤더 영역 */
+.dark .place-result-wrapper .step-indicator {
+  background: white !important;
+  color: #0f172a !important;
+}
+
+.dark .place-result-wrapper .page-title {
+  color: white !important;
+}
+
+.dark .place-result-wrapper .page-subtitle {
+  color: white !important;
+}
+
+/* 장소명: 검정색 */
+.dark .place-result-wrapper .place-name {
+  color: #0f172a !important;
+}
+
+/* ~% 배지: 흰색 */
+.dark .place-result-wrapper .match-badge {
+  color: white !important;
+}
+
+/* 다크모드에서 버튼 스타일 */
+/* 장소 추천받기 버튼: 다크모드에서 흰색 배경, 검정 텍스트 */
+.dark .place-select-wrapper .btn-submit {
+  background: white !important;
+  color: #1e293b !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark .place-select-wrapper .btn-submit:hover:not(:disabled) {
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* 기간 추천받기 버튼: 다크모드에서 흰색 배경, 검정 텍스트 */
+.dark .period-select-wrapper .btn-submit {
+  background: white !important;
+  color: #1e293b !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark .period-select-wrapper .btn-submit:hover:not(:disabled) {
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* 홈 화면 달력 요일 헤더 다크모드 */
+.dark .calendar-day-header {
+  color: #0f172a !important;
+}
+
+/* 커뮤니티 페이지 다크모드 */
+.dark .community-view {
+  background-color: #1a1a1a !important;
+  min-height: 100vh;
+}
+
+.dark .community-view h1,
+.dark .community-view h2,
+.dark .community-view h3,
+.dark .community-view h4,
+.dark .community-view h5,
+.dark .community-view h6 {
+  color: #f5f5f5 !important;
+}
+
+.dark .community-view p,
+.dark .community-view span,
+.dark .community-view div {
+  color: #e5e5e5 !important;
+}
+
+.dark .community-view .text-gray-900,
+.dark .community-view .text-gray-800,
+.dark .community-view .text-gray-700,
+.dark .community-view .text-gray-600,
+.dark .community-view .text-gray-500 {
+  color: #e5e5e5 !important;
+}
+
+.dark .community-view .glass-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 커뮤니티 버튼 스타일 */
+.dark .community-view button {
+  color: white !important;
+}
+
+/* 게시글 등록 버튼 */
+.dark .community-view .bg-slate-800 {
+  background-color: white !important;
+  color: #0f172a !important;
+}
+
+.dark .community-view .bg-slate-800 span {
+  color: #0f172a !important;
+}
+
+.dark .community-view .bg-slate-800:hover {
+  background-color: #f8fafc !important;
+}
+
+/* 게시글 카테고리 박스 (동행모집, 후기 등) 텍스트 검정색 */
+.dark .community-view .bg-gray-100.text-gray-700 {
+  color: #0f172a !important;
+}
 

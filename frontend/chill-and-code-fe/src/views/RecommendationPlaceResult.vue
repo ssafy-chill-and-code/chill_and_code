@@ -77,9 +77,6 @@
                     <span v-for="tag in place.tags" :key="tag" class="place-tag">{{ tag }}</span>
                   </div>
 
-                  <!-- 가격 -->
-                  <div class="place-price">월 {{ formatPrice(place.score) }}</div>
-
                   <!-- 추천 이유 -->
                   <div class="reason-box">
                     <div class="reason-title">📝 추천이유</div>
@@ -152,13 +149,6 @@ function formatDate(dateString) {
   return `${month}월 ${day}일`
 }
 
-function formatPrice(score) {
-  // 점수를 가격으로 변환 (예시)
-  if (score >= 80) return '180만원'
-  if (score >= 60) return '150만원'
-  return '120만원'
-}
-
 function goSchedule(place) {
   // 선택한 장소와 기간 정보를 scheduleStore에 저장
   const period = selectedPeriod.value
@@ -171,7 +161,7 @@ function goSchedule(place) {
 
 <style scoped>
 .place-result-wrapper {
-  background: white;
+  background: var(--color-background);
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
@@ -309,11 +299,13 @@ function goSchedule(place) {
 
 /* Summary Card */
 .summary-card {
-  background: white;
-  border: 2px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 16px;
   padding: 1.5rem 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
@@ -370,11 +362,13 @@ function goSchedule(place) {
 }
 
 .place-card {
-  background: white;
-  border: 2px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   transition: all 0.3s ease;
   height: 100%;
   display: flex;
@@ -460,14 +454,6 @@ function goSchedule(place) {
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
-}
-
-.place-price {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 1rem;
-  letter-spacing: -0.01em;
 }
 
 .reason-box {

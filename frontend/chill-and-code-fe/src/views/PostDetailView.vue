@@ -210,7 +210,7 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="min-h-screen bg-white py-8 lg:py-12">
+  <div class="community-view min-h-screen py-8 lg:py-12" style="background: var(--color-background);">
     <div class="max-w-4xl mx-auto px-4 lg:px-8">
       <!-- 목록으로 돌아가기 -->
       <div class="mb-6">
@@ -226,7 +226,7 @@ onMounted(load)
       </div>
 
       <!-- 게시글 상세 카드 -->
-      <article class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-8 lg:p-10 mb-6">
+      <article class="glass-card rounded-2xl p-8 lg:p-10 mb-6">
         <!-- 상단: 카테고리/지역 + 수정/삭제 버튼 -->
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-2">
@@ -402,7 +402,7 @@ onMounted(load)
       </article>
 
       <!-- 댓글 카드 -->
-      <section class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-8 lg:p-10">
+      <section class="glass-card rounded-2xl p-8 lg:p-10">
         <h2 class="text-xl font-bold text-gray-900 mb-6">
           댓글 <span class="text-gray-500 font-normal text-lg">({{ comments.length }})</span>
         </h2>

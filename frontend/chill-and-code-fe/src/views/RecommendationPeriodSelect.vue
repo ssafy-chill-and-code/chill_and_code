@@ -2,11 +2,11 @@
   <div class="period-select-wrapper">
     <div class="container py-5">
       <!-- 헤더 -->
-      <header class="text-center mb-5">
+      <header class="mb-5">
         <RouterLink class="back-link" to="/recommend">
-          <span>←</span> 이전 단계로
+          <img src="@/assets/arrow/back_arrow.png" alt="뒤로 가기" class="back-arrow-img" />
         </RouterLink>
-        <div class="header-content">
+        <div class="header-content text-center">
           <div class="step-indicator">STEP 2 of 3</div>
           <h1 class="page-title">이번 워케이션 희망 기간은?</h1>
           <p class="page-subtitle">최소 기간과 최대 기간을 설정해주세요</p>
@@ -175,7 +175,7 @@ async function goResult() {
 
 <style scoped>
 .period-select-wrapper {
-  background: white;
+  background: var(--color-background);
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
@@ -192,7 +192,7 @@ async function goResult() {
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border-radius: 8px;
   transition: all 0.3s ease;
   margin-bottom: 2rem;
@@ -201,7 +201,13 @@ async function goResult() {
 
 .back-link:hover {
   background: #f8fafc;
-  color: #1e293b;
+  transform: translateX(-4px);
+}
+
+.back-arrow-img {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s ease;
 }
 
 .header-content {
