@@ -9,8 +9,16 @@ const postStore = usePostStore()
 const title = ref('')
 const region = ref('')
 const content = ref('')
+const category = ref('')
 const message = ref('')
 const loading = ref(false)
+
+const categories = [
+  { value: '', label: '선택 안함' },
+  { value: '후기', label: '후기' },
+  { value: '정보공유', label: '정보공유' },
+  { value: '동행모집', label: '동행모집' },
+]
 
 async function create() {
   message.value = ''
@@ -21,8 +29,14 @@ async function create() {
   
   loading.value = true
   try {
+    // 카테고리가 선택되었으면 제목에 태그 추가
+    let finalTitle = title.value.trim()
+    if (category.value && !finalTitle.includes(`[${category.value}]`) && !finalTitle.includes(category.value)) {
+      finalTitle = `[${category.value}] ${finalTitle}`
+    }
+    
     const res = await postStore.createPost({ 
-      title: title.value, 
+      title: finalTitle, 
       region: region.value, 
       content: content.value 
     })
@@ -91,6 +105,29 @@ function cancel() {
             />
           </div>
 
+          <!-- 카테고리 선택 -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">
+              카테고리
+              <span class="text-gray-400 text-xs font-normal ml-2">(선택사항)</span>
+            </label>
+            <div class="flex flex-wrap gap-3">
+              <button
+                v-for="cat in categories"
+                :key="cat.value"
+                type="button"
+                @click="category = cat.value"
+                :disabled="loading"
+                class="px-5 py-3 rounded-xl text-sm font-semibold transition-all"
+                :class="category === cat.value 
+                  ? 'bg-slate-800 text-white shadow-md' 
+                  : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-slate-400 hover:bg-gray-50'"
+              >
+                {{ cat.label }}
+              </button>
+            </div>
+          </div>
+
           <!-- 지역 선택 -->
           <div>
             <label for="region" class="block text-sm font-semibold text-gray-700 mb-3">
@@ -152,6 +189,10 @@ function cancel() {
               <li class="flex items-start gap-2">
                 <span class="text-slate-400 mt-0.5">•</span>
                 <span>제목은 핵심 내용이 드러나도록 명확하게 작성해주세요.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-slate-400 mt-0.5">•</span>
+                <span>카테고리를 선택하면 제목에 자동으로 태그가 추가됩니다.</span>
               </li>
               <li class="flex items-start gap-2">
                 <span class="text-slate-400 mt-0.5">•</span>

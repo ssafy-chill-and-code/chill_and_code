@@ -10,16 +10,35 @@ const postStore = usePostStore()
 const title = ref('')
 const region = ref('')
 const content = ref('')
+const category = ref('')
 const message = ref('')
 const loading = ref(false)
 const initialLoading = ref(true)
+
+const categories = [
+  { value: '', label: '선택 안함' },
+  { value: '후기', label: '후기' },
+  { value: '정보공유', label: '정보공유' },
+  { value: '동행모집', label: '동행모집' },
+]
 
 onMounted(async () => {
   try {
     await postStore.fetchPostDetail(route.params.postId)
     const p = postStore.post
     if (p) {
-      title.value = p.title || ''
+      // 제목에서 카테고리 태그 추출
+      let originalTitle = p.title || ''
+      const categoryMatch = originalTitle.match(/^\[([^\]]+)\]\s*/)
+      if (categoryMatch) {
+        const extractedCategory = categoryMatch[1]
+        if (['후기', '정보공유', '동행모집'].includes(extractedCategory)) {
+          category.value = extractedCategory
+          originalTitle = originalTitle.replace(/^\[([^\]]+)\]\s*/, '')
+        }
+      }
+      
+      title.value = originalTitle
       region.value = p.region || ''
       content.value = p.content || ''
     }
@@ -39,8 +58,14 @@ async function save() {
   
   loading.value = true
   try {
+    // 카테고리가 선택되었으면 제목에 태그 추가
+    let finalTitle = title.value.trim()
+    if (category.value && !finalTitle.includes(`[${category.value}]`) && !finalTitle.includes(category.value)) {
+      finalTitle = `[${category.value}] ${finalTitle}`
+    }
+    
     await postStore.updatePost(route.params.postId, { 
-      title: title.value, 
+      title: finalTitle, 
       region: region.value, 
       content: content.value 
     })
@@ -110,6 +135,29 @@ function cancel() {
             />
           </div>
 
+          <!-- 카테고리 선택 -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">
+              카테고리
+              <span class="text-gray-400 text-xs font-normal ml-2">(선택사항)</span>
+            </label>
+            <div class="flex flex-wrap gap-3">
+              <button
+                v-for="cat in categories"
+                :key="cat.value"
+                type="button"
+                @click="category = cat.value"
+                :disabled="loading"
+                class="px-5 py-3 rounded-xl text-sm font-semibold transition-all"
+                :class="category === cat.value 
+                  ? 'bg-slate-800 text-white shadow-md' 
+                  : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-slate-400 hover:bg-gray-50'"
+              >
+                {{ cat.label }}
+              </button>
+            </div>
+          </div>
+
           <!-- 지역 선택 -->
           <div>
             <label for="region" class="block text-sm font-semibold text-gray-700 mb-3">
@@ -175,6 +223,10 @@ function cancel() {
               <li class="flex items-start gap-2">
                 <span class="text-slate-400 mt-0.5">•</span>
                 <span>제목과 내용은 필수로 입력해야 합니다.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-slate-400 mt-0.5">•</span>
+                <span>카테고리 변경 시 제목 태그가 업데이트됩니다.</span>
               </li>
               <li class="flex items-start gap-2">
                 <span class="text-slate-400 mt-0.5">•</span>
