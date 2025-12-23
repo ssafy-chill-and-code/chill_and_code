@@ -24,7 +24,8 @@
 		u.nickname,
 		u.profile_image_url,
 		COALESCE(p.view_count, 0) AS view_count,
-		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
+		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count,
+		COALESCE((SELECT COUNT(*) FROM post_like l WHERE l.post_id = p.post_id), 0) AS like_count
 		FROM post p
 		LEFT JOIN users u ON p.user_id = u.user_id
 		<where>
@@ -75,7 +76,8 @@
 		u.nickname,
 		u.profile_image_url,
 		COALESCE(p.view_count, 0) AS view_count,
-		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
+		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count,
+		COALESCE((SELECT COUNT(*) FROM post_like l WHERE l.post_id = p.post_id), 0) AS like_count
 		FROM
 		post p
 		LEFT JOIN users u ON p.user_id = u.user_id
@@ -96,7 +98,8 @@
 		u.nickname,
 		u.profile_image_url,
 		COALESCE(p.view_count, 0) AS view_count,
-		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
+		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count,
+		COALESCE((SELECT COUNT(*) FROM post_like l WHERE l.post_id = p.post_id), 0) AS like_count
 		FROM post p
 		LEFT JOIN users u ON p.user_id = u.user_id
 		WHERE

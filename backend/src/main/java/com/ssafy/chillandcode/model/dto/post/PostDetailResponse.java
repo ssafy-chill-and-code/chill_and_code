@@ -16,6 +16,7 @@ public class PostDetailResponse {
     private String profileImageUrl;
     private Integer viewCount;
     private Integer commentCount;
+    private Integer likeCount;
     private LocalDateTime createdAt;
 
     public PostDetailResponse() {}
@@ -98,6 +99,14 @@ public class PostDetailResponse {
 
     public void setCommentCount(Integer commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 
     public LocalDateTime getCreatedAt() {

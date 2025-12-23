@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePostStore } from '@/stores/post'
 import { useCommentStore } from '@/stores/comment'
+import api from '@/api/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -11,6 +12,9 @@ const commentStore = useCommentStore()
 
 const postId = route.params.postId
 const message = ref('')
+const isLiked = ref(false)
+const likeCount = ref(0)
+const likeLoading = ref(false)
 
 const newComment = ref('')
 const editingId = ref(null)
@@ -76,9 +80,35 @@ function commentAvatarUrl(comment) {
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(String(seed))}`
 }
 
+async function loadLikeInfo() {
+  try {
+    const response = await api.get(`/posts/${postId}/likes`)
+    isLiked.value = response.data.data.isLiked
+    likeCount.value = response.data.data.likeCount
+  } catch (e) {
+    console.error('좋아요 정보 로드 실패:', e)
+  }
+}
+
+async function toggleLike() {
+  if (likeLoading.value) return
+  
+  likeLoading.value = true
+  try {
+    const response = await api.post(`/posts/${postId}/likes`)
+    isLiked.value = response.data.data.isLiked
+    likeCount.value = response.data.data.likeCount
+  } catch (e) {
+    message.value = e?.response?.data?.message || '좋아요 처리에 실패했습니다.'
+  } finally {
+    likeLoading.value = false
+  }
+}
+
 async function load() {
   await postStore.fetchPostDetail(postId)
   await commentStore.fetchCommentsByPost(postId)
+  await loadLikeInfo()
 }
 
 function toList() {
@@ -265,14 +295,29 @@ onMounted(load)
           <!-- 좋아요 버튼 -->
           <button 
             type="button" 
-            class="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-gray-500 transition-colors cursor-not-allowed"
-            disabled
-            title="준비중입니다"
+            @click="toggleLike"
+            :disabled="likeLoading"
+            class="inline-flex items-center gap-1.5 px-3 py-2 transition-all"
+            :class="isLiked 
+              ? 'text-red-500 hover:text-red-600' 
+              : 'text-gray-400 hover:text-red-500'"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="18" 
+              height="18" 
+              viewBox="0 0 24 24" 
+              :fill="isLiked ? 'currentColor' : 'none'" 
+              stroke="currentColor" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+              class="transition-transform"
+              :class="{'scale-110': isLiked}"
+            >
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
             </svg>
-            <span class="text-xs font-medium">좋아요</span>
+            <span class="text-xs font-medium">{{ likeCount }}</span>
           </button>
 
           <!-- 공유 버튼 -->
