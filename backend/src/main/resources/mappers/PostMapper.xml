@@ -7,8 +7,8 @@
 	<!-- 게시글 작성 -->
 	<insert id="insert" parameterType="Post" useGeneratedKeys="true"
 		keyProperty="postId">
-		INSERT INTO post(user_id, title, content, region, tags)
-		VALUES(#{userId}, #{title}, #{content}, #{region}, #{tags})
+		INSERT INTO post(user_id, title, content, region, place_url, tags)
+		VALUES(#{userId}, #{title}, #{content}, #{region}, #{placeUrl}, #{tags})
 	</insert>
 
 	<!-- 게시글 목록 조회 -->
@@ -19,6 +19,7 @@
 		p.title,
 		p.content,
 		p.region,
+		p.place_url,
 		p.created_at,
 		u.nickname,
 		u.profile_image_url,
@@ -69,6 +70,7 @@
 		p.title,
 		p.content,
 		p.region,
+		p.place_url,
 		p.created_at,
 		u.nickname,
 		u.profile_image_url,
@@ -89,6 +91,7 @@
 		p.title,
 		p.content,
 		p.region,
+		p.place_url,
 		p.created_at,
 		u.nickname,
 		u.profile_image_url,
@@ -112,6 +115,9 @@
 			</if>
 			<if test="region != null and region != ''">
 				region = #{region},
+			</if>
+			<if test="placeUrl != null">
+				place_url = #{placeUrl},
 			</if>
 			<if test="tags != null">
 				tags = #{tags},

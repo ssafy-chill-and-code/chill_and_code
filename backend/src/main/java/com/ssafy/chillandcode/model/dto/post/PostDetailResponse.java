@@ -11,6 +11,7 @@ public class PostDetailResponse {
     private String title;
     private String content;
     private String region;
+    private String placeUrl;
     private String nickname;
     private String profileImageUrl;
     private Integer viewCount;
@@ -57,6 +58,14 @@ public class PostDetailResponse {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getPlaceUrl() {
+        return placeUrl;
+    }
+
+    public void setPlaceUrl(String placeUrl) {
+        this.placeUrl = placeUrl;
     }
 
     public String getNickname() {

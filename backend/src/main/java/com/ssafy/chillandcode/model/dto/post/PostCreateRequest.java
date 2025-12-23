@@ -7,13 +7,15 @@ public class PostCreateRequest {
     private String title;
     private String content;
     private String region;
+    private String placeUrl;
 
     public PostCreateRequest() {}
 
-    public PostCreateRequest(String title, String content, String region) {
+    public PostCreateRequest(String title, String content, String region, String placeUrl) {
         this.title = title;
         this.content = content;
         this.region = region;
+        this.placeUrl = placeUrl;
     }
 
     public String getTitle() {
@@ -38,6 +40,14 @@ public class PostCreateRequest {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getPlaceUrl() {
+        return placeUrl;
+    }
+
+    public void setPlaceUrl(String placeUrl) {
+        this.placeUrl = placeUrl;
     }
 }
 

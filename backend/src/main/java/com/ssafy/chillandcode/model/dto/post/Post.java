@@ -13,6 +13,7 @@ public class Post {
     private String title;
     private String content;
     private String region;
+    private String placeUrl;
     private String tags;
     private Integer viewCount;
     private LocalDateTime createdAt;
@@ -55,6 +56,14 @@ public class Post {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getPlaceUrl() {
+        return placeUrl;
+    }
+
+    public void setPlaceUrl(String placeUrl) {
+        this.placeUrl = placeUrl;
     }
 
     public LocalDateTime getCreatedAt() {

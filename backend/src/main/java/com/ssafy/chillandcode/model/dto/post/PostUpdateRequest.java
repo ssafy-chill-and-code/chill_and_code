@@ -7,13 +7,15 @@ public class PostUpdateRequest {
     private String title;
     private String content;
     private String region;
+    private String placeUrl;
 
     public PostUpdateRequest() {}
 
-    public PostUpdateRequest(String title, String content, String region) {
+    public PostUpdateRequest(String title, String content, String region, String placeUrl) {
         this.title = title;
         this.content = content;
         this.region = region;
+        this.placeUrl = placeUrl;
     }
 
     public String getTitle() {
@@ -38,6 +40,14 @@ public class PostUpdateRequest {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getPlaceUrl() {
+        return placeUrl;
+    }
+
+    public void setPlaceUrl(String placeUrl) {
+        this.placeUrl = placeUrl;
     }
 }
 

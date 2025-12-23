@@ -10,6 +10,7 @@ public class PostSummaryResponse {
     private String title;
     private String content;      // 요약용 (일부만)
     private String region;
+    private String placeUrl;
     private String nickname;
     private String profileImageUrl;
     private Integer viewCount;
@@ -48,6 +49,14 @@ public class PostSummaryResponse {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getPlaceUrl() {
+        return placeUrl;
+    }
+
+    public void setPlaceUrl(String placeUrl) {
+        this.placeUrl = placeUrl;
     }
 
     public String getNickname() {

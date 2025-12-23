@@ -33,6 +33,7 @@ public class PostServiceImpl implements PostService {
 		post.setTitle(request.getTitle());
 		post.setContent(request.getContent());
 		post.setRegion(request.getRegion());
+		post.setPlaceUrl(request.getPlaceUrl());
 		
 		// 해시태그 자동 추출 및 저장
 		String tags = HashtagExtractor.extractAndSerialize(
@@ -94,6 +95,7 @@ public class PostServiceImpl implements PostService {
 		post.setTitle(request.getTitle());
 		post.setContent(request.getContent());
 		post.setRegion(request.getRegion());
+		post.setPlaceUrl(request.getPlaceUrl());
 		
 		// 해시태그 자동 추출 및 저장
 		String title = request.getTitle() != null ? request.getTitle() : original.getTitle();

@@ -11,6 +11,8 @@ const title = ref('')
 const region = ref('')
 const content = ref('')
 const category = ref('')
+const placeUrl = ref('')
+const showPlaceInput = ref(false)
 const message = ref('')
 const loading = ref(false)
 const initialLoading = ref(true)
@@ -40,6 +42,8 @@ onMounted(async () => {
       title.value = originalTitle
       region.value = p.region || ''
       content.value = p.content || ''
+      placeUrl.value = p.placeUrl || ''
+      showPlaceInput.value = !!p.placeUrl
     }
   } catch (e) {
     message.value = '게시글을 불러오는데 실패했습니다.'
@@ -66,7 +70,8 @@ async function save() {
     await postStore.updatePost(route.params.postId, { 
       title: finalTitle, 
       region: region.value, 
-      content: content.value 
+      content: content.value,
+      placeUrl: placeUrl.value || null
     })
     router.push({ name: 'post-detail', params: { postId: route.params.postId } })
   } catch (e) {
@@ -191,6 +196,48 @@ function cancel() {
             </select>
           </div>
 
+          <!-- 장소 수정 -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <label class="block text-sm font-semibold text-gray-700">
+                장소 링크
+                <span class="text-gray-400 text-xs font-normal ml-2">(선택사항)</span>
+              </label>
+              <button
+                type="button"
+                @click="showPlaceInput = !showPlaceInput"
+                :disabled="loading"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all"
+                :class="showPlaceInput 
+                  ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' 
+                  : 'bg-slate-800 text-white hover:bg-slate-900'"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {{ showPlaceInput ? '장소 취소' : (placeUrl ? '장소 수정' : '장소 추가') }}
+              </button>
+            </div>
+            <transition name="slide">
+              <div v-if="showPlaceInput" class="space-y-3">
+                <input
+                  v-model="placeUrl"
+                  type="url"
+                  placeholder="지도 링크를 붙여넣으세요 (네이버/카카오/구글 지도)"
+                  :disabled="loading"
+                  class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-all text-base"
+                />
+                <p v-if="placeUrl" class="flex items-center gap-2 text-sm text-green-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  장소 링크가 추가되었습니다
+                </p>
+              </div>
+            </transition>
+          </div>
+
           <!-- 내용 입력 -->
           <div>
             <label for="content" class="block text-sm font-semibold text-gray-700 mb-3">
@@ -232,6 +279,10 @@ function cancel() {
                 <span class="text-slate-400 mt-0.5">•</span>
                 <span>지역 변경 시 게시글 분류가 함께 변경됩니다.</span>
               </li>
+              <li class="flex items-start gap-2">
+                <span class="text-slate-400 mt-0.5">•</span>
+                <span>장소 링크를 추가/수정하면 게시글에 지도 보기 카드가 표시됩니다.</span>
+              </li>
             </ul>
           </div>
 
@@ -265,3 +316,17 @@ function cancel() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.slide-enter-active, .slide-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>
