@@ -245,7 +245,7 @@ function handleContinue() {
 
 <style scoped>
 .period-result-wrapper {
-  background: white;
+  background: var(--color-background);
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
@@ -371,11 +371,13 @@ function handleContinue() {
 }
 
 .result-card {
-  background: white;
-  border: 2px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 16px;
   padding: 2.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   transition: all 0.3s ease;
 }
 

@@ -1,54 +1,68 @@
 <template>
-  <nav class="fixed top-0 left-0 right-0 bg-white border-b z-50" style="border-color: var(--brand-200);">
+  <nav class="fixed top-0 left-0 right-0 z-[1000]">
     <div class="w-full px-4 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+      <div class="flex items-center justify-between h-16 relative">
         <!-- 좌측: 로고 -->
         <RouterLink 
           to="/" 
-          class="logo-link flex items-center gap-2 text-xl font-bold transition-all duration-300"
-          style="color: var(--brand-600);"
+          class="logo-link flex items-center gap-2 transition-all duration-300"
         >
-          <span class="tracking-tight">Chill & Code</span>
+          <img 
+            src="@/assets/logo/chillandcode_logo_.png" 
+            alt="Chill & Code" 
+            class="h-10 w-auto"
+          />
         </RouterLink>
 
-        <!-- 중앙: 전역 메뉴 (데스크톱) -->
-        <div class="hidden md:flex items-center gap-2">
+        <!-- 중앙: 전역 메뉴 (데스크톱) - 절대 위치로 중앙 정렬 -->
+        <div class="hidden md:flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
           <RouterLink 
             to="/" 
-            class="nav-link relative text-gray-700 hover:text-slate-900 font-medium transition-all duration-300 px-4 py-2 rounded-lg hover:bg-slate-50"
-            active-class="text-slate-800 font-semibold"
+            :class="['nav-link relative font-medium transition-all duration-300 px-4 py-2 rounded-lg', isHomePage ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-black hover:text-gray-700 hover:bg-black/5']"
           >
             홈
           </RouterLink>
           <RouterLink 
             to="/recommend" 
-            class="nav-link relative text-gray-700 hover:text-slate-900 font-medium transition-all duration-300 px-4 py-2 rounded-lg hover:bg-slate-50"
-            active-class="text-slate-800 font-semibold"
+            :class="['nav-link relative font-medium transition-all duration-300 px-4 py-2 rounded-lg', isHomePage ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-black hover:text-gray-700 hover:bg-black/5']"
           >
             추천
           </RouterLink>
           <RouterLink 
             to="/schedule" 
-            class="nav-link relative text-gray-700 hover:text-slate-900 font-medium transition-all duration-300 px-4 py-2 rounded-lg hover:bg-slate-50"
-            active-class="text-slate-800 font-semibold"
+            :class="['nav-link relative font-medium transition-all duration-300 px-4 py-2 rounded-lg', isHomePage ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-black hover:text-gray-700 hover:bg-black/5']"
           >
             일정
           </RouterLink>
           <RouterLink 
             to="/posts" 
-            class="nav-link relative text-gray-700 hover:text-slate-900 font-medium transition-all duration-300 px-4 py-2 rounded-lg hover:bg-slate-50"
-            active-class="text-slate-800 font-semibold"
+            :class="['nav-link relative font-medium transition-all duration-300 px-4 py-2 rounded-lg', isHomePage ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-black hover:text-gray-700 hover:bg-black/5']"
           >
             커뮤니티
           </RouterLink>
         </div>
 
-        <!-- 우측: 닉네임 + 로그아웃 (데스크톱) -->
+        <!-- 우측: 다크모드 + 닉네임 + 로그아웃 (데스크톱) -->
         <div class="hidden md:flex items-center gap-3">
+          <!-- 다크모드 토글 버튼 -->
+          <button
+            @click="toggleTheme"
+            :class="['theme-toggle-btn p-2 rounded-lg transition-all duration-300', isHomePage ? 'hover:bg-white/10 active:bg-white/20' : 'hover:bg-black/5 active:bg-black/10']"
+            :title="themeStore.isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'"
+          >
+            <!-- 태양 아이콘 (라이트 모드) -->
+            <svg v-if="!themeStore.isDarkMode" :class="['w-5 h-5 transition-colors', isHomePage ? 'text-white' : 'text-black']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <!-- 달 아이콘 (다크 모드) -->
+            <svg v-else :class="['w-5 h-5 transition-colors', isHomePage ? 'text-white' : 'text-black']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
           <div v-if="isLoggedIn" class="flex items-center gap-3">
             <RouterLink 
               to="/mypage"
-              class="profile-link flex items-center gap-2 text-gray-700 hover:text-slate-900 hover:bg-slate-50 transition-all duration-300 px-3 py-2 rounded-lg"
+              :class="['profile-link flex items-center gap-2 transition-all duration-300 px-3 py-2 rounded-lg', isHomePage ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-black hover:text-gray-700 hover:bg-black/5']"
             >
               <div class="avatar w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold transition-transform duration-300 overflow-hidden flex-shrink-0">
                 <img
@@ -68,7 +82,7 @@
             </RouterLink>
             <button
               @click="onLogout"
-              class="logout-btn px-4 py-2 text-sm font-medium text-gray-700 hover:text-slate-900 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-all duration-300"
+              :class="['logout-btn px-4 py-2 text-sm font-medium border rounded-lg transition-all duration-300', isHomePage ? 'text-white hover:text-gray-200 border-white hover:bg-white/10 hover:border-gray-200 active:bg-white/20' : 'text-black hover:text-gray-700 border-black hover:bg-black/5 hover:border-gray-700 active:bg-black/10']"
             >
               로그아웃
             </button>
@@ -76,13 +90,13 @@
           <div v-else class="flex items-center gap-2">
             <RouterLink
               to="/login"
-              class="login-btn px-4 py-2 text-sm font-medium text-gray-700 hover:text-slate-900 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-all duration-300 hover:scale-105"
+              :class="['login-btn px-4 py-2 text-sm font-medium border rounded-lg transition-all duration-300 hover:scale-105', isHomePage ? 'text-white hover:text-gray-200 border-white hover:bg-white/10 hover:border-gray-200 active:bg-white/20' : 'text-black hover:text-gray-700 border-black hover:bg-black/5 hover:border-gray-700 active:bg-black/10']"
             >
               로그인
             </RouterLink>
             <RouterLink
               to="/signup"
-              class="signup-btn px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded-lg hover:bg-slate-900 hover:shadow-lg transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
+              :class="['signup-btn px-4 py-2 text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105 hover:-translate-y-0.5', isHomePage ? 'text-black bg-white hover:bg-gray-100' : 'text-white bg-black hover:bg-gray-800']"
             >
               회원가입
             </RouterLink>
@@ -92,9 +106,9 @@
         <!-- 모바일: 햄버거 메뉴 버튼 -->
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
-          class="hamburger-btn md:hidden p-2 rounded-lg hover:bg-slate-100 active:bg-slate-200 transition-all duration-300"
+          :class="['hamburger-btn md:hidden p-2 rounded-lg transition-all duration-300', isHomePage ? 'hover:bg-white/10 active:bg-white/20' : 'hover:bg-black/5 active:bg-black/10']"
         >
-          <svg class="w-6 h-6 text-gray-700 transition-transform duration-300" :class="{ 'rotate-90': mobileMenuOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg :class="['w-6 h-6 transition-transform duration-300', { 'rotate-90': mobileMenuOpen }, isHomePage ? 'text-white' : 'text-black']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
@@ -169,6 +183,24 @@
           커뮤니티
         </RouterLink>
 
+        <!-- 다크모드 토글 (모바일) -->
+        <div class="pt-3 border-t border-gray-200">
+          <button
+            @click="toggleTheme"
+            class="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 rounded-lg font-medium transition-all"
+          >
+            <span>{{ themeStore.isDarkMode ? '라이트 모드' : '다크 모드' }}</span>
+            <!-- 태양 아이콘 (라이트 모드) -->
+            <svg v-if="!themeStore.isDarkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <!-- 달 아이콘 (다크 모드) -->
+            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+        </div>
+
         <!-- 로그인/로그아웃 버튼 -->
         <div class="pt-3 border-t border-gray-200">
           <div v-if="isLoggedIn">
@@ -213,16 +245,27 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
+const themeStore = useThemeStore()
 const mobileMenuOpen = ref(false)
 
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 const nickname = computed(() => userStore?.user?.nickname || '회원')
 const profileImageUrl = computed(() => userStore?.user?.profileImageUrl)
+
+// 메인 페이지인지 확인
+const isHomePage = computed(() => route.path === '/')
+
+// 다크모드 토글
+const toggleTheme = () => {
+  themeStore.toggleDarkMode()
+}
 
 const onLogout = async () => {
   try {
@@ -237,14 +280,11 @@ const onLogout = async () => {
 
 <style scoped>
 nav {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
-  transition: box-shadow 0.3s ease;
-}
-
-nav:hover {
-  box-shadow: 0 2px 6px 0 rgb(0 0 0 / 0.08);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
 /* 로고 호버 효과 */

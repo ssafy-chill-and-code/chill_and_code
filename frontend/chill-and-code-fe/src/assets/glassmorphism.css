@@ -1,0 +1,181 @@
+/* 글래스모피즘 공통 스타일 */
+
+/* 라이트 모드 기본값 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-header {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-filter {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary:hover {
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.glass-button-secondary {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #374151;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-button-icon {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #4b5563;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-icon:hover {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-error {
+  background: rgba(254, 242, 242, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-input {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+/* 다크모드 스타일 - 라이트 색상 유지 */
+:deep(.dark) .glass-card,
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #0f172a;
+}
+
+:deep(.dark) .glass-header,
+.dark .glass-header {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:deep(.dark) .glass-filter,
+.dark .glass-filter {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:deep(.dark) .glass-button-secondary,
+.dark .glass-button-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e5e7eb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-button-secondary:hover,
+.dark .glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-button-icon,
+.dark .glass-button-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-button-icon:hover,
+.dark .glass-button-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-error,
+.dark .glass-error {
+  background: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+}
+
+:deep(.dark) .glass-input,
+.dark .glass-input {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 배경 패턴 공통 스타일 */
+.glass-background {
+  position: relative;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+.glass-background-pattern {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass-background-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.glass-content {
+  position: relative;
+  z-index: 10;
+}
+

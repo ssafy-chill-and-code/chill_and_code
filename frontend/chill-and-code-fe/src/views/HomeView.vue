@@ -1,47 +1,40 @@
 <template>
   <div class="home-wrapper">
-    <div class="w-full px-6 lg:px-16 xl:px-24 py-8 lg:py-16">
-      <!-- Hero Section -->
-      <section class="hero-section mb-16 lg:mb-24">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-32 items-center">
-          <!-- 좌측 텍스트 영역 -->
-          <div class="hero-content order-2 lg:order-1">
-            <span class="badge-label">Chill & Code</span>
-            <h1 class="hero-title">
-              일과 휴식을 함께<br />
-              고려하는 <span class="gradient-text">워케이션 추천</span>
-            </h1>
-            <p class="hero-description">
-              이 서비스는 여행 정보를 나열하는 곳이 아닙니다.<br />
-              추천과 선택을 돕는, 컨셉 중심의 워케이션 가이드입니다.
-            </p>
-            <div class="cta-buttons">
-              <RouterLink to="/recommend" class="btn-primary">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <span>워케이션 가능 기간 분석</span>
-              </RouterLink>
-            </div>
-          </div>
-
-          <!-- 우측 이미지 콜라주 영역 -->
-          <div class="collage-wrapper order-1 lg:order-2">
-            <div class="collage" aria-hidden="true">
-              <div class="img-card main">
-                <img class="img-ph" :src="heroMain" alt="" role="presentation" fetchpriority="high" decoding="async" />
-              </div>
-              <div class="img-card sub left">
-                <img class="img-ph" :src="heroSubLeft" alt="" role="presentation" loading="lazy" decoding="async" />
-              </div>
-              <div class="img-card sub right">
-                <img class="img-ph" :src="heroSubRight" alt="" role="presentation" loading="lazy" decoding="async" />
-              </div>
-            </div>
+    <!-- Top Hero Section with 3 Images -->
+    <section class="top-hero-section">
+      <div class="hero-grid">
+        <div class="hero-item">
+          <div class="hero-overlay"></div>
+          <img src="@/assets/main/main1.jpeg" alt="Chill" class="hero-image" />
+          <div class="hero-text">
+            <h2 class="hero-title">CHILL</h2>
           </div>
         </div>
-      </section>
+        <div class="hero-item">
+          <div class="hero-overlay"></div>
+          <img src="@/assets/main/main2.jpeg" alt="And" class="hero-image" />
+          <div class="hero-text">
+            <h2 class="hero-title">AND</h2>
+          </div>
+        </div>
+        <div class="hero-item">
+          <div class="hero-overlay"></div>
+          <img src="@/assets/main/main3.jpeg" alt="Code" class="hero-image" />
+          <div class="hero-text">
+            <h2 class="hero-title">CODE</h2>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <span>scroll</span>
+        <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+    </section>
 
+    <!-- Original Content -->
+    <div class="main-content w-full px-6 lg:px-16 xl:px-24 py-8 lg:py-16">
       <!-- Features Section -->
       <section class="features-section">
         <div class="max-w-[1600px] mx-auto">
@@ -369,10 +362,6 @@
 </template>
 
 <script setup>
-import heroMain from '@/assets/hero/hero-main.webp'
-import heroSubLeft from '@/assets/hero/hero-sub-left.webp'
-import heroSubRight from '@/assets/hero/hero-sub-right.webp'
-
 // 미리보기 섹션으로 스크롤
 const scrollToPreview = (previewId) => {
   const element = document.getElementById(`preview-${previewId}`)
@@ -398,7 +387,17 @@ const navigateToPage = (event, path) => {
 <style scoped>
 .home-wrapper {
   background: var(--brand-50);
-  min-height: calc(100vh - 64px);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+  margin-top: 100vh;
+  background: var(--brand-50);
 }
 
 /* Hero Section */
@@ -586,11 +585,12 @@ const navigateToPage = (event, path) => {
   position: absolute;
   border-radius: 20px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.05),
-    0 10px 40px rgba(0, 0, 0, 0.08),
+    0 8px 32px 0 rgba(31, 38, 135, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -716,13 +716,15 @@ const navigateToPage = (event, path) => {
 }
 
 .feature-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 2.5rem 2rem;
   text-align: center;
   transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -1000,11 +1002,13 @@ const navigateToPage = (event, path) => {
 }
 
 .place-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   transition: all 0.3s ease;
 }
 
@@ -1383,6 +1387,151 @@ const navigateToPage = (event, path) => {
   
   .schedule-summary {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Top Hero Section Styles */
+.top-hero-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  z-index: 0;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.hero-item {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.hero-item:hover .hero-image {
+  transform: scale(1.05);
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.hero-item:hover .hero-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  text-align: center;
+  color: white;
+  width: 100%;
+  padding: 2rem;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-subtitle {
+  font-size: clamp(2rem, 6vw, 5rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  animation: fadeInUp 1s ease-out;
+}
+
+.scroll-indicator {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  animation: fadeIn 1.5s ease-out;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 1fr);
+  }
+  
+  .hero-title {
+    font-size: clamp(2rem, 12vw, 4rem);
+  }
+  
+  .hero-subtitle {
+    font-size: clamp(1.5rem, 10vw, 3rem);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>

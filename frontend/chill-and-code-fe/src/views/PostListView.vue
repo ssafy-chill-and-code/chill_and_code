@@ -115,7 +115,7 @@ function deriveCategoryForPost(p) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white py-8 lg:py-12">
+  <div class="community-view min-h-screen py-8 lg:py-12" style="background: var(--color-background);">
     <div class="max-w-7xl mx-auto px-4 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8">
         <!-- 메인 영역: 게시글 목록 -->
@@ -208,7 +208,7 @@ function deriveCategoryForPost(p) {
               <article
                 v-for="p in filteredPosts"
                 :key="p.postId"
-                class="bg-white border border-gray-100 rounded-2xl shadow-md p-5 lg:p-6 cursor-pointer transition-all hover:shadow-lg hover:border-gray-200"
+                class="glass-card rounded-2xl p-5 lg:p-6 cursor-pointer transition-all hover:shadow-lg"
                 role="button"
                 tabindex="0"
                 @click="open(p.postId)"
