@@ -233,19 +233,11 @@ onMounted(load)
           :href="postStore.post.placeUrl" 
           target="_blank" 
           rel="noopener noreferrer"
-          class="block mb-6 p-5 bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md transition-all group"
+          class="block mb-6 p-4 bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md transition-all group"
         >
-          <div class="flex items-center gap-3">
-            <div class="flex-shrink-0 w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-              📍
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-bold text-slate-900 mb-1 group-hover:text-slate-700 transition-colors">
-                지도에서 장소 보기
-              </div>
-              <div class="text-xs text-gray-500 truncate">
-                {{ postStore.post.placeUrl }}
-              </div>
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-bold text-slate-900 group-hover:text-slate-700 transition-colors">
+              위치 정보:
             </div>
             <div class="flex-shrink-0 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
