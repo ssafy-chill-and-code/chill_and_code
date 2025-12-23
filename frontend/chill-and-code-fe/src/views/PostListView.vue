@@ -70,22 +70,6 @@ onMounted(() => {
   postStore.fetchHashtagRank({ limit: 10, windowDays: 7 }) // 최근 7일, 10개
 })
 
-const popularKeywords = computed(() => {
-  const counts = new Map()
-  for (const p of filteredPosts.value) {
-    const tags = extractTags(p)
-    const regionTag = (p.region && p.region.trim()) ? `#${p.region.trim()}` : null
-    for (const t of tags) {
-      if (regionTag && t === regionTag) continue
-      counts.set(t, (counts.get(t) || 0) + 1)
-    }
-  }
-  return Array.from(counts.entries())
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
-    .slice(0, 8)
-})
-
 function extractTags(p) {
   const title = (p?.title || '').trim()
   const content = (p?.content || '').trim()
@@ -466,25 +450,6 @@ function deriveCategoryForPost(p) {
                 <span>{{ tag.hashtag }}</span>
                 <span class="text-indigo-500 font-semibold">{{ tag.count }}</span>
               </button>
-            </div>
-          </div>
-
-          <!-- 주요 키워드 -->
-          <div v-if="popularKeywords.length > 0" class="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
-            <h3 class="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-700">
-                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/>
-              </svg>
-              주요 키워드
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="kw in popularKeywords"
-                :key="kw.tag"
-                class="px-3 py-1.5 bg-slate-50 text-slate-700 rounded-lg text-xs font-medium border border-slate-200 hover:bg-slate-100 transition-colors"
-              >
-                {{ kw.tag }}
-              </span>
             </div>
           </div>
         </aside>
