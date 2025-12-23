@@ -114,7 +114,7 @@ public class PostServiceImpl implements PostService {
 	// 게시글 삭제
 	@Override
 	public void delete(Long postId, Long userId) {
-		Post original = postDao.selectById(postId);
+		PostDetailResponse original = postDao.selectById(postId);
 		if (original == null) {
 			throw new ApiException(ErrorCode.POST_NOT_FOUND);
 		}
