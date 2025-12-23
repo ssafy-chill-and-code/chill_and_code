@@ -21,6 +21,7 @@
 		p.region,
 		p.created_at,
 		u.nickname,
+		u.profile_image_url,
 		COALESCE(p.view_count, 0) AS view_count,
 		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
 		FROM post p
@@ -70,6 +71,7 @@
 		p.region,
 		p.created_at,
 		u.nickname,
+		u.profile_image_url,
 		COALESCE(p.view_count, 0) AS view_count,
 		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
 		FROM
@@ -89,6 +91,7 @@
 		p.region,
 		p.created_at,
 		u.nickname,
+		u.profile_image_url,
 		COALESCE(p.view_count, 0) AS view_count,
 		COALESCE((SELECT COUNT(*) FROM comment c WHERE c.post_id = p.post_id), 0) AS comment_count
 		FROM post p

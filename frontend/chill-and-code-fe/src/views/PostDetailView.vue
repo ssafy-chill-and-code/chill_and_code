@@ -65,6 +65,10 @@ const derivedCategory = computed(() => {
 
 function avatarUrl() {
   const p = postStore.post || {}
+  // 사용자가 설정한 프로필 이미지가 있으면 그것을 사용, 없으면 dicebear
+  if (p.profileImageUrl) {
+    return p.profileImageUrl
+  }
   const seed = p.userId ?? p.title ?? 'user'
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(String(seed))}`
 }
@@ -76,6 +80,15 @@ function formatDate(input) {
   const m = d.getMonth() + 1
   const dd = d.getDate()
   return `${m}월 ${dd}일`
+}
+
+function commentAvatarUrl(comment) {
+  // 사용자가 설정한 프로필 이미지가 있으면 그것을 사용, 없으면 dicebear
+  if (comment?.profileImageUrl) {
+    return comment.profileImageUrl
+  }
+  const seed = comment?.userId ?? 'user'
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(String(seed))}`
 }
 
 async function load() {
@@ -332,6 +345,7 @@ onMounted(load)
                 <div class="mb-3 text-gray-900 leading-relaxed text-sm">{{ c.content }}</div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <img :src="commentAvatarUrl(c)" alt="avatar" class="w-5 h-5 rounded-full" />
                     <span class="font-medium text-gray-700">{{ c.nickname || c.userId }}</span>
                     <span>·</span>
                     <span>{{ formatDate(c.createdAt) }}</span>

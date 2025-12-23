@@ -16,7 +16,8 @@ public class Comment {
 	private String postTitle; // 게시글 제목
 
 	// JOIN 결과
-	private String nickname; // 작성자 닉네임 
+	private String nickname; // 작성자 닉네임
+	private String profileImageUrl; // 작성자 프로필 이미지 URL 
 
 	public Long getCommentId() {
 		return commentId;
@@ -64,5 +65,21 @@ public class Comment {
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public void setProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
+
+	public String getPostTitle() {
+		return postTitle;
+	}
+
+	public void setPostTitle(String postTitle) {
+		this.postTitle = postTitle;
 	}
 }

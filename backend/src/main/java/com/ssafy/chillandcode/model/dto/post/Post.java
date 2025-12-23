@@ -15,6 +15,7 @@ public class Post {
     private String nickname; // 작성자 닉네임
     private Integer viewCount; // 조회수
     private Integer commentCount; // 댓글 개수
+    private String profileImageUrl; // 작성자 프로필 이미지 URL
 
     public Long getPostId() {
         return postId;
@@ -86,6 +87,14 @@ public class Post {
 
     public void setCommentCount(Integer commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
 }

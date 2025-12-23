@@ -17,6 +17,7 @@
 	<select id="selectByPostId" resultType="Comment">
 		SELECT c.comment_id,
 		c.post_id, c.user_id, c.content, u.nickname,
+		u.profile_image_url,
 		c.created_at
 		FROM comment c
 		JOIN users u ON c.user_id = u.user_id
@@ -33,6 +34,7 @@
 		c.content,
 		c.created_at,
 		u.nickname,
+		u.profile_image_url,
 		p.title AS post_title
 		FROM comment c
 		JOIN users u ON c.user_id = u.user_id

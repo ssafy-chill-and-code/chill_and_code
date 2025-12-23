@@ -109,6 +109,10 @@ function extractTags(p) {
 }
 
 function avatarUrl(p) {
+  // 사용자가 설정한 프로필 이미지가 있으면 그것을 사용, 없으면 dicebear
+  if (p?.profileImageUrl) {
+    return p.profileImageUrl
+  }
   const seed = p?.userId ?? p?.title ?? 'user'
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(String(seed))}`
 }
