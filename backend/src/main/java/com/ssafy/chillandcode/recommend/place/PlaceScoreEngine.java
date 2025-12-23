@@ -11,9 +11,10 @@ package com.ssafy.chillandcode.recommend.place;
 public class PlaceScoreEngine {
 
     // 정규화 최대값
-    // workspace: 513 범위를 50으로 제한 (코워킹/호텔 과다 점수 방지)
+    // workspace: 평균값 기준 (WORKSPACE:342, ACCOMMODATION:215, SPOT:58)
+    // 최대 400으로 제한하여 차별화 유지
     // nature/activity: 0.5 범위를 10으로 스케일업 (x20 배율)
-    private static final double MAX_WORKSPACE_NORMALIZED = 50.0;
+    private static final double MAX_WORKSPACE_NORMALIZED = 400.0;
     private static final double NATURE_SCALE_FACTOR = 20.0; // 0.5 → 10.0
     private static final double ACTIVITY_SCALE_FACTOR = 20.0; // 0.5 → 10.0
 
