@@ -15,6 +15,7 @@ const message = ref('')
 const isLiked = ref(false)
 const likeCount = ref(0)
 const likeLoading = ref(false)
+const shareMessage = ref('')
 
 const newComment = ref('')
 const editingId = ref(null)
@@ -102,6 +103,40 @@ async function toggleLike() {
     message.value = e?.response?.data?.message || '좋아요 처리에 실패했습니다.'
   } finally {
     likeLoading.value = false
+  }
+}
+
+async function sharePost() {
+  const url = window.location.href
+  
+  try {
+    await navigator.clipboard.writeText(url)
+    shareMessage.value = '링크가 클립보드에 복사되었습니다!'
+    
+    // 3초 후 메시지 자동 제거
+    setTimeout(() => {
+      shareMessage.value = ''
+    }, 3000)
+  } catch (e) {
+    // 클립보드 API 지원하지 않는 경우 fallback
+    const textArea = document.createElement('textarea')
+    textArea.value = url
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-999999px'
+    document.body.appendChild(textArea)
+    textArea.select()
+    
+    try {
+      document.execCommand('copy')
+      shareMessage.value = '링크가 클립보드에 복사되었습니다!'
+      setTimeout(() => {
+        shareMessage.value = ''
+      }, 3000)
+    } catch (err) {
+      shareMessage.value = '링크 복사에 실패했습니다.'
+    } finally {
+      document.body.removeChild(textArea)
+    }
   }
 }
 
@@ -323,9 +358,9 @@ onMounted(load)
           <!-- 공유 버튼 -->
           <button 
             type="button" 
-            class="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-gray-500 transition-colors cursor-not-allowed"
-            disabled
-            title="준비중입니다"
+            @click="sharePost"
+            class="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-blue-500 transition-colors"
+            :class="{'text-blue-500': shareMessage}"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/>
@@ -357,6 +392,12 @@ onMounted(load)
         </div>
         <div v-if="message" class="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-yellow-700 text-sm">
           {{ message }}
+        </div>
+        <div v-if="shareMessage" class="mt-4 bg-green-50 border border-green-200 rounded-xl p-3 text-green-700 text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          {{ shareMessage }}
         </div>
       </article>
 
