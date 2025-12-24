@@ -40,14 +40,14 @@ public class RecommendPeriodServiceImpl implements RecommendPeriodService {
 			req = new RecommendPeriodRequest();
 		}
 		
-		LocalDate today = LocalDate.now();
+		LocalDate baseDate = (req.getStartDate() != null) ? req.getStartDate() : LocalDate.now();
 		UserStyle style = resolveStyle(req);
 		
-		SearchWindow window = determineSearchWindow(today);
+		SearchWindow window = determineSearchWindow(baseDate);
 
 		List<Schedule> schedules = loadSchedules(userId, window);
 
-		PeriodRecommendationContext context = buildContext(req, window, today, style);
+		PeriodRecommendationContext context = buildContext(req, window, baseDate, style);
 		
 		List<PeriodCandidate> candidates = generateCandidates(schedules, context);
 		
@@ -62,10 +62,10 @@ public class RecommendPeriodServiceImpl implements RecommendPeriodService {
 	}
 
 	// search 범위 설정
-	private SearchWindow determineSearchWindow(LocalDate today) {
-		LocalDate start = today;
+	private SearchWindow determineSearchWindow(LocalDate baseDate) {
+		LocalDate start = baseDate;
 		
-		// 추천 탐색 범위는 오늘~3개월 (MVP 기준) 추후 style/유저 설정으로 확장 가능
+		// 추천 탐색 범위는 baseDate~3개월 (MVP 기준) 추후 style/유저 설정으로 확장 가능
 		LocalDate end = start.plusMonths(3); 
 
 

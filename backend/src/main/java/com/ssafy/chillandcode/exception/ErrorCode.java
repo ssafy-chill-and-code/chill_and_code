@@ -12,6 +12,8 @@ public enum ErrorCode {
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "올바른 이메일 형식이 아닙니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 8자 이상이며 공백이 없어야 합니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 2~10자이며 공백이 없어야 합니다."),
+    INVALID_RATING(HttpStatus.BAD_REQUEST, "별점은 1~5 사이의 값이어야 합니다."),
+    MISSING_REQUIRED_PARAMETER(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다."),
 
     // 🔹 중복 / 상태 검증
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다."),
