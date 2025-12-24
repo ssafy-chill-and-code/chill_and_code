@@ -277,7 +277,7 @@
               <div 
                 :class="[
                   'text-xs transition-colors',
-                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  isDarkMode ? 'text-gray-400' : 'text-gray-900'
                 ]"
               >
                 내 프로필 보기
@@ -293,9 +293,9 @@
             'mobile-nav-link block px-4 py-3 hover:pl-6 font-medium transition-all duration-300 rounded-lg',
             isDarkMode
               ? 'text-gray-200 hover:text-white hover:bg-white/10'
-              : 'text-gray-700 hover:text-slate-900 hover:bg-slate-50'
+              : 'text-gray-900 hover:text-black hover:bg-slate-50'
           ]"
-          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-slate-800 font-semibold bg-slate-50'"
+          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-black font-semibold bg-slate-50'"
           @click="mobileMenuOpen = false"
         >
           홈
@@ -306,9 +306,9 @@
             'mobile-nav-link block px-4 py-3 hover:pl-6 font-medium transition-all duration-300 rounded-lg',
             isDarkMode
               ? 'text-gray-200 hover:text-white hover:bg-white/10'
-              : 'text-gray-700 hover:text-slate-900 hover:bg-slate-50'
+              : 'text-gray-900 hover:text-black hover:bg-slate-50'
           ]"
-          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-slate-800 font-semibold bg-slate-50'"
+          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-black font-semibold bg-slate-50'"
           @click="mobileMenuOpen = false"
         >
           추천
@@ -319,9 +319,9 @@
             'mobile-nav-link block px-4 py-3 hover:pl-6 font-medium transition-all duration-300 rounded-lg',
             isDarkMode
               ? 'text-gray-200 hover:text-white hover:bg-white/10'
-              : 'text-gray-700 hover:text-slate-900 hover:bg-slate-50'
+              : 'text-gray-900 hover:text-black hover:bg-slate-50'
           ]"
-          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-slate-800 font-semibold bg-slate-50'"
+          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-black font-semibold bg-slate-50'"
           @click="mobileMenuOpen = false"
         >
           일정
@@ -332,9 +332,9 @@
             'mobile-nav-link block px-4 py-3 hover:pl-6 font-medium transition-all duration-300 rounded-lg',
             isDarkMode
               ? 'text-gray-200 hover:text-white hover:bg-white/10'
-              : 'text-gray-700 hover:text-slate-900 hover:bg-slate-50'
+              : 'text-gray-900 hover:text-black hover:bg-slate-50'
           ]"
-          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-slate-800 font-semibold bg-slate-50'"
+          :active-class="isDarkMode ? 'text-white font-semibold bg-white/10' : 'text-black font-semibold bg-slate-50'"
           @click="mobileMenuOpen = false"
         >
           커뮤니티
@@ -353,7 +353,7 @@
               'w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium transition-all',
               isDarkMode
                 ? 'text-gray-200 hover:text-white hover:bg-white/10 active:bg-white/20'
-                : 'text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100'
+                : 'text-gray-900 hover:bg-slate-50 hover:text-black active:bg-slate-100'
             ]"
           >
             <span>{{ themeStore.isDarkMode ? '라이트 모드' : '다크 모드' }}</span>
@@ -382,7 +382,7 @@
                 'w-full px-4 py-3 text-left rounded-lg font-medium transition-all',
                 isDarkMode
                   ? 'text-gray-200 hover:text-white hover:bg-white/10 active:bg-white/20'
-                  : 'text-gray-700 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100'
+                  : 'text-gray-900 hover:bg-slate-50 hover:text-black active:bg-slate-100'
               ]"
             >
               로그아웃
@@ -395,7 +395,7 @@
                 'block w-full px-4 py-3 text-center border rounded-lg font-medium transition-all',
                 isDarkMode
                   ? 'text-gray-200 border-gray-600 hover:bg-white/10 hover:border-gray-500 active:bg-white/20'
-                  : 'text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100'
+                  : 'text-gray-900 border-gray-300 hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100'
               ]"
               @click="mobileMenuOpen = false"
             >
@@ -623,5 +623,63 @@ nav:has(+ div .home-wrapper) {
 
 .mobile-nav-link.router-link-active::before {
   height: 70%;
+}
+
+/* 일반 모드에서 NavBar 텍스트 검정색 강제 (홈페이지가 아닐 때) */
+nav:not(.dark) .nav-link {
+  color: #111827 !important;
+}
+
+nav:not(.dark) .profile-link {
+  color: #111827 !important;
+}
+
+nav:not(.dark) .profile-link span {
+  color: #111827 !important;
+}
+
+nav:not(.dark) .login-btn {
+  color: #111827 !important;
+}
+
+nav:not(.dark) .logout-btn {
+  color: #111827 !important;
+}
+
+nav:not(.dark) .theme-toggle-btn svg {
+  color: #111827 !important;
+}
+
+nav:not(.dark) .hamburger-btn svg {
+  color: #111827 !important;
+}
+
+/* 홈페이지일 때는 흰색 유지 */
+nav:not(.dark):has(+ div .home-wrapper) .nav-link {
+  color: white !important;
+}
+
+nav:not(.dark):has(+ div .home-wrapper) .profile-link {
+  color: white !important;
+}
+
+nav:not(.dark):has(+ div .home-wrapper) .profile-link span {
+  color: white !important;
+}
+
+nav:not(.dark):has(+ div .home-wrapper) .login-btn {
+  color: white !important;
+}
+
+nav:not(.dark):has(+ div .home-wrapper) .logout-btn {
+  color: white !important;
+}
+
+nav:not(.dark):has(+ div .home-wrapper) .theme-toggle-btn svg {
+  color: white !important;
+}
+
+nav:not(.dark):has(+ div .home-wrapper) .hamburger-btn svg {
+  color: white !important;
 }
 </style>
