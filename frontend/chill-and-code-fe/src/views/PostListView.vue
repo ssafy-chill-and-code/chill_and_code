@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { usePostStore } from '@/stores/post'
 import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
+const route = useRoute()
 const postStore = usePostStore()
 const themeStore = useThemeStore()
 
@@ -138,6 +139,11 @@ function open(postId) {
 }
 
 onMounted(() => {
+  // URL query 파라미터에서 region 필터 적용
+  if (route.query.region) {
+    region.value = route.query.region
+  }
+  
   load()
   postStore.fetchRegionRank({ limit: 5 })
   postStore.fetchHashtagRank({ limit: 10, windowDays: 7 }) // 최근 7일, 10개
@@ -356,7 +362,7 @@ function getCategoryStyle(categoryName) {
             <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
               <div class="md:col-span-7">
                 <div class="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="isDarkMode ? 'text-gray-400' : 'text-gray-400'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none z-10', isDarkMode ? 'text-gray-400' : 'text-gray-400']">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.35-4.35"/>
                   </svg>
@@ -376,12 +382,15 @@ function getCategoryStyle(categoryName) {
               </div>
               <div class="md:col-span-3">
                 <div class="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none', isDarkMode ? 'text-gray-400' : 'text-gray-400']">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none z-10', isDarkMode ? 'text-gray-400' : 'text-gray-400']">
                     <path d="M3 3h6v6H3z"/><path d="M14 4h6v6h-6z"/><path d="M14 14h6v6h-6z"/><path d="M3 14h6v6H3z"/>
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none z-10', isDarkMode ? 'text-gray-400' : 'text-gray-400']">
+                    <polyline points="6 9 12 15 18 9"/>
                   </svg>
                   <select 
                     :class="[
-                      'w-full pl-11 pr-4 py-2.5 text-sm border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all appearance-none',
+                      'w-full pl-11 pr-10 py-2.5 text-sm border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all appearance-none cursor-pointer',
                       isDarkMode 
                         ? 'bg-gray-800/50 border-gray-600 text-gray-100' 
                         : 'border-gray-300 bg-white text-gray-900'
