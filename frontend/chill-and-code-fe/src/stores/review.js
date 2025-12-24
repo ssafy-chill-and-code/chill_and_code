@@ -46,6 +46,33 @@ export const useReviewStore = defineStore('review', () => {
     }
   }
 
+  // 리뷰 수정
+  async function updateReview(reviewId, rating, content) {
+    error.value = ''
+    try {
+      const { data } = await api.patch(`/reviews/${reviewId}`, {
+        rating,
+        content: content || null
+      })
+      return data
+    } catch (e) {
+      error.value = e?.response?.data?.message || e.message
+      throw e
+    }
+  }
+
+  // 리뷰 삭제
+  async function deleteReview(reviewId) {
+    error.value = ''
+    try {
+      const { data } = await api.delete(`/reviews/${reviewId}`)
+      return data
+    } catch (e) {
+      error.value = e?.response?.data?.message || e.message
+      throw e
+    }
+  }
+
   // 리뷰 요약 초기화
   function clearReviewSummary() {
     reviewSummary.value = null
@@ -58,6 +85,8 @@ export const useReviewStore = defineStore('review', () => {
     error,
     fetchReviews,
     createReview,
+    updateReview,
+    deleteReview,
     clearReviewSummary
   }
 })

@@ -73,21 +73,103 @@
                     <div class="review-date">{{ formatDate(review.createdAt) }}</div>
                   </div>
                 </div>
-                <div class="review-rating">
-                  <span
-                    v-for="i in 5"
-                    :key="i"
-                    class="star-small"
-                    :class="{
-                      'star-filled': i <= review.rating,
-                      'star-empty': i > review.rating
-                    }"
-                  >
-                    ★
-                  </span>
+                <div class="review-header-right">
+                  <div v-if="editingReviewId !== review.id" class="review-rating">
+                    <span
+                      v-for="i in 5"
+                      :key="i"
+                      class="star-small"
+                      :class="{
+                        'star-filled': i <= review.rating,
+                        'star-empty': i > review.rating
+                      }"
+                    >
+                      ★
+                    </span>
+                  </div>
+                  <div v-if="currentUserId && currentUserId === review.userId && editingReviewId !== review.id" class="review-actions">
+                    <button
+                      type="button"
+                      class="btn-edit"
+                      @click="startEdit(review)"
+                      :disabled="updating || deleting"
+                    >
+                      수정
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-delete"
+                      @click="handleDelete(review.id)"
+                      :disabled="updating || deleting"
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div class="review-content">
+              
+              <!-- 수정 모드 -->
+              <div v-if="editingReviewId === review.id" class="review-edit-form">
+                <div class="form-group">
+                  <label class="form-label">별점</label>
+                  <div class="rating-input">
+                    <button
+                      v-for="i in 5"
+                      :key="i"
+                      type="button"
+                      class="star-button"
+                      :class="{
+                        'star-filled': i <= editingReview.rating,
+                        'star-empty': i > editingReview.rating
+                      }"
+                      @click="editingReview.rating = i"
+                    >
+                      <svg
+                        class="star-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linejoin="round"
+                        stroke-linecap="round"
+                      >
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">내용</label>
+                  <textarea
+                    v-model="editingReview.content"
+                    class="form-textarea"
+                    rows="3"
+                    placeholder="리뷰를 작성해주세요..."
+                  ></textarea>
+                </div>
+                <div class="edit-actions">
+                  <button
+                    type="button"
+                    class="btn-cancel"
+                    @click="cancelEdit"
+                    :disabled="updating"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-save"
+                    @click="saveEdit(review.id)"
+                    :disabled="updating || editingReview.rating === 0"
+                  >
+                    <span v-if="updating">저장 중...</span>
+                    <span v-else>저장</span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- 일반 모드 -->
+              <div v-else class="review-content">
                 {{ review.content || '내용 없음' }}
               </div>
             </div>
@@ -164,6 +246,7 @@
 import { ref, computed, watch } from 'vue'
 import { useReviewStore } from '@/stores/review'
 import { useThemeStore } from '@/stores/theme'
+import { useUserStore } from '@/stores/user'
 import CModal from '@/components/common/CModal.vue'
 
 const props = defineProps({
@@ -176,7 +259,17 @@ const emit = defineEmits(['update:modelValue'])
 
 const reviewStore = useReviewStore()
 const themeStore = useThemeStore()
+const userStore = useUserStore()
 const isDarkMode = computed(() => themeStore.isDarkMode)
+
+const currentUserId = computed(() => userStore.user?.userId || null)
+const editingReviewId = ref(null)
+const editingReview = ref({
+  rating: 0,
+  content: ''
+})
+const updating = ref(false)
+const deleting = ref(false)
 
 const isOpen = computed({
   get: () => props.modelValue,
@@ -189,10 +282,20 @@ const newReview = ref({
   content: ''
 })
 
-// 모달이 열릴 때 리뷰 목록 조회
+// 모달이 열릴 때 리뷰 목록 조회 및 사용자 정보 확인
 watch(() => props.modelValue, async (newVal) => {
   if (newVal && props.placeName) {
     try {
+      // 로그인된 경우 사용자 정보 가져오기
+      const token = sessionStorage.getItem('accessToken')
+      if (token && !userStore.user) {
+        try {
+          await userStore.fetchProfile()
+        } catch (e) {
+          console.warn('사용자 정보 조회 실패:', e)
+        }
+      }
+      
       await reviewStore.fetchReviews(props.placeName, props.region)
     } catch (e) {
       console.error('리뷰 조회 실패:', e)
@@ -204,6 +307,7 @@ watch(() => props.modelValue, async (newVal) => {
   } else {
     // 모달이 닫힐 때 폼 초기화
     newReview.value = { rating: 0, content: '' }
+    cancelEdit()
     reviewStore.clearReviewSummary()
   }
 })
@@ -229,6 +333,106 @@ function formatDate(dateString) {
 function selectRating(rating) {
   newReview.value.rating = rating
   console.log('별점 선택:', rating, '현재 newReview:', newReview.value)
+}
+
+function startEdit(review) {
+  editingReviewId.value = review.id
+  editingReview.value = {
+    rating: review.rating,
+    content: review.content || ''
+  }
+}
+
+function cancelEdit() {
+  editingReviewId.value = null
+  editingReview.value = {
+    rating: 0,
+    content: ''
+  }
+}
+
+async function saveEdit(reviewId) {
+  if (!editingReview.value.rating) {
+    alert('별점을 선택해주세요.')
+    return
+  }
+
+  updating.value = true
+  try {
+    await reviewStore.updateReview(
+      reviewId,
+      editingReview.value.rating,
+      editingReview.value.content
+    )
+    
+    // 리뷰 목록 새로고침
+    await reviewStore.fetchReviews(props.placeName, props.region)
+    
+    // 수정 모드 종료
+    cancelEdit()
+    
+    alert('수정되었습니다.')
+  } catch (e) {
+    console.error('리뷰 수정 실패:', e)
+    console.error('에러 응답:', e?.response)
+    console.error('에러 상태:', e?.response?.status)
+    console.error('에러 메시지:', e?.response?.data)
+    
+    let errorMessage = '리뷰 수정에 실패했습니다.'
+    if (e?.response?.data?.message) {
+      errorMessage = e.response.data.message
+    } else if (e?.response?.status === 401) {
+      errorMessage = '로그인이 필요합니다.'
+    } else if (e?.response?.status === 403) {
+      errorMessage = '본인의 리뷰만 수정할 수 있습니다.'
+    } else if (e?.response?.status === 404) {
+      errorMessage = '리뷰를 찾을 수 없습니다.'
+    } else if (e?.message) {
+      errorMessage = e.message
+    }
+    
+    alert(errorMessage)
+  } finally {
+    updating.value = false
+  }
+}
+
+async function handleDelete(reviewId) {
+  if (!confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
+    return
+  }
+
+  deleting.value = true
+  try {
+    await reviewStore.deleteReview(reviewId)
+    
+    // 리뷰 목록 새로고침
+    await reviewStore.fetchReviews(props.placeName, props.region)
+    
+    alert('리뷰가 삭제되었습니다.')
+  } catch (e) {
+    console.error('리뷰 삭제 실패:', e)
+    console.error('에러 응답:', e?.response)
+    console.error('에러 상태:', e?.response?.status)
+    console.error('에러 메시지:', e?.response?.data)
+    
+    let errorMessage = '리뷰 삭제에 실패했습니다.'
+    if (e?.response?.data?.message) {
+      errorMessage = e.response.data.message
+    } else if (e?.response?.status === 401) {
+      errorMessage = '로그인이 필요합니다.'
+    } else if (e?.response?.status === 403) {
+      errorMessage = '본인의 리뷰만 삭제할 수 있습니다.'
+    } else if (e?.response?.status === 404) {
+      errorMessage = '리뷰를 찾을 수 없습니다.'
+    } else if (e?.message) {
+      errorMessage = e.message
+    }
+    
+    alert(errorMessage)
+  } finally {
+    deleting.value = false
+  }
 }
 
 async function handleSubmit() {
@@ -550,6 +754,14 @@ async function handleSubmit() {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.review-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .reviewer-info {
@@ -615,6 +827,71 @@ async function handleSubmit() {
   gap: 0.125rem;
 }
 
+.review-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-edit {
+  background: rgba(30, 41, 59, 0.1);
+  color: #1e293b;
+  border: 1px solid rgba(30, 41, 59, 0.2);
+}
+
+.btn-edit:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 0.2);
+  transform: translateY(-1px);
+}
+
+.dark .btn-edit {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark .btn-edit:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-delete {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.2);
+  transform: translateY(-1px);
+}
+
+.dark .btn-delete {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark .btn-delete:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.25);
+}
+
+.btn-edit:disabled,
+.btn-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .star-small {
   font-size: 1rem;
   color: #cbd5e1;
@@ -641,6 +918,77 @@ async function handleSubmit() {
 
 .dark .review-content {
   color: #cbd5e1;
+}
+
+/* Review Edit Form */
+.review-edit-form {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+}
+
+.dark .review-edit-form {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.btn-cancel {
+  padding: 0.625rem 1.25rem;
+  border: 1px solid rgba(30, 41, 59, 0.3);
+  background: rgba(255, 255, 255, 0.8);
+  color: #1e293b;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 0.1);
+}
+
+.dark .btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark .btn-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-save {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Write Section */
