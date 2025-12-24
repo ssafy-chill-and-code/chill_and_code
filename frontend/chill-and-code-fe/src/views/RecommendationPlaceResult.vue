@@ -89,9 +89,14 @@
                   </div>
 
                   <!-- 버튼 -->
-                  <button class="btn-select" @click="goSchedule(place)">
-                    <span>✓</span> 이 장소로 일정 만들기
-                  </button>
+                  <div class="place-actions">
+                    <button class="btn-review" @click="openReviewModal(place)">
+                      <span>⭐</span> 리뷰 보기
+                    </button>
+                    <button class="btn-select" @click="goSchedule(place)">
+                      <span>✓</span> 이 장소로 일정 만들기
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -99,16 +104,24 @@
         </section>
       </div>
     </div>
+
+    <!-- 리뷰 모달 -->
+    <PlaceReviewModal
+      v-model="reviewModalOpen"
+      :place-name="selectedPlace?.name"
+      :region="selectedPlace?.region"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
 import { useRecommendationStore } from '@/stores/recommendation'
 import { useScheduleStore } from '@/stores/schedule'
 import { useThemeStore } from '@/stores/theme'
+import PlaceReviewModal from '@/components/PlaceReviewModal.vue'
 
 const router = useRouter()
 const placeStore = usePlaceRecommendationStore()
@@ -117,6 +130,15 @@ const scheduleStore = useScheduleStore()
 const themeStore = useThemeStore()
 
 const isDarkMode = computed(() => themeStore.isDarkMode)
+
+// 리뷰 모달 상태
+const reviewModalOpen = ref(false)
+const selectedPlace = ref(null)
+
+function openReviewModal(place) {
+  selectedPlace.value = place
+  reviewModalOpen.value = true
+}
 
 const places = computed(() => {
   const result = placeStore.result || []
@@ -604,6 +626,49 @@ function goSchedule(place) {
 
 .dark .reason-text {
   color: #e2e8f0 !important;
+}
+
+.place-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.btn-review {
+  appearance: none;
+  border: 2px solid #1e293b;
+  background: white;
+  color: #1e293b;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.875rem 1.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.btn-review:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+  background: #f8fafc;
+}
+
+.dark .btn-review {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.dark .btn-review:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .btn-select {
