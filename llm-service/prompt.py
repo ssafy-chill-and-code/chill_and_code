@@ -46,6 +46,22 @@ def build_prompt(style: str, budget: str, transport: Optional[str], places: list
     lines.append("- 장소의 특성(nature/activity/workspace)을 구체적으로 드러내고, 사용자 style/budget 맥락을 연결")
     lines.append("- 문장 끝맺음과 표현을 반복하지 말고 적절히 변주")
     lines.append("")
+    lines.append("[trendScore 활용 가이드]")
+    lines.append("- trendScore(0~100)는 최근 관심도 신호이며, 현재성/트렌드를 표현하는 보조 요소입니다")
+    lines.append("- trendScore가 높을 때(70 이상)만 자연스럽게 언급하고, 낮으면 굳이 언급하지 않습니다")
+    lines.append("- 숫자, 점수, 순위, 랭킹 같은 표현은 사용하지 않고 의미 기반 표현만 사용합니다")
+    lines.append("- 금지 표현: '핫', '핫 플레이스', '인기 급증', '급증', '인기 순위', '트렌디한' 등 과장된 표현")
+    lines.append("- 허용 표현: '최근 관심이 높아지는', '관심이 늘어나는 추세', '점차 주목받고 있는' 등 완화된 표현")
+    lines.append("- style별로 trend 표현 강도와 방식이 달라집니다:")
+    lines.append("  * CAFE: trend 언급을 최소화 (가능하면 생략)")
+    lines.append("  * NATURE: trend가 높을 때만 자연스럽게 언급")
+    lines.append("  * ACTIVITY: trend 표현을 완화된 톤으로만 사용 (보조적인 느낌만)")
+    lines.append("- 문장 구조 규칙:")
+    lines.append("  1. 첫 문장은 반드시 style 중심 설명 (ACTIVITY/체험/활동 중심)")
+    lines.append("  2. trend 관련 문장은 보조 문장으로 뒤에 배치")
+    lines.append("  3. trend 문장이 문장의 핵심이 되지 않도록 할 것")
+    lines.append("- trend 표현은 문구의 톤/수식어/강조 표현으로만 반영하며, 기존 style 중심 설명은 유지합니다")
+    lines.append("")
 
     # 사용자 조건
     lines.append(f"[사용자 조건]")
@@ -65,7 +81,8 @@ def build_prompt(style: str, budget: str, transport: Optional[str], places: list
             f"score: {p.score}, "
             f"nature: {p.natureScore}, "
             f"activity: {p.activityScore}, "
-            f"workspace: {p.workspaceCount}"
+            f"workspace: {p.workspaceCount}, "
+            f"trend: {p.trendScore}"
         )
 
     return "\n".join(lines)

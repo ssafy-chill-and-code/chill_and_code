@@ -121,6 +121,35 @@ def build_fallback(
                 f"{btxt} 기준으로도 만족스러운 편입니다.",
             ], prob=0.65))
 
+        # trend 맥락(확률적으로 포함, trendScore >= 70일 때만)
+        trend_score = getattr(p, 'trendScore', 0)
+        if trend_score >= 70:
+            # style별 trend 표현 강도: CAFE < NATURE < ACTIVITY
+            style_upper = style.upper() if style else ""
+            if style_upper == "CAFE":
+                # CAFE: 최소화 (20% 확률)
+                trend_prob = 0.2
+                trend_pool = [
+                    "요즘 찾는 분들이 늘어나고 있어요.",
+                ]
+            elif style_upper == "NATURE":
+                # NATURE: 중간 (30% 확률)
+                trend_prob = 0.3
+                trend_pool = [
+                    "최근 주목받는 장소로 관심이 높아지고 있어요.",
+                    "요즘 많이 찾는 힐링 스팟이에요.",
+                    "최근 관심이 증가한 자연 명소입니다.",
+                ]
+            else:  # ACTIVITY 또는 기타
+                # ACTIVITY: 완화된 톤 (30% 확률, 보조적인 느낌만)
+                trend_prob = 0.3
+                trend_pool = [
+                    "최근 관심이 높아지는 추세예요.",
+                    "관심이 늘어나는 추세입니다.",
+                    "점차 주목받고 있는 곳이에요.",
+                ]
+            fragments.append(maybe_clause(trend_pool, prob=trend_prob))
+
         # 이동 맥락(확률적으로 포함)
         if transport_opts:
             fragments.append(maybe_clause(transport_opts, prob=0.6))

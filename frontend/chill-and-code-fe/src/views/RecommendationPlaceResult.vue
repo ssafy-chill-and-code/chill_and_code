@@ -69,7 +69,6 @@
                 <div class="place-image">
                   <img v-if="place.imageUrl && place.imageUrl !== 'NO_IMAGE'" :src="place.imageUrl" :alt="place.name" />
                   <div v-else class="place-image-placeholder">🏖️</div>
-                  <div class="match-badge">⭐ {{ Math.round(place.trendScore) }}%</div>
                 </div>
 
                 <!-- 정보 -->
@@ -495,19 +494,6 @@ function goSchedule(place) {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 }
 
-.match-badge {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  background: rgba(30, 41, 59, 0.95);
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.375rem 0.75rem;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
-}
 
 .place-info {
   padding: 1.5rem;
@@ -596,10 +582,8 @@ function goSchedule(place) {
   color: #64748b;
   line-height: 1.6;
   transition: color 0.3s ease;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .dark .reason-text {
