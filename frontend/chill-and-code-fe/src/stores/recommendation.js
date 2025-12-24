@@ -8,7 +8,8 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     style: null, // 'RELAX' | 'WORK' | 'BALANCE'
     minDays: null,
     maxDays: null,
-    remoteWorkAllowed: false
+    remoteWorkAllowed: false,
+    startDate: null // 시작일 (선택 사항, null이면 오늘 기준)
   })
   
   const result = ref(null) // 추천 결과 { primary, reason, alternatives }
@@ -29,14 +30,16 @@ export const useRecommendationStore = defineStore('recommendation', () => {
         style: selection.value.style,
         minDays: selection.value.minDays,
         maxDays: selection.value.maxDays,
-        remoteWorkAllowed: selection.value.remoteWorkAllowed
+        remoteWorkAllowed: selection.value.remoteWorkAllowed,
+        startDate: selection.value.startDate
       })
       
       const response = await api.post('/recommend/period', {
         style: selection.value.style,
         minDays: selection.value.minDays,
         maxDays: selection.value.maxDays,
-        remoteWorkAllowed: selection.value.remoteWorkAllowed
+        remoteWorkAllowed: selection.value.remoteWorkAllowed,
+        startDate: selection.value.startDate
       })
       
       console.log('✅ [Store] API 응답 받음')
@@ -71,7 +74,8 @@ export const useRecommendationStore = defineStore('recommendation', () => {
       style: null,
       minDays: null,
       maxDays: null,
-      remoteWorkAllowed: false
+      remoteWorkAllowed: false,
+      startDate: null
     }
     result.value = null
     loading.value = false

@@ -94,12 +94,15 @@ public class PeriodScoringEngine {
 			case LONGEST:
 				int lengthScore = Math.min(duration, userStyle.getLengthCap());
 				score += lengthScore * 2.0;
-				score -= daysAway * 0.5;
+				// 30일 이내는 패널티 없음, 30일 이후만 약한 패널티 적용
+				if (daysAway > 30) {
+					score -= (daysAway - 30) * 0.1;
+				}
 				score = Math.max(score, 0);
 				break;
 			case FASTEST:
-				int proximityScore = Math.max(0,  30 - daysAway);
-				score += proximityScore * 1.5;
+				// FASTEST는 후보 생성 단계에서 이미 '가장 빠른 시작일'이 보장됨
+				// proximity 보정은 의미 중복이므로 제거
 				break;
 			case WEEKEND_OPTIMAL:
 				int weekendCount = DateRangeUtils.countWeekend(candidate.getStartDate(), candidate.getEndDate());

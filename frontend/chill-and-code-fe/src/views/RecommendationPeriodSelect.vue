@@ -26,6 +26,20 @@
             <h3 class="section-title">워케이션 기간 <span class="required">*</span></h3>
           </div>
           <div class="period-grid">
+            <!-- 시작일 -->
+            <div class="input-card">
+              <label class="input-label">시작일 <span class="optional">(선택)</span></label>
+              <div class="input-group-custom">
+                <input 
+                  type="date" 
+                  v-model="startDate" 
+                  class="form-control-custom date-input" 
+                  :min="minDate"
+                />
+              </div>
+              <div class="input-hint">지정하지 않으면 오늘부터 검색합니다</div>
+            </div>
+
             <!-- 최소 기간 -->
             <div class="input-card">
               <label class="input-label">최소 기간</label>
@@ -143,7 +157,11 @@ const isDarkMode = computed(() => themeStore.isDarkMode)
 const minDays = ref(2)
 const maxDays = ref(5)
 const remoteWorkAllowed = ref(false)
+const startDate = ref('')
 const errorMessage = ref('')
+
+// 오늘 날짜를 YYYY-MM-DD 형식으로 (date input의 min 속성용)
+const minDate = new Date().toISOString().split('T')[0]
 
 async function goResult() {
   // 유효성 검사
@@ -168,7 +186,8 @@ async function goResult() {
   recommendationStore.updateSelection({
     minDays: minDays.value,
     maxDays: maxDays.value,
-    remoteWorkAllowed: remoteWorkAllowed.value
+    remoteWorkAllowed: remoteWorkAllowed.value,
+    startDate: startDate.value || null
   })
   
   try {
@@ -369,7 +388,7 @@ async function goResult() {
 
 .period-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -460,6 +479,22 @@ async function goResult() {
 
 .dark .form-control-custom::placeholder {
   color: #94a3b8;
+}
+
+.date-input {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0 0.75rem;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.date-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 .input-suffix {
@@ -765,6 +800,7 @@ async function goResult() {
   }
   
   .period-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
   
@@ -786,6 +822,10 @@ async function goResult() {
   .period-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+  
+  .date-input {
+    font-size: 0.875rem;
   }
   
   .form-control-custom {
