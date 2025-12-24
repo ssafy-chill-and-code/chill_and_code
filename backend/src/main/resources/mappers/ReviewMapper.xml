@@ -56,4 +56,24 @@
 		VALUES (#{placeName}, #{region}, #{rating}, #{content}, #{userId})
 	</insert>
 
+	<!-- 리뷰 ID로 리뷰 조회 -->
+	<select id="selectById" parameterType="Long" resultType="com.ssafy.chillandcode.model.dto.review.PlaceReview">
+		SELECT id, place_name, region, rating, content, user_id, created_at
+		FROM place_review
+		WHERE id = #{reviewId}
+	</select>
+
+	<!-- 장소 리뷰 수정 -->
+	<update id="update" parameterType="com.ssafy.chillandcode.model.dto.review.PlaceReview">
+		UPDATE place_review
+		SET rating = #{rating}, content = #{content}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 장소 리뷰 삭제 -->
+	<delete id="delete" parameterType="Long">
+		DELETE FROM place_review
+		WHERE id = #{reviewId}
+	</delete>
+
 </mapper>

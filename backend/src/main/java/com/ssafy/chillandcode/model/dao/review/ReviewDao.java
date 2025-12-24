@@ -33,5 +33,20 @@ public interface ReviewDao {
      * 장소 리뷰 작성
      */
     int insert(PlaceReview placeReview);
+
+    /**
+     * 리뷰 ID로 리뷰 조회
+     */
+    PlaceReview selectById(Long reviewId);
+
+    /**
+     * 장소 리뷰 수정
+     */
+    int update(PlaceReview placeReview);
+
+    /**
+     * 장소 리뷰 삭제
+     */
+    int delete(Long reviewId);
 }
 
