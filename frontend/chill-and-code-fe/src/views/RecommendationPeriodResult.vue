@@ -1,5 +1,10 @@
 <template>
-  <div class="period-result-wrapper">
+  <div 
+    :class="[
+      'period-result-wrapper',
+      isDarkMode ? 'dark' : ''
+    ]"
+  >
     <div class="container py-5">
       <!-- 헤더 -->
       <header class="text-center mb-5">
@@ -141,9 +146,13 @@
 import { computed, watch, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecommendationStore } from '@/stores/recommendation'
+import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
 const recommendationStore = useRecommendationStore()
+const themeStore = useThemeStore()
+
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const showEditModal = ref(false)
 const editedStartDate = ref('')
@@ -249,6 +258,11 @@ function handleContinue() {
   min-height: calc(100vh - 64px);
   padding-top: 4rem;
   padding-bottom: 4rem;
+  transition: background 0.3s ease;
+}
+
+.dark.period-result-wrapper {
+  background: #0f172a;
 }
 
 .step-indicator {
@@ -270,6 +284,11 @@ function handleContinue() {
   color: #0f172a;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  transition: color 0.3s ease;
+}
+
+.dark .page-title {
+  color: #ffffff;
 }
 
 .page-subtitle {
@@ -277,6 +296,11 @@ function handleContinue() {
   color: #64748b;
   margin-bottom: 0;
   font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.dark .page-subtitle {
+  color: #cbd5e1;
 }
 
 /* Loading */
@@ -299,6 +323,11 @@ function handleContinue() {
   font-size: 1.125rem;
   color: #64748b;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.dark .loading-text {
+  color: #e2e8f0 !important;
 }
 
 /* Error & Empty */
@@ -312,6 +341,16 @@ function handleContinue() {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   max-width: 500px;
   margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.dark .error-card,
+.dark .empty-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .error-icon,
@@ -326,6 +365,13 @@ function handleContinue() {
   justify-content: center;
   border-radius: 16px;
   border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.dark .error-icon,
+.dark .empty-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .error-title,
@@ -335,6 +381,12 @@ function handleContinue() {
   color: #0f172a;
   margin-bottom: 0.75rem;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .error-title,
+.dark .empty-title {
+  color: #ffffff;
 }
 
 .error-message,
@@ -342,6 +394,12 @@ function handleContinue() {
   color: #64748b;
   margin-bottom: 2rem;
   font-size: 0.9375rem;
+  transition: color 0.3s ease;
+}
+
+.dark .error-message,
+.dark .empty-message {
+  color: #e2e8f0 !important;
 }
 
 .btn-retry {
@@ -381,10 +439,21 @@ function handleContinue() {
   transition: all 0.3s ease;
 }
 
+.dark .result-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
 .result-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
   border-color: #cbd5e1;
+}
+
+.dark .result-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .primary-card {
@@ -392,6 +461,11 @@ function handleContinue() {
   border-width: 2px;
   margin-bottom: 3rem;
   background: linear-gradient(to bottom, #f8fafc 0%, white 100%);
+}
+
+.dark .primary-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .card-badge {
@@ -429,18 +503,35 @@ function handleContinue() {
   border-radius: 12px;
   border: 2px solid #e2e8f0;
   letter-spacing: -0.01em;
+  transition: all 0.3s ease;
+}
+
+.dark .date-text {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
 }
 
 .date-separator {
   font-size: 1.375rem;
   color: #94a3b8;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.dark .date-separator {
+  color: #cbd5e1 !important;
 }
 
 .duration {
   font-size: 1.0625rem;
   color: #334155;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.dark .duration {
+  color: #e2e8f0 !important;
 }
 
 .reason-section {
@@ -449,6 +540,12 @@ function handleContinue() {
   border-radius: 12px;
   margin-bottom: 2rem;
   border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.dark .reason-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .reason-title {
@@ -456,12 +553,22 @@ function handleContinue() {
   font-weight: 600;
   color: #0f172a;
   margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.dark .reason-title {
+  color: #ffffff !important;
 }
 
 .reason-text {
   font-size: 0.9375rem;
   color: #64748b;
   line-height: 1.7;
+  transition: color 0.3s ease;
+}
+
+.dark .reason-text {
+  color: #e2e8f0 !important;
 }
 
 .btn-select {
@@ -506,12 +613,26 @@ function handleContinue() {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
+.dark .btn-select.edit {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0 !important;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .btn-select.edit:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
   color: #334155;
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .btn-select.edit:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .btn-icon {
@@ -529,12 +650,26 @@ function handleContinue() {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
+.dark .btn-select.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .btn-select.secondary:hover {
   background: #f8fafc;
   border-color: #1e293b;
   color: #1e293b;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .btn-select.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* Alternatives */
@@ -549,6 +684,11 @@ function handleContinue() {
   margin-bottom: 1.5rem;
   text-align: center;
   letter-spacing: -0.02em;
+  transition: color 0.3s ease;
+}
+
+.dark .section-title {
+  color: #ffffff !important;
 }
 
 .alternatives-grid {
@@ -577,12 +717,22 @@ function handleContinue() {
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .date-text-alt {
+  color: #ffffff;
 }
 
 .date-separator-alt {
   font-size: 1rem;
   color: #94a3b8;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.dark .date-separator-alt {
+  color: #cbd5e1 !important;
 }
 
 .duration-alt {
@@ -590,6 +740,11 @@ function handleContinue() {
   color: #64748b;
   text-align: center;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.dark .duration-alt {
+  color: #cbd5e1 !important;
 }
 
 .btn-icon-small {
@@ -638,6 +793,15 @@ function handleContinue() {
   max-width: 500px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   animation: slideUp 0.3s ease-out;
+  transition: all 0.3s ease;
+}
+
+.dark .modal-content {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes slideUp {
@@ -657,6 +821,11 @@ function handleContinue() {
   justify-content: space-between;
   padding: 1.5rem 2rem;
   border-bottom: 1px solid #e2e8f0;
+  transition: border-color 0.3s ease;
+}
+
+.dark .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-title {
@@ -664,6 +833,11 @@ function handleContinue() {
   font-weight: 700;
   color: #0f172a;
   margin: 0;
+  transition: color 0.3s ease;
+}
+
+.dark .modal-title {
+  color: #ffffff;
 }
 
 .modal-close {
@@ -680,9 +854,18 @@ function handleContinue() {
   transition: all 0.2s ease;
 }
 
+.dark .modal-close {
+  color: #cbd5e1 !important;
+}
+
 .modal-close:hover {
   background: #f1f5f9;
   color: #0f172a;
+}
+
+.dark .modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .modal-close svg {
@@ -704,6 +887,11 @@ function handleContinue() {
   font-weight: 600;
   color: #334155;
   margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.dark .form-label {
+  color: #e2e8f0 !important;
 }
 
 .required {
@@ -717,13 +905,25 @@ function handleContinue() {
   border-radius: 12px;
   font-size: 1rem;
   color: #0f172a;
+  background: white;
   transition: all 0.2s ease;
+}
+
+.dark .form-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #1e293b;
   box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+.dark .form-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
 }
 
 .duration-preview {
@@ -735,6 +935,13 @@ function handleContinue() {
   font-weight: 600;
   color: #334155;
   border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.dark .duration-preview {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0 !important;
 }
 
 .modal-footer {
@@ -742,6 +949,11 @@ function handleContinue() {
   gap: 1rem;
   padding: 1.5rem 2rem;
   border-top: 1px solid #e2e8f0;
+  transition: border-color 0.3s ease;
+}
+
+.dark .modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-cancel,
@@ -763,10 +975,22 @@ function handleContinue() {
   border: 2px solid #e2e8f0;
 }
 
+.dark .btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0 !important;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
 .btn-cancel:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
   color: #334155;
+}
+
+.dark .btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
 }
 
 .btn-continue {

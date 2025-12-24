@@ -223,36 +223,14 @@ a,
 
 /* ===== 다크모드 제거: 홈, 추천, 일정, 커뮤니티 ===== */
 
-/* 메인 화면 다크모드 제거 */
+/* 메인 화면 다크모드 제거 (히어로 섹션만) */
 .dark .home-wrapper {
   background: var(--brand-50) !important;
 }
 
-.dark .home-wrapper h1,
-.dark .home-wrapper h2,
-.dark .home-wrapper h3,
-.dark .home-wrapper h4,
-.dark .home-wrapper h5,
-.dark .home-wrapper h6 {
-  color: #0f172a !important;
-}
-
-.dark .home-wrapper p,
-.dark .home-wrapper span:not(.hero-title),
-.dark .home-wrapper div {
-  color: #334155 !important;
-}
-
-.dark .home-wrapper .text-gray-900,
-.dark .home-wrapper .text-gray-800,
-.dark .home-wrapper .text-gray-700,
-.dark .home-wrapper .text-gray-600 {
-  color: #334155 !important;
-}
-
-.dark .home-wrapper .glass-card {
-  background: rgba(255, 255, 255, 0.6) !important;
-  color: #334155 !important;
+/* main-content 영역은 다크모드 적용 */
+.dark .home-wrapper .main-content {
+  background: #0f172a !important;
 }
 
 /* 히어로 타이틀은 여전히 흰색 */
@@ -284,6 +262,30 @@ a,
 .dark .schedule-view span,
 .dark .schedule-view div {
   color: #e5e5e5 !important;
+}
+
+/* 페이지 헤더와 월 표시는 흰색 유지 */
+.dark .schedule-view h1[style*="color"],
+.dark .schedule-view h3[style*="color"],
+.dark .schedule-view button[style*="color"] {
+  color: #ffffff !important;
+}
+
+/* 필터 색상 원형은 인라인 스타일의 배경색 유지 */
+.dark .schedule-view .glass-filter-item .filter-color-dot,
+.dark .schedule-view .glass-filter-item .rounded-full.filter-color-dot {
+  background-color: var(--filter-color) !important;
+  color: transparent !important;
+}
+
+/* 일정 이벤트는 제외 - Reference.vue 방식 유지 (검정색 텍스트) */
+.dark .schedule-view .fc-event,
+.dark .schedule-view .fc-event *,
+.dark .schedule-view .fc-event .fc-event-title,
+.dark .schedule-view .fc-event .fc-event-title-frame,
+.dark .schedule-view .fc-event .fc-event-title-container,
+.dark .schedule-view .fc-event .fc-event-title-container * {
+  color: #000000 !important;
 }
 
 .dark .schedule-view .text-gray-900,
@@ -444,9 +446,34 @@ a,
   color: #0f172a !important;
 }
 
-/* 캘린더 스타일 */
+/* 캘린더 스타일 - 일정 이벤트 제외 */
 .dark .schedule-view .fc {
   color: #e5e5e5 !important;
+}
+
+/* 일정 이벤트 텍스트는 검정색 (더 구체적인 선택자) */
+.dark .schedule-view .fc .fc-event,
+.dark .schedule-view .fc .fc-event *,
+.dark .schedule-view .fc .fc-event .fc-event-title,
+.dark .schedule-view .fc .fc-event .fc-event-title-frame,
+.dark .schedule-view .fc .fc-event .fc-event-title-container,
+.dark .schedule-view .fc .fc-event .fc-event-title-container *,
+.dark .schedule-view .fc .fc-event .fc-event-main,
+.dark .schedule-view .fc .fc-event .fc-event-main-frame {
+  color: #000000 !important;
+}
+
+/* 다크모드에서 일정 이벤트 배경색 강제 유지 (밝은 색) */
+.dark .schedule-view .fc-event.schedule-type-personal {
+  background-color: #fffbeb !important;
+}
+
+.dark .schedule-view .fc-event.schedule-type-work {
+  background-color: #fef2f2 !important;
+}
+
+.dark .schedule-view .fc-event.schedule-type-workation {
+  background-color: #eff6ff !important;
 }
 
 .dark .schedule-view .fc-theme-standard td,

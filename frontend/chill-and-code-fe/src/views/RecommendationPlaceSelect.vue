@@ -1,5 +1,10 @@
 <template>
-  <div class="place-select-wrapper">
+  <div 
+    :class="[
+      'place-select-wrapper',
+      isDarkMode ? 'dark' : ''
+    ]"
+  >
     <div class="container py-5">
       <!-- 헤더 -->
       <header class="mb-5">
@@ -210,10 +215,14 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePlaceRecommendationStore } from '@/stores/placeRecommendation'
 import { useRecommendationStore } from '@/stores/recommendation'
+import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
 const placeStore = usePlaceRecommendationStore()
 const recommendationStore = useRecommendationStore()
+const themeStore = useThemeStore()
+
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const selectedStyle = ref('')
 const budget = ref('') // '가성비', '적당한', '프리미엄' 중 하나
@@ -669,6 +678,11 @@ function goBack() {
   /* SVG hover 효과가 잘리지 않도록 */
   overflow: visible;
   position: relative;
+  transition: background 0.3s ease;
+}
+
+.dark.place-select-wrapper {
+  background: #0f172a;
 }
 
 .back-link {
@@ -689,9 +703,17 @@ function goBack() {
   cursor: pointer;
 }
 
+.dark .back-link {
+  color: #cbd5e1;
+}
+
 .back-link:hover {
   background: #f8fafc;
   transform: translateX(-4px);
+}
+
+.dark .back-link:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .back-arrow-img {
@@ -727,6 +749,14 @@ function goBack() {
   background-clip: text;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  transition: all 0.3s ease;
+}
+
+.dark .page-title {
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .page-subtitle {
@@ -734,6 +764,11 @@ function goBack() {
   color: #64748b;
   margin-bottom: 0;
   font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.dark .page-subtitle {
+  color: #cbd5e1;
 }
 
 .form-container {
@@ -756,9 +791,20 @@ function goBack() {
   position: relative;
 }
 
+.dark .form-section {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
 .form-section:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border-color: #d1d5db;
+}
+
+.dark .form-section:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .section-header {
@@ -766,6 +812,11 @@ function goBack() {
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #f1f5f9;
   position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.dark .section-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-header::after {
@@ -785,6 +836,11 @@ function goBack() {
   margin: 0;
   letter-spacing: 0.025em;
   text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.dark .section-title {
+  color: #ffffff !important;
 }
 
 .section-hint {
@@ -793,6 +849,11 @@ function goBack() {
   margin: 0.5rem 0 0 0;
   font-weight: 400;
   line-height: 1.5;
+  transition: color 0.3s ease;
+}
+
+.dark .section-hint {
+  color: #cbd5e1 !important;
 }
 
 .required {
@@ -805,6 +866,11 @@ function goBack() {
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: none;
+  transition: color 0.3s ease;
+}
+
+.dark .optional {
+  color: #e2e8f0 !important;
 }
 
 /* Style Grid */
@@ -832,16 +898,36 @@ function goBack() {
   justify-content: center;
 }
 
+.dark .style-option {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .style-option:hover {
   border-color: #1e293b;
   background: #f9fafb;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.dark .style-option:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .style-option.selected {
   border-color: #6366f1;
   background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.dark .style-option.selected {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3), 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
 .option-emoji {
@@ -891,6 +977,11 @@ function goBack() {
   color: #111827;
   margin-bottom: 0.375rem;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .option-title {
+  color: #ffffff !important;
 }
 
 .option-desc {
@@ -898,6 +989,11 @@ function goBack() {
   color: #6b7280;
   line-height: 1.5;
   margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.dark .option-desc {
+  color: #e2e8f0 !important;
 }
 
 .option-hint {
@@ -906,6 +1002,11 @@ function goBack() {
   line-height: 1.4;
   margin-top: 0.25rem;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.dark .option-hint {
+  color: #cbd5e1 !important;
 }
 
 /* Budget Grid */
@@ -933,16 +1034,36 @@ function goBack() {
   justify-content: center;
 }
 
+.dark .budget-option {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .budget-option:hover {
   border-color: #1e293b;
   background: #f9fafb;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.dark .budget-option:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .budget-option.selected {
   border-color: #6366f1;
   background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.dark .budget-option.selected {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3), 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
 /* Select */
@@ -959,10 +1080,21 @@ function goBack() {
   font-weight: 400;
 }
 
+.dark .form-select-custom {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+}
+
 .form-select-custom:focus {
   outline: none;
   border-color: #1e293b;
   box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+.dark .form-select-custom:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
 }
 
 /* Region Map */
@@ -983,6 +1115,14 @@ function goBack() {
   background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
   border-radius: 0.75rem;
   border: 1px solid #c7d2fe;
+  transition: all 0.3s ease;
+}
+
+.dark .region-selected-tags {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .selected-tag {
@@ -1034,6 +1174,14 @@ function goBack() {
   /* pointer-events가 자식에 전달되도록 */
   pointer-events: auto;
   z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.dark .map-wrapper {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .korea-map-container {
@@ -1197,12 +1345,24 @@ function goBack() {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.dark .error-alert {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5 !important;
 }
 
 .error-icon-svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.dark .error-icon-svg {
+  color: #fca5a5;
 }
 
 /* Submit */

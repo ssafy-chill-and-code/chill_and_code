@@ -34,7 +34,12 @@
     </section>
 
     <!-- Original Content -->
-    <div class="main-content w-full px-6 lg:px-16 xl:px-24 py-8 lg:py-16">
+    <div 
+      :class="[
+        'main-content w-full px-6 lg:px-16 xl:px-24 py-8 lg:py-16',
+        isDarkMode ? 'dark' : ''
+      ]"
+    >
       <!-- Features Section -->
       <section class="features-section">
         <div class="max-w-[1600px] mx-auto">
@@ -362,6 +367,12 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useThemeStore } from '@/stores/theme'
+
+const themeStore = useThemeStore()
+const isDarkMode = computed(() => themeStore.isDarkMode)
+
 // 미리보기 섹션으로 스크롤
 const scrollToPreview = (previewId) => {
   const element = document.getElementById(`preview-${previewId}`)
@@ -398,6 +409,11 @@ const navigateToPage = (event, path) => {
   z-index: 1;
   margin-top: 100vh;
   background: var(--brand-50);
+  transition: background 0.3s ease;
+}
+
+.dark .main-content {
+  background: #0f172a;
 }
 
 /* Hero Section */
@@ -641,6 +657,11 @@ const navigateToPage = (event, path) => {
   position: relative;
   padding: 4rem 0;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(248, 250, 252, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .features-section {
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.5) 50%, rgba(15, 23, 42, 0) 100%);
 }
 
 /* 상단 구분선 효과 */
@@ -654,6 +675,11 @@ const navigateToPage = (event, path) => {
   max-width: 1200px;
   height: 1px;
   background: linear-gradient(to right, transparent 0%, rgba(203, 213, 225, 0.5) 50%, transparent 100%);
+  transition: background 0.3s ease;
+}
+
+.dark .main-content .features-section::before {
+  background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
 }
 
 /* Section Header */
@@ -697,6 +723,13 @@ const navigateToPage = (event, path) => {
   margin-bottom: 1.25rem;
   border: 1px solid rgba(203, 213, 225, 0.4);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .section-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .section-title {
@@ -705,6 +738,11 @@ const navigateToPage = (event, path) => {
   color: #0f172a;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .section-title {
+  color: #ffffff;
 }
 
 .section-subtitle {
@@ -713,6 +751,11 @@ const navigateToPage = (event, path) => {
   font-weight: 400;
   max-width: 600px;
   margin: 0 auto;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .section-subtitle {
+  color: #cbd5e1;
 }
 
 .feature-card {
@@ -729,6 +772,17 @@ const navigateToPage = (event, path) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.dark .main-content .feature-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.dark .main-content .feature-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .feature-card:hover {
@@ -751,6 +805,12 @@ const navigateToPage = (event, path) => {
   transition: all 0.3s ease;
 }
 
+.dark .main-content .feature-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
 .feature-card:hover .feature-icon {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
@@ -762,6 +822,11 @@ const navigateToPage = (event, path) => {
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .feature-title {
+  color: #ffffff;
 }
 
 .feature-text {
@@ -769,6 +834,11 @@ const navigateToPage = (event, path) => {
   line-height: 1.7;
   margin-bottom: 0;
   font-size: 0.9375rem;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .feature-text {
+  color: #cbd5e1;
 }
 
 /* Preview Sections */
@@ -777,6 +847,12 @@ const navigateToPage = (event, path) => {
   padding: 5rem 0;
   background: linear-gradient(to bottom, rgba(248, 250, 252, 0.3) 0%, rgba(255, 255, 255, 0) 100%);
   border-top: 1px solid rgba(226, 232, 240, 0.6);
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .preview-section {
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .preview-section:last-of-type {
@@ -794,6 +870,11 @@ const navigateToPage = (event, path) => {
   color: #0f172a;
   margin-bottom: 0.75rem;
   letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .preview-title {
+  color: #ffffff;
 }
 
 .preview-subtitle {
@@ -802,6 +883,11 @@ const navigateToPage = (event, path) => {
   font-weight: 400;
   max-width: 500px;
   margin: 0 auto;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .preview-subtitle {
+  color: #cbd5e1;
 }
 
 .preview-content {
@@ -819,6 +905,15 @@ const navigateToPage = (event, path) => {
   display: flex;
   flex-direction: column;
   max-width: 100%;
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .calendar-preview {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .calendar-header {
@@ -834,6 +929,11 @@ const navigateToPage = (event, path) => {
   font-size: 1.0625rem;
   font-weight: 700;
   color: #0f172a;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .calendar-month {
+  color: #ffffff;
 }
 
 .calendar-legend {
@@ -848,6 +948,11 @@ const navigateToPage = (event, path) => {
   gap: 0.25rem;
   font-size: 0.75rem;
   color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .legend-item {
+  color: #cbd5e1;
 }
 
 .legend-item .dot {
@@ -874,6 +979,11 @@ const navigateToPage = (event, path) => {
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .calendar-day-header {
+  color: #94a3b8;
 }
 
 .calendar-cell {
@@ -888,10 +998,18 @@ const navigateToPage = (event, path) => {
   transition: all 0.2s ease;
 }
 
+.dark .main-content .calendar-cell {
+  color: #e2e8f0;
+}
+
 .calendar-cell:not(.empty):hover {
   background: #f1f5f9;
   transform: scale(1.05);
   cursor: pointer;
+}
+
+.dark .main-content .calendar-cell:not(.empty):hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .calendar-cell.empty {
@@ -904,10 +1022,20 @@ const navigateToPage = (event, path) => {
   font-weight: 600;
 }
 
+.dark .main-content .calendar-cell.work {
+  background: rgba(100, 116, 139, 0.2);
+  color: #cbd5e1;
+}
+
 .calendar-cell.personal {
   background: #dbeafe;
   color: #1e40af;
   font-weight: 600;
+}
+
+.dark .main-content .calendar-cell.personal {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
 }
 
 .calendar-cell.recommended {
@@ -915,6 +1043,12 @@ const navigateToPage = (event, path) => {
   color: #047857;
   font-weight: 700;
   box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.dark .main-content .calendar-cell.recommended {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.3) 100%);
+  color: #6ee7b7;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
 }
 
 /* Recommendation Result */
@@ -928,6 +1062,14 @@ const navigateToPage = (event, path) => {
   border: 1px solid #bbf7d0;
   max-width: 100%;
   align-self: center;
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .recommendation-result {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .result-icon {
@@ -941,6 +1083,13 @@ const navigateToPage = (event, path) => {
   justify-content: center;
   color: #10b981;
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .result-icon {
+  background: rgba(255, 255, 255, 0.1);
+  color: #6ee7b7;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .result-content {
@@ -954,6 +1103,11 @@ const navigateToPage = (event, path) => {
   margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .result-title {
+  color: #6ee7b7;
 }
 
 .result-period {
@@ -962,6 +1116,11 @@ const navigateToPage = (event, path) => {
   color: #047857;
   margin-bottom: 0.875rem;
   line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .result-period {
+  color: #6ee7b7;
 }
 
 .result-reason {
@@ -969,6 +1128,11 @@ const navigateToPage = (event, path) => {
   color: #059669;
   line-height: 1.65;
   margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .result-reason {
+  color: #a7f3d0;
 }
 
 .result-cta {
@@ -985,6 +1149,17 @@ const navigateToPage = (event, path) => {
   border: 1px solid #86efac;
   transition: all 0.3s ease;
   text-decoration: none;
+}
+
+.dark .main-content .result-cta {
+  background: rgba(255, 255, 255, 0.1);
+  color: #6ee7b7;
+  border: 1px solid rgba(110, 231, 183, 0.3);
+}
+
+.dark .main-content .result-cta:hover {
+  background: rgba(110, 231, 183, 0.2);
+  color: #6ee7b7;
 }
 
 .result-cta:hover {
@@ -1010,6 +1185,17 @@ const navigateToPage = (event, path) => {
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   transition: all 0.3s ease;
+}
+
+.dark .main-content .place-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.dark .main-content .place-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .place-card:hover {
@@ -1054,6 +1240,12 @@ const navigateToPage = (event, path) => {
   font-weight: 600;
   color: #0f172a;
   backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .place-rating {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .place-rating svg {
@@ -1070,6 +1262,11 @@ const navigateToPage = (event, path) => {
   color: #0f172a;
   margin-bottom: 0.5rem;
   line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .place-name {
+  color: #ffffff;
 }
 
 .place-desc {
@@ -1077,6 +1274,11 @@ const navigateToPage = (event, path) => {
   color: #64748b;
   line-height: 1.6;
   margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .place-desc {
+  color: #cbd5e1;
 }
 
 .place-tags {
@@ -1093,6 +1295,12 @@ const navigateToPage = (event, path) => {
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .place-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
 }
 
 .place-price {
@@ -1101,10 +1309,20 @@ const navigateToPage = (event, path) => {
   gap: 0.5rem;
   padding-top: 1rem;
   border-top: 1px solid #f1f5f9;
+  transition: border-color 0.3s ease;
+}
+
+.dark .main-content .place-price {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .price-label {
   font-size: 0.875rem;
+  color: #94a3b8;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .price-label {
   color: #94a3b8;
 }
 
@@ -1112,6 +1330,11 @@ const navigateToPage = (event, path) => {
   font-size: 1.25rem;
   font-weight: 700;
   color: #0f172a;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .price-value {
+  color: #ffffff;
 }
 
 /* Schedule Cards */
@@ -1131,13 +1354,29 @@ const navigateToPage = (event, path) => {
   transition: all 0.3s ease;
 }
 
+.dark .main-content .schedule-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .schedule-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
+.dark .main-content .schedule-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
 .schedule-card.work {
   border-left: 4px solid #64748b;
+}
+
+.dark .main-content .schedule-card.work {
+  border-left: 4px solid #94a3b8;
 }
 
 .schedule-card.workation {
@@ -1145,8 +1384,19 @@ const navigateToPage = (event, path) => {
   background: linear-gradient(to bottom right, #f0f9ff 0%, white 100%);
 }
 
+.dark .main-content .schedule-card.workation {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-left: 4px solid #60a5fa;
+}
+
 .schedule-card.personal {
   border-left: 4px solid #3b82f6;
+}
+
+.dark .main-content .schedule-card.personal {
+  border-left: 4px solid #93c5fd;
 }
 
 .schedule-header {
@@ -1161,6 +1411,7 @@ const navigateToPage = (event, path) => {
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .work-badge {
@@ -1168,9 +1419,19 @@ const navigateToPage = (event, path) => {
   color: #475569;
 }
 
+.dark .main-content .work-badge {
+  background: rgba(100, 116, 139, 0.2);
+  color: #cbd5e1;
+}
+
 .workation-badge {
   background: #e0f2fe;
   color: #0369a1;
+}
+
+.dark .main-content .workation-badge {
+  background: rgba(14, 165, 233, 0.2);
+  color: #60a5fa;
 }
 
 .personal-badge {
@@ -1178,10 +1439,20 @@ const navigateToPage = (event, path) => {
   color: #1e40af;
 }
 
+.dark .main-content .personal-badge {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
 .schedule-date {
   font-size: 0.75rem;
   color: #94a3b8;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .schedule-date {
+  color: #94a3b8;
 }
 
 .schedule-title {
@@ -1189,6 +1460,11 @@ const navigateToPage = (event, path) => {
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .schedule-title {
+  color: #ffffff;
 }
 
 .schedule-desc {
@@ -1196,12 +1472,22 @@ const navigateToPage = (event, path) => {
   color: #64748b;
   margin-bottom: 0.75rem;
   line-height: 1.5;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .schedule-desc {
+  color: #cbd5e1;
 }
 
 .schedule-time {
   font-size: 0.875rem;
   color: #94a3b8;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .schedule-time {
+  color: #94a3b8;
 }
 
 .schedule-location {
@@ -1211,6 +1497,11 @@ const navigateToPage = (event, path) => {
   font-size: 0.875rem;
   color: #0ea5e9;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .schedule-location {
+  color: #60a5fa;
 }
 
 .schedule-location svg {
@@ -1237,6 +1528,14 @@ const navigateToPage = (event, path) => {
   transition: all 0.3s ease;
 }
 
+.dark .main-content .summary-card:not(.highlight) {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .summary-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
@@ -1245,6 +1544,14 @@ const navigateToPage = (event, path) => {
 .summary-card.highlight {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   border-color: #fbbf24;
+}
+
+.dark .main-content .summary-card.highlight {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .summary-icon {
@@ -1260,16 +1567,34 @@ const navigateToPage = (event, path) => {
 .work-icon {
   background: #f1f5f9;
   color: #475569;
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .work-icon {
+  background: rgba(100, 116, 139, 0.2);
+  color: #cbd5e1;
 }
 
 .personal-icon {
   background: #dbeafe;
   color: #1e40af;
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .personal-icon {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
 }
 
 .workation-icon {
   background: white;
   color: #d97706;
+  transition: all 0.3s ease;
+}
+
+.dark .main-content .workation-icon {
+  background: rgba(217, 119, 6, 0.2);
+  color: #fbbf24;
 }
 
 .summary-content {
@@ -1280,20 +1605,38 @@ const navigateToPage = (event, path) => {
   font-size: 0.875rem;
   color: #64748b;
   margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .summary-card:not(.highlight) .summary-label {
+  color: #cbd5e1;
 }
 
 .summary-card.highlight .summary-label {
   color: #92400e;
 }
 
+.dark .main-content .summary-card.highlight .summary-label {
+  color: #fbbf24;
+}
+
 .summary-value {
   font-size: 1.5rem;
   font-weight: 800;
   color: #0f172a;
+  transition: color 0.3s ease;
+}
+
+.dark .main-content .summary-card:not(.highlight) .summary-value {
+  color: #ffffff;
 }
 
 .summary-card.highlight .summary-value {
   color: #78350f;
+}
+
+.dark .main-content .summary-card.highlight .summary-value {
+  color: #fcd34d;
 }
 
 /* CTA Container */

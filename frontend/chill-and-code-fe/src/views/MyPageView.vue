@@ -5,12 +5,17 @@ import { useUserStore } from '../stores/user'
 import { usePostStore } from '../stores/post'
 import { useCommentStore } from '../stores/comment'
 import { useScheduleStore } from '../stores/schedule'
+import { useThemeStore } from '../stores/theme'
 
 const router = useRouter()
 const userStore = useUserStore()
 const postStore = usePostStore()
 const commentStore = useCommentStore()
 const scheduleStore = useScheduleStore()
+const themeStore = useThemeStore()
+
+// 다크모드 상태 (전역 store에서 가져오기)
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const activeTab = ref('home')
 const mobileMenuOpen = ref(false)
@@ -339,12 +344,50 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen" style="background: var(--color-background);">
-    <div class="flex">
+  <div 
+    :class="[
+      'min-h-screen relative transition-colors duration-300',
+      isDarkMode 
+        ? 'dark' 
+        : ''
+    ]"
+    :style="{
+      backgroundColor: isDarkMode ? '#0f172a' : '#f0f4f8'
+    }"
+  >
+    <!-- 통일된 배경 패턴 -->
+    <div 
+      class="fixed inset-0 pointer-events-none"
+      :style="{
+        backgroundImage: isDarkMode
+          ? 'radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.15) 1px, transparent 0), radial-gradient(circle at 20px 20px, rgba(139, 92, 246, 0.1) 1px, transparent 0)'
+          : 'radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.08) 1px, transparent 0), radial-gradient(circle at 20px 20px, rgba(139, 92, 246, 0.05) 1px, transparent 0)',
+        backgroundSize: '40px 40px, 60px 60px',
+        backgroundPosition: '0 0, 20px 20px'
+      }"
+    ></div>
+    <!-- 미묘한 그라데이션 오버레이 (글래스 효과 강조용) -->
+    <div 
+      class="fixed inset-0 pointer-events-none opacity-40"
+      :style="{
+        background: isDarkMode
+          ? 'radial-gradient(ellipse at top, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.1) 0%, transparent 50%)'
+          : 'radial-gradient(ellipse at top, rgba(99, 102, 241, 0.05) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.05) 0%, transparent 50%)'
+      }"
+    ></div>
+    
+    <div class="flex relative z-10">
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:block w-80 border-r border-gray-200 fixed left-0 top-16 bottom-0 overflow-y-auto glass-card">
+      <aside class="hidden lg:block w-80 border-r border-white/20 fixed left-0 top-16 bottom-0 overflow-y-auto glass-card">
         <div class="p-10">
-          <h2 class="text-2xl font-bold text-gray-900 mb-10">마이페이지</h2>
+          <h2 
+            :class="[
+              'text-2xl font-bold mb-10 transition-colors',
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            ]"
+          >
+            마이페이지
+          </h2>
           <nav class="space-y-3">
             <button
               v-for="tab in tabs"
@@ -353,8 +396,10 @@ onMounted(async () => {
               :class="[
                 'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium flex items-center gap-3',
                 activeTab === tab.id
-                  ? 'bg-slate-800 text-white shadow-lg'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'glass-button-primary text-white shadow-lg'
+                  : isDarkMode
+                    ? 'glass-button-secondary text-gray-200 hover:text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
               ]"
             >
               <svg 
@@ -380,7 +425,7 @@ onMounted(async () => {
       <!-- Mobile Menu Button -->
       <button
         @click="mobileMenuOpen = !mobileMenuOpen"
-        class="lg:hidden fixed bottom-8 right-8 w-16 h-16 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center z-30 hover:bg-slate-900 transition-all"
+        class="glass-button-primary lg:hidden fixed bottom-8 right-8 w-16 h-16 rounded-full flex items-center justify-center z-30 transition-all"
       >
         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -390,20 +435,32 @@ onMounted(async () => {
       <!-- Mobile Drawer -->
       <div 
         v-if="mobileMenuOpen" 
-        class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden"
         @click="mobileMenuOpen = false"
       ></div>
       <div 
         :class="[
-          'fixed top-0 left-0 bottom-0 w-80 glass-card shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
+          'glass-drawer fixed top-0 left-0 bottom-0 w-80 shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         ]"
       >
-        <div class="p-8 border-b border-gray-200 flex items-center justify-between">
-          <h2 class="text-xl font-bold text-gray-900">마이페이지</h2>
+        <div 
+          :class="[
+            'p-8 border-b flex items-center justify-between transition-colors',
+            isDarkMode ? 'border-gray-700' : 'border-gray-200'
+          ]"
+        >
+          <h2 
+            :class="[
+              'text-xl font-bold transition-colors',
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            ]"
+          >
+            마이페이지
+          </h2>
           <button 
             @click="mobileMenuOpen = false"
-            class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            class="glass-button-icon p-2 rounded-lg transition-colors"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -418,8 +475,10 @@ onMounted(async () => {
             :class="[
               'w-full text-left px-6 py-4 rounded-xl transition-all text-base font-medium flex items-center gap-3',
               activeTab === tab.id
-                ? 'bg-slate-800 text-white shadow-lg'
-                : 'text-gray-700 hover:bg-gray-100'
+                ? 'glass-button-primary text-white shadow-lg'
+                : isDarkMode
+                  ? 'glass-button-secondary text-gray-200 hover:text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
             ]"
           >
             <svg 
@@ -445,7 +504,7 @@ onMounted(async () => {
       <main class="flex-1 lg:ml-80">
         <!-- Error Message -->
         <div v-if="error" class="p-8 lg:p-12">
-          <div class="max-w-4xl mx-auto p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          <div class="glass-error max-w-4xl mx-auto p-4 border-l-4 border-red-500 rounded-xl text-red-700 text-sm">
             {{ error }}
           </div>
         </div>
@@ -453,14 +512,35 @@ onMounted(async () => {
         <!-- Home Tab -->
         <section v-show="activeTab === 'home'" class="p-8 lg:p-12">
           <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-            <span class="text-gray-600 font-medium">불러오는 중...</span>
+            <div 
+              :class="[
+                'animate-spin rounded-full h-12 w-12 border-4 transition-colors',
+                isDarkMode 
+                  ? 'border-gray-700 border-t-indigo-400' 
+                  : 'border-gray-200 border-t-indigo-600'
+              ]"
+            ></div>
+            <span 
+              :class="[
+                'font-medium transition-colors',
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              ]"
+            >
+              불러오는 중...
+            </span>
           </div>
 
           <div v-else class="max-w-4xl mx-auto space-y-6">
             <!-- Profile Card -->
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 lg:p-8">
-              <h2 class="text-2xl font-bold text-gray-900 mb-6">프로필</h2>
+            <div class="glass-card p-6 lg:p-8">
+              <h2 
+                :class="[
+                  'text-2xl font-bold mb-6 transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                프로필
+              </h2>
               
               <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 mb-6">
                 <div class="relative flex-shrink-0">
@@ -478,15 +558,36 @@ onMounted(async () => {
                   </div>
                 </div>
                 <div class="flex-1 text-center lg:text-left">
-                  <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ user?.nickname || '사용자' }}</h3>
-                  <p class="text-gray-600 mb-1">{{ user?.email }}</p>
-                  <p class="text-gray-500 text-sm">{{ user?.region || '지역 정보 없음' }}</p>
+                  <h3 
+                    :class="[
+                      'text-2xl font-bold mb-2 transition-colors',
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    ]"
+                  >
+                    {{ user?.nickname || '사용자' }}
+                  </h3>
+                  <p 
+                    :class="[
+                      'mb-1 transition-colors',
+                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    ]"
+                  >
+                    {{ user?.email }}
+                  </p>
+                  <p 
+                    :class="[
+                      'text-sm transition-colors',
+                      isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                    ]"
+                  >
+                    {{ user?.region || '지역 정보 없음' }}
+                  </p>
                 </div>
               </div>
 
               <button
                 @click="openProfileEdit"
-                class="w-full lg:w-auto px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+                class="glass-button-primary w-full lg:w-auto px-6 py-3 rounded-xl transition-all font-semibold"
               >
                 프로필 수정
               </button>
@@ -494,17 +595,59 @@ onMounted(async () => {
 
             <!-- Stats (Coming Soon) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="glass-card rounded-2xl p-6 text-center opacity-40">
-                <div class="text-xs text-gray-500 mb-1 font-medium">워케이션 생성</div>
-                <div class="text-lg font-bold text-gray-400">준비중</div>
+              <div class="glass-card p-6 text-center opacity-40">
+                <div 
+                  :class="[
+                    'text-xs mb-1 font-medium transition-colors',
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  ]"
+                >
+                  워케이션 생성
+                </div>
+                <div 
+                  :class="[
+                    'text-lg font-bold transition-colors',
+                    isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                  ]"
+                >
+                  준비중
+                </div>
               </div>
-              <div class="glass-card rounded-2xl p-6 text-center opacity-40">
-                <div class="text-xs text-gray-500 mb-1 font-medium">추천 이용</div>
-                <div class="text-lg font-bold text-gray-400">준비중</div>
+              <div class="glass-card p-6 text-center opacity-40">
+                <div 
+                  :class="[
+                    'text-xs mb-1 font-medium transition-colors',
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  ]"
+                >
+                  추천 이용
+                </div>
+                <div 
+                  :class="[
+                    'text-lg font-bold transition-colors',
+                    isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                  ]"
+                >
+                  준비중
+                </div>
               </div>
-              <div class="glass-card rounded-2xl p-6 text-center opacity-40">
-                <div class="text-xs text-gray-500 mb-1 font-medium">워케이션 스타일</div>
-                <div class="text-lg font-bold text-gray-400">준비중</div>
+              <div class="glass-card p-6 text-center opacity-40">
+                <div 
+                  :class="[
+                    'text-xs mb-1 font-medium transition-colors',
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  ]"
+                >
+                  워케이션 스타일
+                </div>
+                <div 
+                  :class="[
+                    'text-lg font-bold transition-colors',
+                    isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                  ]"
+                >
+                  준비중
+                </div>
               </div>
             </div>
           </div>
@@ -514,26 +657,61 @@ onMounted(async () => {
         <section v-show="activeTab === 'posts'" class="p-8 lg:p-12">
           <div class="max-w-4xl mx-auto">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
-              <h2 class="text-3xl font-bold text-gray-900">내 게시글</h2>
+              <h2 
+                :class="[
+                  'text-3xl font-bold transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                내 게시글
+              </h2>
               <button
                 @click="$router.push('/posts')"
-                class="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all font-semibold shadow-sm hover:shadow-md"
+                class="glass-button-primary w-full lg:w-auto px-6 py-3 rounded-xl transition-all font-semibold"
               >
                 커뮤니티 둘러보기
               </button>
             </div>
 
             <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-              <span class="text-gray-600 font-medium">불러오는 중...</span>
+              <div 
+                :class="[
+                  'animate-spin rounded-full h-12 w-12 border-4 transition-colors',
+                  isDarkMode 
+                    ? 'border-gray-700 border-t-indigo-400' 
+                    : 'border-gray-200 border-t-indigo-600'
+                ]"
+              ></div>
+              <span 
+                :class="[
+                  'font-medium transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                불러오는 중...
+              </span>
             </div>
 
-            <div v-else-if="myPosts.length === 0" class="glass-card rounded-2xl p-16 text-center">
-              <h3 class="text-2xl font-bold text-gray-900 mb-3">작성한 게시글이 없습니다</h3>
-              <p class="text-gray-600 mb-8 text-lg">첫 게시글을 작성해보세요!</p>
+            <div v-else-if="myPosts.length === 0" class="glass-card p-16 text-center">
+              <h3 
+                :class="[
+                  'text-2xl font-bold mb-3 transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                작성한 게시글이 없습니다
+              </h3>
+              <p 
+                :class="[
+                  'mb-8 text-lg transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                첫 게시글을 작성해보세요!
+              </p>
               <button
                 @click="$router.push('/posts')"
-                class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg transition-all font-semibold"
+                class="glass-button-primary px-8 py-4 rounded-xl transition-all font-semibold"
               >
                 게시판 둘러보기
               </button>
@@ -543,13 +721,32 @@ onMounted(async () => {
               <div
                 v-for="post in myPosts"
                 :key="post.postId"
-                class="glass-card rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer"
+                class="glass-card p-6 hover:shadow-xl transition-all cursor-pointer"
                 @click="$router.push(`/posts/${post.postId}`)"
               >
-                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ post.title }}</h3>
-                <p class="text-gray-600 mb-3 line-clamp-2 leading-relaxed text-sm">{{ post.content }}</p>
+                <h3 
+                  :class="[
+                    'text-lg font-bold mb-2 transition-colors',
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                  ]"
+                >
+                  {{ post.title }}
+                </h3>
+                <p 
+                  :class="[
+                    'mb-3 line-clamp-2 leading-relaxed text-sm transition-colors',
+                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                  ]"
+                >
+                  {{ post.content }}
+                </p>
                 <div class="flex flex-wrap items-center justify-between gap-4">
-                  <div class="flex items-center gap-3 text-xs text-gray-500">
+                  <div 
+                    :class="[
+                      'flex items-center gap-3 text-xs transition-colors',
+                      isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                    ]"
+                  >
                     <span>{{ post.region || '지역 미지정' }}</span>
                     <span>•</span>
                     <span>조회 {{ post.viewCount || 0 }}</span>
@@ -571,32 +768,84 @@ onMounted(async () => {
         <!-- My Comments Tab -->
         <section v-show="activeTab === 'comments'" class="p-8 lg:p-12">
           <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">내 댓글</h2>
+            <h2 
+              :class="[
+                'text-3xl font-bold mb-8 transition-colors',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
+            >
+              내 댓글
+            </h2>
 
             <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-              <span class="text-gray-600 font-medium">불러오는 중...</span>
+              <div 
+                :class="[
+                  'animate-spin rounded-full h-12 w-12 border-4 transition-colors',
+                  isDarkMode 
+                    ? 'border-gray-700 border-t-indigo-400' 
+                    : 'border-gray-200 border-t-indigo-600'
+                ]"
+              ></div>
+              <span 
+                :class="[
+                  'font-medium transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                불러오는 중...
+              </span>
             </div>
 
-            <div v-else-if="myComments.length === 0" class="glass-card rounded-2xl p-16 text-center">
-              <h3 class="text-2xl font-bold text-gray-900 mb-3">작성한 댓글이 없습니다</h3>
-              <p class="text-gray-600 text-lg">커뮤니티에서 활동해보세요!</p>
+            <div v-else-if="myComments.length === 0" class="glass-card p-16 text-center">
+              <h3 
+                :class="[
+                  'text-2xl font-bold mb-3 transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                작성한 댓글이 없습니다
+              </h3>
+              <p 
+                :class="[
+                  'text-lg transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                커뮤니티에서 활동해보세요!
+              </p>
             </div>
 
             <div v-else class="space-y-3">
               <div
                 v-for="comment in myComments"
                 :key="comment.commentId"
-                class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 hover:shadow-xl transition-all"
+                class="glass-card p-6 hover:shadow-xl transition-all"
               >
-                <p class="text-gray-900 mb-3 leading-relaxed">{{ comment.content }}</p>
+                <p 
+                  :class="[
+                    'mb-3 leading-relaxed transition-colors',
+                    isDarkMode ? 'text-gray-200' : 'text-gray-900'
+                  ]"
+                >
+                  {{ comment.content }}
+                </p>
                 <div class="flex items-center justify-between gap-4">
-                  <span class="text-xs text-gray-500">{{ new Date(comment.createdAt).toLocaleDateString() }}</span>
+                  <span 
+                    :class="[
+                      'text-xs transition-colors',
+                      isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                    ]"
+                  >
+                    {{ new Date(comment.createdAt).toLocaleDateString() }}
+                  </span>
                   <div class="flex items-center gap-3">
                     <button
                       v-if="comment.postId"
                       @click="$router.push(`/posts/${comment.postId}`)"
-                      class="text-xs text-slate-700 hover:text-slate-900 font-semibold transition-colors"
+                      :class="[
+                        'text-xs font-semibold transition-colors',
+                        isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-700 hover:text-slate-900'
+                      ]"
                     >
                       원문 보기 →
                     </button>
@@ -617,10 +866,17 @@ onMounted(async () => {
         <section v-show="activeTab === 'schedules'" class="p-8 lg:p-12">
           <div class="max-w-4xl mx-auto">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
-              <h2 class="text-3xl font-bold text-gray-900">내 일정</h2>
+              <h2 
+                :class="[
+                  'text-3xl font-bold transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                내 일정
+              </h2>
               <button
                 @click="$router.push('/schedule')"
-                class="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all font-semibold shadow-sm hover:shadow-md"
+                class="glass-button-primary w-full lg:w-auto px-6 py-3 rounded-xl transition-all font-semibold"
               >
                 일정 캘린더로 이동
               </button>
@@ -633,8 +889,10 @@ onMounted(async () => {
                 :class="[
                   'px-5 py-2 rounded-xl font-semibold transition-all text-sm',
                   scheduleTypeFilter === null
-                    ? 'bg-slate-800 text-white shadow-lg'
-                    : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'glass-button-primary text-white shadow-lg'
+                    : isDarkMode
+                      ? 'glass-button-secondary text-gray-200 hover:text-white'
+                      : 'glass-button-secondary text-gray-700 hover:text-gray-900'
                 ]"
               >
                 전체
@@ -646,8 +904,10 @@ onMounted(async () => {
                 :class="[
                   'px-5 py-2 rounded-xl font-semibold transition-all text-sm',
                   scheduleTypeFilter === type.value
-                    ? 'bg-slate-800 text-white shadow-lg'
-                    : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'glass-button-primary text-white shadow-lg'
+                    : isDarkMode
+                      ? 'glass-button-secondary text-gray-200 hover:text-white'
+                      : 'glass-button-secondary text-gray-700 hover:text-gray-900'
                 ]"
               >
                 {{ type.label }}
@@ -655,16 +915,44 @@ onMounted(async () => {
             </div>
 
             <div v-if="loading" class="flex flex-col items-center justify-center gap-4 py-32">
-              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-              <span class="text-gray-600 font-medium">불러오는 중...</span>
+              <div 
+                :class="[
+                  'animate-spin rounded-full h-12 w-12 border-4 transition-colors',
+                  isDarkMode 
+                    ? 'border-gray-700 border-t-indigo-400' 
+                    : 'border-gray-200 border-t-indigo-600'
+                ]"
+              ></div>
+              <span 
+                :class="[
+                  'font-medium transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                불러오는 중...
+              </span>
             </div>
 
-            <div v-else-if="schedules.length === 0" class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-16 text-center">
-              <h3 class="text-2xl font-bold text-gray-900 mb-3">등록된 일정이 없습니다</h3>
-              <p class="text-gray-600 mb-8 text-lg">새로운 일정을 추가해보세요!</p>
+            <div v-else-if="schedules.length === 0" class="glass-card p-16 text-center">
+              <h3 
+                :class="[
+                  'text-2xl font-bold mb-3 transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                등록된 일정이 없습니다
+              </h3>
+              <p 
+                :class="[
+                  'mb-8 text-lg transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                새로운 일정을 추가해보세요!
+              </p>
               <button
                 @click="$router.push('/schedule')"
-                class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg transition-all font-semibold"
+                class="glass-button-primary px-8 py-4 rounded-xl transition-all font-semibold"
               >
                 일정 추가하기
               </button>
@@ -674,7 +962,7 @@ onMounted(async () => {
               <div
                 v-for="schedule in schedules"
                 :key="schedule.scheduleId"
-                class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 hover:shadow-xl transition-all"
+                class="glass-card p-6 hover:shadow-xl transition-all"
               >
                 <div class="flex items-start gap-5">
                   <div 
@@ -692,9 +980,30 @@ onMounted(async () => {
                     >
                       {{ scheduleTypes.find(t => t.value === schedule.type)?.label || schedule.type }}
                     </span>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ schedule.title }}</h3>
-                    <p class="text-gray-600 mb-2 leading-relaxed text-sm">{{ schedule.description }}</p>
-                    <p class="text-xs text-gray-500">{{ schedule.startDate }} ~ {{ schedule.endDate }}</p>
+                    <h3 
+                      :class="[
+                        'text-lg font-bold mb-2 transition-colors',
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                      ]"
+                    >
+                      {{ schedule.title }}
+                    </h3>
+                    <p 
+                      :class="[
+                        'mb-2 leading-relaxed text-sm transition-colors',
+                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                      ]"
+                    >
+                      {{ schedule.description }}
+                    </p>
+                    <p 
+                      :class="[
+                        'text-xs transition-colors',
+                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                      ]"
+                    >
+                      {{ schedule.startDate }} ~ {{ schedule.endDate }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -705,17 +1014,38 @@ onMounted(async () => {
         <!-- Settings Tab -->
         <section v-show="activeTab === 'settings'" class="p-8 lg:p-12">
           <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">계정 설정</h2>
+            <h2 
+              :class="[
+                'text-3xl font-bold mb-8 transition-colors',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
+            >
+              계정 설정
+            </h2>
 
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 lg:p-8">
+            <div class="glass-card p-6 lg:p-8">
               <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
-                  <h3 class="text-xl font-bold text-gray-900 mb-2">비밀번호 변경</h3>
-                  <p class="text-gray-600">계정의 비밀번호를 변경합니다</p>
+                  <h3 
+                    :class="[
+                      'text-xl font-bold mb-2 transition-colors',
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    ]"
+                  >
+                    비밀번호 변경
+                  </h3>
+                  <p 
+                    :class="[
+                      'transition-colors',
+                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    ]"
+                  >
+                    계정의 비밀번호를 변경합니다
+                  </p>
                 </div>
                 <button
                   @click="openPasswordChange"
-                  class="px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 hover:shadow-lg transition-all font-semibold"
+                  class="glass-button-primary px-6 py-3 rounded-xl transition-all font-semibold"
                 >
                   비밀번호 변경
                 </button>
@@ -727,11 +1057,23 @@ onMounted(async () => {
         <!-- Withdrawal Tab -->
         <section v-show="activeTab === 'withdrawal'" class="p-8 lg:p-12">
           <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">회원 탈퇴</h2>
+            <h2 
+              :class="[
+                'text-3xl font-bold mb-8 transition-colors',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
+            >
+              회원 탈퇴
+            </h2>
 
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 lg:p-8">
+            <div class="glass-card p-6 lg:p-8">
               <h3 class="text-lg font-bold text-red-600 mb-5">⚠️ 회원 탈퇴 안내</h3>
-              <ul class="space-y-2 text-gray-700 mb-6 text-sm">
+              <ul 
+                :class="[
+                  'space-y-2 mb-6 text-sm transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                ]"
+              >
                 <li>• 회원 탈퇴 시 모든 개인 정보가 삭제됩니다.</li>
                 <li>• 작성한 게시글과 댓글은 삭제되지 않을 수 있습니다.</li>
                 <li>• 탈퇴 후 동일 이메일로 재가입이 제한될 수 있습니다.</li>
@@ -745,7 +1087,12 @@ onMounted(async () => {
                     v-model="withdrawalConfirm" 
                     class="mt-0.5 w-4 h-4 text-red-600 rounded focus:ring-red-500"
                   />
-                  <span class="text-gray-900 font-semibold text-sm">
+                  <span 
+                    :class="[
+                      'font-semibold text-sm transition-colors',
+                      isDarkMode ? 'text-gray-200' : 'text-gray-900'
+                    ]"
+                  >
                     위 내용을 모두 확인했으며, 회원 탈퇴에 동의합니다.
                   </span>
                 </label>
@@ -767,11 +1114,18 @@ onMounted(async () => {
     <!-- Profile Edit Modal -->
     <div
       v-if="showProfileEditModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       @click.self="showProfileEditModal = false"
     >
-      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-10">
-        <h3 class="text-3xl font-bold text-gray-900 mb-8">프로필 수정</h3>
+      <div class="glass-modal rounded-2xl shadow-2xl max-w-2xl w-full p-10">
+        <h3 
+          :class="[
+            'text-3xl font-bold mb-8 transition-colors',
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          ]"
+        >
+          프로필 수정
+        </h3>
         <div class="space-y-6">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-3">이메일 (변경 불가)</label>
@@ -900,11 +1254,18 @@ onMounted(async () => {
     <!-- Password Change Modal -->
     <div
       v-if="showPasswordChangeModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       @click.self="showPasswordChangeModal = false"
     >
-      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
-        <h3 class="text-3xl font-bold text-gray-900 mb-8">비밀번호 변경</h3>
+      <div class="glass-modal rounded-2xl shadow-2xl max-w-md w-full p-10">
+        <h3 
+          :class="[
+            'text-3xl font-bold mb-8 transition-colors',
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          ]"
+        >
+          비밀번호 변경
+        </h3>
         <div class="space-y-5">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-3">현재 비밀번호</label>
@@ -956,18 +1317,30 @@ onMounted(async () => {
     <!-- Withdrawal Modal -->
     <div
       v-if="showWithdrawalModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       @click.self="showWithdrawalModal = false"
     >
-      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-10">
-        <h3 class="text-3xl font-bold text-gray-900 mb-6">정말로 탈퇴하시겠습니까?</h3>
-        <p class="text-gray-600 mb-8 text-base leading-relaxed">
+      <div class="glass-modal rounded-2xl shadow-2xl max-w-md w-full p-10">
+        <h3 
+          :class="[
+            'text-3xl font-bold mb-6 transition-colors',
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          ]"
+        >
+          정말로 탈퇴하시겠습니까?
+        </h3>
+        <p 
+          :class="[
+            'mb-8 text-base leading-relaxed transition-colors',
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          ]"
+        >
           이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.
         </p>
         <div class="flex gap-3">
           <button
             @click="showWithdrawalModal = false"
-            class="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all font-semibold"
+            class="glass-button-secondary flex-1 px-6 py-4 rounded-xl transition-all font-semibold"
           >
             취소
           </button>
@@ -984,6 +1357,149 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+/* 글래스모피즘 스타일 클래스 - 라이트 모드 기본값 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary:hover {
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.glass-button-secondary {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #374151;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-button-icon {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #4b5563;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-icon:hover {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-error {
+  background: rgba(254, 242, 242, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-drawer {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.glass-modal {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* 다크모드 스타일 */
+:deep(.dark) .glass-card,
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-button-secondary,
+.dark .glass-button-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e5e7eb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-button-secondary:hover,
+.dark .glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-button-icon,
+.dark .glass-button-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-button-icon:hover,
+.dark .glass-button-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-error,
+.dark .glass-error {
+  background: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+}
+
+:deep(.dark) .glass-drawer,
+.dark .glass-drawer {
+  background: rgba(15, 23, 42, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:deep(.dark) .glass-modal,
+.dark .glass-modal {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

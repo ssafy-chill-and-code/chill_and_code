@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useScheduleStore } from '@/stores/schedule'
+import { useThemeStore } from '@/stores/theme'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -12,6 +13,10 @@ import ScheduleAnalysisDetail from '@/components/ScheduleAnalysisDetail.vue'
 
 const router = useRouter()
 const scheduleStore = useScheduleStore()
+const themeStore = useThemeStore()
+
+// 다크모드 상태 (전역 store에서 가져오기)
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 // 상태 관리
 const loading = ref(false)
@@ -386,36 +391,111 @@ const toggleSidebar = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
+
 </script>
 
 <template>
-  <div class="schedule-view min-h-screen" style="background: var(--color-background);">
+  <div 
+    :class="[
+      'schedule-view min-h-screen relative transition-colors duration-300',
+      isDarkMode 
+        ? 'dark' 
+        : ''
+    ]"
+    :style="{
+      backgroundColor: isDarkMode ? '#0f172a' : '#f0f4f8'
+    }"
+  >
+    <!-- 통일된 배경 패턴 -->
+    <div 
+      class="fixed inset-0 pointer-events-none"
+      :style="{
+        backgroundImage: isDarkMode
+          ? 'radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.15) 1px, transparent 0), radial-gradient(circle at 20px 20px, rgba(139, 92, 246, 0.1) 1px, transparent 0)'
+          : 'radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.08) 1px, transparent 0), radial-gradient(circle at 20px 20px, rgba(139, 92, 246, 0.05) 1px, transparent 0)',
+        backgroundSize: '40px 40px, 60px 60px',
+        backgroundPosition: '0 0, 20px 20px'
+      }"
+    ></div>
+    <!-- 미묘한 그라데이션 오버레이 (글래스 효과 강조용) -->
+    <div 
+      class="fixed inset-0 pointer-events-none opacity-40"
+      :style="{
+        background: isDarkMode
+          ? 'radial-gradient(ellipse at top, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.1) 0%, transparent 50%)'
+          : 'radial-gradient(ellipse at top, rgba(99, 102, 241, 0.05) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.05) 0%, transparent 50%)'
+      }"
+    ></div>
+    
     <!-- 메인 컨텐츠 -->
-    <div class="w-full px-4 lg:px-8 py-6 lg:py-8">
+    <div class="w-full px-4 lg:px-8 py-6 lg:py-8 relative z-10">
       <!-- 페이지 헤더 -->
-      <div class="mb-6">
-        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">일정 관리</h1>
-        <p class="mt-1 text-sm text-gray-600">워케이션을 위한 스마트한 일정 분석</p>
+      <div class="mb-6 glass-header px-6 py-4 rounded-xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 
+              :class="[
+                'text-2xl lg:text-3xl font-bold transition-colors',
+                isDarkMode ? 'text-white !important' : 'text-gray-900'
+              ]"
+              :style="isDarkMode ? { color: '#ffffff' } : {}"
+            >
+              일정 관리
+            </h1>
+            <p 
+              :class="[
+                'mt-1 text-sm transition-colors',
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              ]"
+            >
+              워케이션을 위한 스마트한 일정 분석
+            </p>
+          </div>
+        </div>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-6">
         <!-- 좌측 패널 (데스크톱: 일반 레이아웃, 모바일: 숨김) -->
         <aside class="hidden lg:block w-64 flex-shrink-0 space-y-4">
           <!-- 현재 월 선택 -->
-          <div class="glass-card rounded-lg p-4">
+          <div class="glass-card p-4">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  :class="[
+                    'w-5 h-5 transition-colors',
+                    isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
+                  ]"
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <h3 class="text-sm font-semibold text-gray-900">{{ currentYearMonth }}</h3>
+                <h3 
+                  :class="[
+                    'text-sm font-semibold transition-colors',
+                    isDarkMode ? 'text-white !important' : 'text-gray-900'
+                  ]"
+                  :style="isDarkMode ? { color: '#ffffff' } : {}"
+                >
+                  {{ currentYearMonth }}
+                </h3>
               </div>
               <button 
                 @click="openMonthPicker"
-                class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                class="glass-button-icon p-1.5 rounded-lg transition-colors"
                 title="월 선택"
               >
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  :class="[
+                    'w-4 h-4 transition-colors',
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  ]"
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </button>
@@ -429,7 +509,14 @@ const toggleSidebar = () => {
                   v-for="(day, index) in weekDays" 
                   :key="index"
                   class="text-center text-xs font-medium"
-                  :class="index === 0 ? 'text-red-500' : index === 6 ? 'text-blue-500' : 'text-gray-500'"
+                  :class="[
+                    'text-center text-xs font-medium transition-colors',
+                    index === 0 
+                      ? (isDarkMode ? 'text-red-400' : 'text-red-500')
+                      : index === 6 
+                        ? (isDarkMode ? 'text-blue-400' : 'text-blue-500')
+                        : (isDarkMode ? 'text-gray-400' : 'text-gray-500')
+                  ]"
                 >
                   {{ day }}
                 </div>
@@ -448,9 +535,10 @@ const toggleSidebar = () => {
                   :class="[
                     !day ? 'text-transparent' : '',
                     isToday(day) 
-                      ? 'bg-indigo-600 text-white rounded-full font-bold' 
+                      ? 'glass-today text-white rounded-full font-bold' 
                       : day 
-                        ? 'text-gray-700 hover:bg-gray-100 rounded cursor-pointer' 
+                        ? 'glass-day rounded cursor-pointer transition-colors'
+                        + (isDarkMode ? ' text-gray-200' : ' text-gray-700') 
                         : ''
                   ]"
                 >
@@ -463,7 +551,7 @@ const toggleSidebar = () => {
           <!-- CTA 버튼 -->
           <button
             @click="goToRecommend"
-            class="w-full bg-slate-800 text-white rounded-lg px-4 py-3 font-semibold text-sm hover:bg-slate-900 transition-all shadow-sm"
+            class="glass-button-primary w-full rounded-lg px-4 py-3 font-semibold text-sm transition-all"
           >
             <div class="flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -476,7 +564,7 @@ const toggleSidebar = () => {
           <!-- 일정 추가 버튼 -->
           <button
             @click="openCreateModal"
-            class="w-full bg-white border border-gray-300 text-gray-700 rounded-lg px-4 py-3 font-semibold text-sm hover:bg-gray-50 transition-all shadow-sm"
+            class="glass-button-secondary w-full rounded-lg px-4 py-3 font-semibold text-sm transition-all"
           >
             <div class="flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -492,41 +580,73 @@ const toggleSidebar = () => {
 
         <!-- 메인 캘린더 영역 -->
         <main class="flex-1 min-w-0 space-y-6">
-          <div class="glass-card rounded-lg overflow-hidden">
+          <div class="glass-card overflow-hidden">
             <!-- 캘린더 상단 컨트롤 -->
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div class="glass-header px-6 py-4 border-b border-white/20">
               <div class="flex items-center justify-between">
                 <button 
                   @click="openMonthPicker"
-                  class="text-xl lg:text-2xl font-bold text-gray-900 hover:text-indigo-600 transition-colors flex items-center gap-2 group"
+                  :class="[
+                    'text-xl lg:text-2xl font-bold transition-colors flex items-center gap-2 group',
+                    isDarkMode 
+                      ? 'text-white !important hover:text-indigo-400' 
+                      : 'text-gray-900 hover:text-indigo-600'
+                  ]"
+                  :style="isDarkMode ? { color: '#ffffff' } : {}"
                 >
                   {{ currentYearMonth }}
-                  <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg 
+                    :class="[
+                      'w-5 h-5 transition-colors',
+                      isDarkMode 
+                        ? 'text-gray-400 group-hover:text-indigo-400' 
+                        : 'text-gray-400 group-hover:text-indigo-600'
+                    ]"
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
                 <div class="flex items-center gap-2">
                   <button
                     @click="prevMonth"
-                    class="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all"
+                    class="glass-button-icon p-2 rounded-lg transition-all"
                     title="이전 달"
                   >
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg 
+                      :class="[
+                        'w-5 h-5 transition-colors',
+                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                      ]"
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
                   <button
                     @click="goToday"
-                    class="px-4 py-2 text-sm font-semibold text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-all shadow-sm"
+                    class="glass-button-secondary px-4 py-2 text-sm font-semibold rounded-lg transition-all"
                   >
                     오늘
                   </button>
                   <button
                     @click="nextMonth"
-                    class="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all"
+                    class="glass-button-icon p-2 rounded-lg transition-all"
                     title="다음 달"
                   >
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg 
+                      :class="[
+                        'w-5 h-5 transition-colors',
+                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                      ]"
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
@@ -535,13 +655,13 @@ const toggleSidebar = () => {
             </div>
 
             <!-- 일정 유형 필터 (캘린더 위 여백) -->
-            <div class="px-6 py-3 bg-white">
+            <div class="px-6 py-3 glass-filter">
               <div class="flex items-center justify-end">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
                   <label 
                     v-for="type in scheduleTypes" 
                     :key="type.value"
-                    class="flex items-center gap-2 cursor-pointer group"
+                    class="flex items-center gap-2 cursor-pointer group glass-filter-item px-3 py-2 rounded-lg transition-all"
                   >
                     <input 
                       type="checkbox" 
@@ -550,8 +670,23 @@ const toggleSidebar = () => {
                       class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     />
                     <div class="flex items-center gap-1.5">
-                      <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: type.color }"></div>
-                      <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">{{ type.label }}</span>
+                      <div 
+                        class="w-3 h-3 rounded-full shadow-sm filter-color-dot" 
+                        :style="{ 
+                          backgroundColor: type.color,
+                          '--filter-color': type.color
+                        }"
+                      ></div>
+                      <span 
+                        :class="[
+                          'text-sm font-medium transition-colors',
+                          isDarkMode 
+                            ? 'text-gray-200 group-hover:text-white' 
+                            : 'text-gray-700 group-hover:text-gray-900'
+                        ]"
+                      >
+                        {{ type.label }}
+                      </span>
                     </div>
                   </label>
                 </div>
@@ -559,7 +694,15 @@ const toggleSidebar = () => {
             </div>
 
             <!-- 에러 메시지 -->
-            <div v-if="error" class="mx-6 mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-sm shadow-sm">
+            <div 
+              v-if="error" 
+              :class="[
+                'glass-error mx-6 mt-6 p-4 border-l-4 border-red-500 rounded text-sm transition-colors',
+                isDarkMode
+                  ? 'bg-red-900/30 text-red-300'
+                  : 'text-red-800'
+              ]"
+            >
               <div class="flex items-center gap-2">
                 <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
@@ -570,8 +713,22 @@ const toggleSidebar = () => {
 
             <!-- 로딩 상태 -->
             <div v-if="loading" class="p-12 text-center">
-              <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600"></div>
-              <p class="mt-4 text-sm font-medium text-gray-600">일정을 불러오는 중...</p>
+              <div 
+                :class="[
+                  'inline-block animate-spin rounded-full h-12 w-12 border-4 transition-colors',
+                  isDarkMode 
+                    ? 'border-gray-700 border-t-indigo-400' 
+                    : 'border-gray-200 border-t-blue-600'
+                ]"
+              ></div>
+              <p 
+                :class="[
+                  'mt-4 text-sm font-medium transition-colors',
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                ]"
+              >
+                일정을 불러오는 중...
+              </p>
             </div>
 
             <!-- FullCalendar -->
@@ -589,7 +746,7 @@ const toggleSidebar = () => {
     <!-- Mobile Menu Button -->
     <button
       @click="toggleSidebar"
-      class="lg:hidden fixed bottom-8 right-8 w-16 h-16 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center z-30 hover:bg-slate-900 transition-all"
+      class="glass-button-primary lg:hidden fixed bottom-8 right-8 w-16 h-16 rounded-full flex items-center justify-center z-30 transition-all"
     >
       <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
@@ -599,20 +756,32 @@ const toggleSidebar = () => {
     <!-- Mobile Drawer -->
     <div 
       v-if="mobileMenuOpen" 
-      class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden"
       @click="mobileMenuOpen = false"
     ></div>
     <div 
       :class="[
-        'fixed top-0 left-0 bottom-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
+        'glass-drawer fixed top-0 left-0 bottom-0 w-80 shadow-2xl transform transition-transform duration-300 z-50 lg:hidden overflow-y-auto',
         mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       ]"
     >
-      <div class="p-8 border-b border-gray-200 flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900">필터 및 분석</h2>
+      <div 
+        :class="[
+          'p-8 border-b flex items-center justify-between transition-colors',
+          isDarkMode ? 'border-gray-700' : 'border-gray-200'
+        ]"
+      >
+        <h2 
+          :class="[
+            'text-xl font-bold transition-colors',
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          ]"
+        >
+          필터 및 분석
+        </h2>
         <button 
           @click="mobileMenuOpen = false"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="glass-button-icon p-2 rounded-lg transition-colors"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -621,20 +790,44 @@ const toggleSidebar = () => {
       </div>
       <div class="p-6 space-y-6">
         <!-- 현재 월 선택 -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+        <div class="glass-card p-5">
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg 
+                :class="[
+                  'w-5 h-5 transition-colors',
+                  isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
+                ]"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <h3 class="text-sm font-semibold text-gray-900">{{ currentYearMonth }}</h3>
+              <h3 
+                :class="[
+                  'text-sm font-semibold transition-colors',
+                  isDarkMode ? 'text-white !important' : 'text-gray-900'
+                ]"
+                :style="isDarkMode ? { color: '#ffffff' } : {}"
+              >
+                {{ currentYearMonth }}
+              </h3>
             </div>
             <button 
               @click="openMonthPicker"
-              class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              class="glass-button-icon p-1.5 rounded-lg transition-colors"
               title="월 선택"
             >
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg 
+                :class="[
+                  'w-4 h-4 transition-colors',
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                ]"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </button>
@@ -648,7 +841,14 @@ const toggleSidebar = () => {
                 v-for="(day, index) in weekDays" 
                 :key="index"
                 class="text-center text-xs font-medium"
-                :class="index === 0 ? 'text-red-500' : index === 6 ? 'text-blue-500' : 'text-gray-500'"
+                :class="[
+                  'text-center text-xs font-medium transition-colors',
+                  index === 0 
+                    ? (isDarkMode ? 'text-red-400' : 'text-red-500')
+                    : index === 6 
+                      ? (isDarkMode ? 'text-blue-400' : 'text-blue-500')
+                      : (isDarkMode ? 'text-gray-400' : 'text-gray-500')
+                ]"
               >
                 {{ day }}
               </div>
@@ -667,9 +867,10 @@ const toggleSidebar = () => {
                 :class="[
                   !day ? 'text-transparent' : '',
                   isToday(day) 
-                    ? 'bg-indigo-600 text-white rounded-full font-bold' 
+                    ? 'glass-today text-white rounded-full font-bold' 
                     : day 
-                      ? 'text-gray-700 hover:bg-gray-100 rounded cursor-pointer' 
+                      ? 'glass-day rounded cursor-pointer'
+                      + (isDarkMode ? ' text-gray-200' : ' text-gray-700') 
                       : ''
                 ]"
               >
@@ -683,7 +884,7 @@ const toggleSidebar = () => {
         <!-- CTA 버튼 -->
         <button
           @click="goToRecommend"
-          class="w-full bg-slate-800 text-white rounded-lg px-5 py-4 font-semibold text-sm hover:bg-slate-900 transition-all shadow-sm"
+          class="glass-button-primary w-full rounded-lg px-5 py-4 font-semibold text-sm transition-all"
         >
           <div class="flex items-center justify-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -696,7 +897,7 @@ const toggleSidebar = () => {
         <!-- 일정 추가 버튼 -->
         <button
           @click="openCreateModal"
-          class="w-full bg-white border border-gray-300 text-gray-700 rounded-lg px-5 py-4 font-semibold text-sm hover:bg-gray-50 transition-all shadow-sm"
+          class="glass-button-secondary w-full rounded-lg px-5 py-4 font-semibold text-sm transition-all"
         >
           <div class="flex items-center justify-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -732,18 +933,39 @@ const toggleSidebar = () => {
     />
 
     <!-- 월 선택 모달 -->
-    <div v-if="showMonthPicker" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" @click.self="showMonthPicker = false">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden" @click.stop>
+    <div v-if="showMonthPicker" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" @click.self="showMonthPicker = false">
+      <div class="glass-modal rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden" @click.stop>
         <!-- 모달 헤더 -->
-        <div class="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5">
+        <div class="glass-modal-header px-6 py-5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg 
+                :class="[
+                  'w-5 h-5 transition-colors',
+                  isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
+                ]"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <h3 class="text-xl font-bold text-white">월 선택</h3>
+              <h3 
+                :class="[
+                  'text-xl font-bold transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                월 선택
+              </h3>
             </div>
-            <button @click="showMonthPicker = false" class="text-white/80 hover:text-white transition-colors p-1">
+            <button 
+              @click="showMonthPicker = false" 
+              :class="[
+                'glass-button-icon transition-colors p-1',
+                isDarkMode ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+              ]"
+            >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -758,22 +980,43 @@ const toggleSidebar = () => {
             <div class="flex items-center justify-center gap-4">
               <button
                 @click="decreaseYear"
-                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                class="glass-button-icon p-2 rounded-lg transition-colors"
                 title="이전 년도"
               >
-                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  :class="[
+                    'w-6 h-6 transition-colors',
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  ]"
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div class="text-2xl font-bold text-gray-900 min-w-[120px] text-center">
+              <div 
+                :class="[
+                  'text-2xl font-bold min-w-[120px] text-center transition-colors',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
                 {{ selectedYear }}년
               </div>
               <button
                 @click="increaseYear"
-                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                class="glass-button-icon p-2 rounded-lg transition-colors"
                 title="다음 년도"
               >
-                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  :class="[
+                    'w-6 h-6 transition-colors',
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  ]"
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -790,8 +1033,10 @@ const toggleSidebar = () => {
                 :class="[
                   'py-3 text-sm font-semibold rounded-lg transition-all',
                   selectedMonth === month
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'glass-button-primary text-white'
+                    : isDarkMode
+                      ? 'glass-button-secondary text-gray-200 hover:text-white'
+                      : 'glass-button-secondary text-gray-700 hover:text-gray-900'
                 ]"
               >
                 {{ month }}월
@@ -801,16 +1046,21 @@ const toggleSidebar = () => {
         </div>
 
         <!-- 모달 푸터 -->
-        <div class="bg-gray-50 px-6 py-4 flex items-center justify-end gap-2">
+        <div 
+          :class="[
+            'glass-header px-6 py-4 flex items-center justify-end gap-2 border-t transition-colors',
+            isDarkMode ? 'border-white/20' : 'border-gray-200'
+          ]"
+        >
           <button
             @click="showMonthPicker = false"
-            class="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all"
+            class="glass-button-secondary px-4 py-2 text-sm font-semibold rounded-lg transition-all"
           >
             취소
           </button>
           <button
             @click="applyMonthSelection"
-            class="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
+            class="glass-button-primary px-4 py-2 text-sm font-semibold rounded-lg transition-all"
           >
             이동
           </button>
@@ -821,6 +1071,240 @@ const toggleSidebar = () => {
 </template>
 
 <style scoped>
+/* 글래스모피즘 스타일 클래스 - 라이트 모드 기본값 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-header {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-filter {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-button-primary:hover {
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.glass-button-secondary {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #374151;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-button-icon {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #4b5563;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button-icon:hover {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-error {
+  background: rgba(254, 242, 242, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-drawer {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.glass-modal {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.glass-filter-item {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.glass-filter-item:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.glass-modal-header {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-today {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.9) 0%, rgba(67, 56, 202, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.glass-day {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: all 0.2s ease;
+}
+
+.glass-day:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 다크모드 스타일 */
+:deep(.dark) .glass-card,
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-header,
+.dark .glass-header {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:deep(.dark) .glass-filter,
+.dark .glass-filter {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:deep(.dark) .glass-button-secondary,
+.dark .glass-button-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e5e7eb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-button-secondary:hover,
+.dark .glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-button-icon,
+.dark .glass-button-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-button-icon:hover,
+.dark .glass-button-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:deep(.dark) .glass-error,
+.dark .glass-error {
+  background: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+}
+
+:deep(.dark) .glass-drawer,
+.dark .glass-drawer {
+  background: rgba(15, 23, 42, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:deep(.dark) .glass-modal,
+.dark .glass-modal {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+:deep(.dark) .glass-filter-item,
+.dark .glass-filter-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+:deep(.dark) .glass-filter-item:hover,
+.dark .glass-filter-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark) .glass-day,
+.dark .glass-day {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+:deep(.dark) .glass-day:hover,
+.dark .glass-day:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 /* FullCalendar 커스텀 스타일 - 깔끔한 디자인 */
 :deep(.fc) {
   font-family: inherit;
@@ -832,7 +1316,13 @@ const toggleSidebar = () => {
 }
 
 :deep(.fc-daygrid-day:hover) {
-  background-color: #f9fafb;
+  background-color: rgba(249, 250, 251, 0.6);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+:deep(.dark .fc-daygrid-day:hover) {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 :deep(.fc-daygrid-day-number) {
@@ -841,17 +1331,30 @@ const toggleSidebar = () => {
   padding: 8px;
   font-size: 0.875rem;
   min-width: 28px;
+  transition: color 0.3s ease;
+}
+
+:deep(.dark .fc-daygrid-day-number) {
+  color: #e5e7eb;
 }
 
 :deep(.fc-col-header-cell) {
-  background-color: #f9fafb;
-  border-color: #e5e7eb;
+  background: rgba(249, 250, 251, 0.6);
+  backdrop-filter: blur(10px);
+  border-color: rgba(229, 231, 235, 0.5);
   padding: 14px 8px;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.7rem;
   letter-spacing: 0.05em;
   color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+:deep(.dark .fc-col-header-cell) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
 }
 
 :deep(.fc-daygrid-day-frame) {
@@ -860,19 +1363,26 @@ const toggleSidebar = () => {
 
 :deep(.fc-event) {
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 5px 8px;
   margin: 2px;
   font-size: 0.85rem;
   font-weight: 600;
   border-width: 2px !important;
   border-left-width: 4px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.15s ease;
 }
 
 /* 일정 유형별 색상 강제 적용 */
 :deep(.fc-event.schedule-type-personal) {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+  border-left-color: #fde68a !important;
+}
+
+:deep(.dark .fc-event.schedule-type-personal) {
   background-color: #fffbeb !important;
   border-color: #fde68a !important;
   border-left-color: #fde68a !important;
@@ -884,15 +1394,44 @@ const toggleSidebar = () => {
   border-left-color: #fca5a5 !important;
 }
 
+:deep(.dark .fc-event.schedule-type-work) {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+  border-left-color: #fca5a5 !important;
+}
+
 :deep(.fc-event.schedule-type-workation) {
   background-color: #eff6ff !important;
   border-color: #93c5fd !important;
   border-left-color: #93c5fd !important;
 }
 
+:deep(.dark .fc-event.schedule-type-workation) {
+  background-color: #eff6ff !important;
+  border-color: #93c5fd !important;
+  border-left-color: #93c5fd !important;
+}
+
+/* 다크모드에서 일정 이벤트 텍스트 색상 (Reference.vue 방식 - 검정색) */
+:deep(.dark .fc-event),
+:deep(.dark .fc-event *),
+:deep(.dark .fc-event .fc-event-title),
+:deep(.dark .fc-event .fc-event-title-frame),
+:deep(.dark .fc-event .fc-event-title-container),
+:deep(.dark .fc-event .fc-event-title-container *),
+:deep(.dark .fc-event .fc-event-main),
+:deep(.dark .fc-event .fc-event-main-frame) {
+  color: #000000 !important;
+}
+
 :deep(.fc-event:hover) {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(15px);
+}
+
+:deep(.dark .fc-event:hover) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 :deep(.fc-daygrid-event-dot) {
@@ -906,7 +1445,13 @@ const toggleSidebar = () => {
 }
 
 :deep(.fc-day-today) {
-  background-color: #eef2ff !important;
+  background: rgba(238, 242, 255, 0.6) !important;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+:deep(.dark .fc-day-today) {
+  background: rgba(79, 70, 229, 0.15) !important;
 }
 
 :deep(.fc-day-today .fc-daygrid-day-number) {
@@ -925,33 +1470,65 @@ const toggleSidebar = () => {
 }
 
 :deep(.fc-scrollgrid) {
-  border-color: #e5e7eb !important;
-  border-radius: 8px;
+  border-color: rgba(229, 231, 235, 0.5) !important;
+  border-radius: 12px;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+:deep(.dark .fc-scrollgrid) {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 :deep(.fc-scrollgrid td),
 :deep(.fc-scrollgrid th) {
-  border-color: #e5e7eb;
+  border-color: rgba(229, 231, 235, 0.5);
+  transition: border-color 0.3s ease;
 }
 
 :deep(.fc-theme-standard td),
 :deep(.fc-theme-standard th) {
-  border-color: #e5e7eb;
+  border-color: rgba(229, 231, 235, 0.5);
+  transition: border-color 0.3s ease;
+}
+
+:deep(.dark .fc-scrollgrid td),
+:deep(.dark .fc-scrollgrid th),
+:deep(.dark .fc-theme-standard td),
+:deep(.dark .fc-theme-standard th) {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* 주말 스타일 */
 :deep(.fc-day-sat .fc-daygrid-day-number) {
   color: #4f46e5;
+  transition: color 0.3s ease;
 }
 
 :deep(.fc-day-sun .fc-daygrid-day-number) {
   color: #dc2626;
+  transition: color 0.3s ease;
+}
+
+:deep(.dark .fc-day-sat .fc-daygrid-day-number) {
+  color: #818cf8;
+}
+
+:deep(.dark .fc-day-sun .fc-daygrid-day-number) {
+  color: #f87171;
 }
 
 /* 다른 달 날짜 */
 :deep(.fc-day-other .fc-daygrid-day-number) {
   color: #d1d5db;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+:deep(.dark .fc-day-other .fc-daygrid-day-number) {
+  color: #6b7280;
 }
 </style>
