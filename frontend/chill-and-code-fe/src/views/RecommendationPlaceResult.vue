@@ -74,7 +74,16 @@
                 <!-- 정보 -->
                 <div class="place-info">
                   <h6 class="place-name">{{ place.name }}</h6>
-                  <div class="place-region">{{ place.region }}</div>
+                  <div class="place-region-wrapper">
+                    <span class="place-region">{{ place.region }}</span>
+                    <button 
+                      class="region-community-btn"
+                      @click="goToCommunity(place.region)"
+                      title="커뮤니티에서 {{ place.region }} 게시물 보기"
+                    >
+                      커뮤니티 보기
+                    </button>
+                  </div>
 
                   <!-- 태그 -->
                   <div class="place-tags">
@@ -177,6 +186,41 @@ function formatDate(dateString) {
   const month = date.getMonth() + 1
   const day = date.getDate()
   return `${month}월 ${day}일`
+}
+
+// 지역명을 PostListView 필터 형식으로 변환
+function convertRegionToFilterFormat(regionName) {
+  const regionMap = {
+    '경기도': '경기',
+    '강원도': '강원',
+    '강원특별자치도': '강원',
+    '경상남도': '경남',
+    '경상북도': '경북',
+    '광주광역시': '광주',
+    '대구광역시': '대구',
+    '대전광역시': '대전',
+    '부산광역시': '부산',
+    '서울특별시': '서울',
+    '울산광역시': '울산',
+    '인천광역시': '인천',
+    '전라남도': '전남',
+    '전라북도': '전북',
+    '전북특별자치도': '전북',
+    '제주특별자치도': '제주',
+    '충청남도': '충남',
+    '충청북도': '충북',
+    '세종특별자치시': '세종'
+  }
+  return regionMap[regionName] || regionName
+}
+
+// 커뮤니티 페이지로 이동 (지역 필터 적용)
+function goToCommunity(regionName) {
+  const filterRegion = convertRegionToFilterFormat(regionName)
+  router.push({
+    path: '/posts',
+    query: { region: filterRegion }
+  })
 }
 
 function goSchedule(place) {
@@ -537,15 +581,52 @@ function goSchedule(place) {
   color: #ffffff !important;
 }
 
+.place-region-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
 .place-region {
   font-size: 0.875rem;
   color: #64748b;
-  margin-bottom: 1rem;
   transition: color 0.3s ease;
 }
 
 .dark .place-region {
   color: #cbd5e1 !important;
+}
+
+.region-community-btn {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 8px;
+  padding: 0.375rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.region-community-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #4f46e5;
+}
+
+.dark .region-community-btn {
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.dark .region-community-btn:hover {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #a5b4fc;
 }
 
 .place-tags {

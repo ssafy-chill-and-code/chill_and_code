@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { usePostStore } from '@/stores/post'
 import { useThemeStore } from '@/stores/theme'
 
 const router = useRouter()
+const route = useRoute()
 const postStore = usePostStore()
 const themeStore = useThemeStore()
 
@@ -138,6 +139,11 @@ function open(postId) {
 }
 
 onMounted(() => {
+  // URL query 파라미터에서 region 필터 적용
+  if (route.query.region) {
+    region.value = route.query.region
+  }
+  
   load()
   postStore.fetchRegionRank({ limit: 5 })
   postStore.fetchHashtagRank({ limit: 10, windowDays: 7 }) // 최근 7일, 10개
