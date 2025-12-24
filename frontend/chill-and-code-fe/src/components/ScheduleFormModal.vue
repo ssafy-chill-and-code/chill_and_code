@@ -1,6 +1,10 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useScheduleStore } from '@/stores/schedule'
+import { useThemeStore } from '@/stores/theme'
+
+const themeStore = useThemeStore()
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const props = defineProps({
   schedule: {
@@ -429,11 +433,28 @@ const handleOverlayClick = (e) => {
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                 </svg>
                 <div class="flex-1">
-                  <div class="text-xs font-semibold text-blue-800 mb-1">시스템이 자동으로 지정한 태그</div>
-                  <div class="text-sm font-medium text-blue-900 mb-1">
+                  <div 
+                    :class="[
+                      'text-xs font-semibold mb-1',
+                      isDarkMode ? 'text-gray-900' : 'text-blue-800'
+                    ]"
+                  >
+                    시스템이 자동으로 지정한 태그
+                  </div>
+                  <div 
+                    :class="[
+                      'text-sm font-medium mb-1',
+                      isDarkMode ? 'text-gray-900' : 'text-blue-900'
+                    ]"
+                  >
                     {{ tagOptions.find(t => t.value === autoTag)?.label || autoTag }}
                   </div>
-                  <div class="text-xs text-blue-700">
+                  <div 
+                    :class="[
+                      'text-xs',
+                      isDarkMode ? 'text-gray-800' : 'text-blue-700'
+                    ]"
+                  >
                     {{ tagOptions.find(t => t.value === autoTag)?.description || '' }}
                   </div>
                 </div>

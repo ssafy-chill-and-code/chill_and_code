@@ -1,13 +1,42 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+  <div 
+    :class="[
+      'rounded-lg shadow-sm border p-4 transition-colors',
+      isDarkMode 
+        ? 'bg-gray-800/50 border-gray-700' 
+        : 'bg-white border-gray-200'
+    ]"
+  >
     <!-- 로딩 상태 -->
     <div v-if="loading" class="flex items-center gap-3">
-      <div class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-gray-200 border-t-indigo-600"></div>
-      <span class="text-xs text-gray-600">분석 중...</span>
+      <div 
+        :class="[
+          'inline-block animate-spin rounded-full h-4 w-4 border-2 transition-colors',
+          isDarkMode 
+            ? 'border-gray-700 border-t-indigo-400' 
+            : 'border-gray-200 border-t-indigo-600'
+        ]"
+      ></div>
+      <span 
+        :class="[
+          'text-xs transition-colors',
+          isDarkMode ? 'text-gray-300' : 'text-gray-600'
+        ]"
+      >
+        분석 중...
+      </span>
     </div>
 
     <!-- 에러 상태 -->
-    <div v-else-if="error" class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-xs">
+    <div 
+      v-else-if="error" 
+      :class="[
+        'p-3 border-l-4 rounded text-xs transition-colors',
+        isDarkMode
+          ? 'bg-red-900/30 border-red-500 text-red-300'
+          : 'bg-red-50 border-red-500 text-red-800'
+      ]"
+    >
       <div class="flex items-center gap-2">
         <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
@@ -21,24 +50,59 @@
       <!-- 일정이 없는 경우 -->
       <div v-if="hasNoSchedules" class="text-center py-3">
         <div class="flex items-center justify-center gap-2 mb-2">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg 
+            :class="[
+              'w-5 h-5 transition-colors',
+              isDarkMode ? 'text-gray-500' : 'text-gray-400'
+            ]"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
-        <p class="text-sm font-medium text-gray-700 mb-1">이번 달에는 아직 등록된 일정이 없어요.</p>
-        <p class="text-xs text-gray-500">일정을 추가하면 분석이 시작돼요.</p>
+        <p 
+          :class="[
+            'text-sm font-medium mb-1 transition-colors',
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          ]"
+        >
+          이번 달에는 아직 등록된 일정이 없어요.
+        </p>
+        <p 
+          :class="[
+            'text-xs transition-colors',
+            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+          ]"
+        >
+          일정을 추가하면 분석이 시작돼요.
+        </p>
       </div>
       
       <!-- 일정이 있는 경우 -->
       <div v-else class="flex items-center gap-3">
         <div class="flex-shrink-0">
-          <span :class="statusBadgeClass" class="px-2.5 py-1 rounded-full text-xs font-bold">
+          <span :class="statusBadgeClass" class="px-2.5 py-1 rounded-full text-xs font-bold transition-colors">
             {{ statusLabel }} {{ statusEmoji }}
           </span>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="text-sm font-semibold text-gray-900">{{ summary.summaryComment }}</div>
-          <div class="flex items-center gap-4 mt-1.5 text-xs text-gray-600">
+          <div 
+            :class="[
+              'text-sm font-semibold transition-colors',
+              isDarkMode ? 'text-white !important' : 'text-gray-900'
+            ]"
+            :style="isDarkMode ? { color: '#ffffff' } : {}"
+          >
+            {{ summary.summaryComment }}
+          </div>
+          <div 
+            :class="[
+              'flex items-center gap-4 mt-1.5 text-xs transition-colors',
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            ]"
+          >
             <span>차단 {{ blockedDays }}일</span>
             <span>조율 {{ summary.mixedDayCount }}일</span>
             <span>여유 {{ summary.flexibleDayCount }}일</span>
@@ -49,7 +113,14 @@
 
     <!-- 데이터 없음 -->
     <div v-else class="text-center py-2">
-      <p class="text-xs text-gray-500">분석할 일정이 없습니다.</p>
+      <p 
+        :class="[
+          'text-xs transition-colors',
+          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+        ]"
+      >
+        분석할 일정이 없습니다.
+      </p>
     </div>
   </div>
 </template>
@@ -57,6 +128,10 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useScheduleStore } from '@/stores/schedule'
+import { useThemeStore } from '@/stores/theme'
+
+const themeStore = useThemeStore()
+const isDarkMode = computed(() => themeStore.isDarkMode)
 
 const props = defineProps({
   month: {
@@ -93,9 +168,21 @@ const statusEmoji = computed(() => {
 const statusBadgeClass = computed(() => {
   if (!summary.value) return ''
   const status = summary.value.overallStatus
-  if (status === 'FLEXIBLE') return 'bg-emerald-100 text-emerald-700'
-  if (status === 'MIXED') return 'bg-amber-100 text-amber-700'
-  if (status === 'BUSY') return 'bg-red-100 text-red-700'
+  if (status === 'FLEXIBLE') {
+    return isDarkMode.value 
+      ? 'bg-emerald-900/40 text-emerald-100 border border-emerald-700'
+      : 'bg-emerald-100 text-emerald-700'
+  }
+  if (status === 'MIXED') {
+    return isDarkMode.value 
+      ? 'bg-amber-900/40 text-amber-100 border border-amber-700'
+      : 'bg-amber-100 text-amber-700'
+  }
+  if (status === 'BUSY') {
+    return isDarkMode.value 
+      ? 'bg-red-900/40 text-red-100 border border-red-700'
+      : 'bg-red-100 text-red-700'
+  }
   return ''
 })
 
