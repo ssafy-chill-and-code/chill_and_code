@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,7 +54,7 @@ public class ReviewController {
                 .body(ApiResponse.success("리뷰가 성공적으로 등록되었습니다.", Map.of("reviewId", reviewId)));
     }
 
-    @PutMapping("/reviews/{reviewId}")
+    @PatchMapping("/reviews/{reviewId}")
     @Operation(summary = "장소 리뷰 수정", description = "본인이 작성한 리뷰를 수정합니다.")
     public ResponseEntity<?> updateReview(
             @AuthenticationPrincipal Long userId,
