@@ -10,14 +10,16 @@ public class LlmPlaceInput {
     private double natureScore;
     private double activityScore;
     private int workspaceCount;
+    private double trendScore;
 
-    public LlmPlaceInput(Long placeId, String name, double score, double natureScore, double activityScore, int workspaceCount) {
+    public LlmPlaceInput(Long placeId, String name, double score, double natureScore, double activityScore, int workspaceCount, double trendScore) {
         this.placeId = placeId;
         this.name = name;
         this.score = score;
         this.natureScore = natureScore;
         this.activityScore = activityScore;
         this.workspaceCount = workspaceCount;
+        this.trendScore = trendScore;
     }
 
     public Long getPlaceId() { return placeId; }
@@ -26,5 +28,6 @@ public class LlmPlaceInput {
     public double getNatureScore() { return natureScore; }
     public double getActivityScore() { return activityScore; }
     public int getWorkspaceCount() { return workspaceCount; }
+    public double getTrendScore() { return trendScore; }
 }
 

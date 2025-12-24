@@ -64,6 +64,7 @@ public class HttpLlmClient implements LlmClient {
                 m.put("natureScore", p.getNatureScore());
                 m.put("activityScore", p.getActivityScore());
                 m.put("workspaceCount", p.getWorkspaceCount());
+                m.put("trendScore", p.getTrendScore());
                 return m;
             }).collect(java.util.stream.Collectors.toList());
             body.put("places", placeList);

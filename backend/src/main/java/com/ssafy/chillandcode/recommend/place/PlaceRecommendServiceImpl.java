@@ -106,7 +106,8 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
                         sv.score(),
                         sv.view().getNatureScore(),
                         sv.view().getActivityScore(),
-                        sv.view().getWorkspaceCount()
+                        sv.view().getWorkspaceCount(),
+                        sv.view().getTrendScore()
                 )
         ).collect(Collectors.toList());
 
@@ -145,7 +146,7 @@ public class PlaceRecommendServiceImpl implements PlaceRecommendService {
 
             // LLM 추천이유가 있으면 적용, 없으면 로컬 규칙으로 생성
             String reasonText = (llm != null) ? llm.getReasonText()
-                    : ReasonTextBuilder.build(style, budget, transport);
+                    : ReasonTextBuilder.build(style, budget, transport, v.getTrendScore());
 
 		return new PlaceRecommendCard(
                 v.getPlaceId(),

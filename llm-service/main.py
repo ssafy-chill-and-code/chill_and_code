@@ -21,6 +21,7 @@ class PlaceInput(BaseModel):
     natureScore: float
     activityScore: float
     workspaceCount: int
+    trendScore: float
 
 Places = Annotated[List[PlaceInput], Field(max_length=20)]
 
