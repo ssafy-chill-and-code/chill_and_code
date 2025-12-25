@@ -192,6 +192,48 @@ function deriveCategoryForPost(p) {
   return null // 카테고리 없음
 }
 
+// content에서 이미지 URL을 제거하고 텍스트만 반환
+function getTextContent(content) {
+  if (!content) return ''
+  
+  // 이미지 URL 패턴
+  const imageUrlPattern = /https?:\/\/[^\s<>"']+\.(jpg|jpeg|png|gif|webp|svg)(\?[^\s<>"']*)?/gi
+  
+  // HTML 태그 제거 (이미지 태그는 유지하지 않음)
+  let text = content.replace(/<img[^>]*>/gi, '')
+  
+  // 순수 이미지 URL 텍스트 제거
+  text = text.replace(imageUrlPattern, '')
+  
+  // HTML 태그 모두 제거
+  text = text.replace(/<[^>]+>/g, '')
+  
+  // 연속된 공백과 줄바꿈 정리
+  text = text.replace(/\n{3,}/g, '\n\n').trim()
+  
+  return text
+}
+
+// content에서 첫 번째 이미지 URL 추출 (미리보기용)
+function getFirstImageUrl(content) {
+  if (!content) return null
+  
+  // img 태그에서 src 추출
+  const imgTagMatch = content.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i)
+  if (imgTagMatch && imgTagMatch[1]) {
+    return imgTagMatch[1]
+  }
+  
+  // 순수 이미지 URL 추출
+  const imageUrlPattern = /https?:\/\/[^\s<>"']+\.(jpg|jpeg|png|gif|webp|svg)(\?[^\s<>"']*)?/i
+  const urlMatch = content.match(imageUrlPattern)
+  if (urlMatch && urlMatch[0]) {
+    return urlMatch[0]
+  }
+  
+  return null
+}
+
 // 카테고리 스타일 가져오기
 function getCategoryStyle(categoryName) {
   if (!categoryName || !categoryConfig[categoryName]) {
@@ -482,20 +524,20 @@ function getCategoryStyle(categoryName) {
 
                     <!-- 요약 내용 -->
                     <p 
-                      v-if="p.content" 
+                      v-if="getTextContent(p.content)" 
                       :class="[
                         'text-sm mb-3 line-clamp-2 leading-relaxed transition-colors',
                         isDarkMode ? 'text-gray-300' : 'text-gray-600'
                       ]"
                     >
-                      {{ p.content }}
+                      {{ getTextContent(p.content) }}
                     </p>
                   </div>
 
-                  <!-- 썸네일 이미지 -->
-                  <div v-if="p.thumbnailUrl" class="flex-shrink-0">
+                  <!-- 썸네일 이미지 (thumbnailUrl 우선, 없으면 content에서 첫 이미지 추출) -->
+                  <div v-if="p.thumbnailUrl || getFirstImageUrl(p.content)" class="flex-shrink-0">
                     <img 
-                      :src="p.thumbnailUrl" 
+                      :src="p.thumbnailUrl || getFirstImageUrl(p.content)" 
                       :alt="p.title"
                       class="w-24 h-24 object-cover rounded-lg"
                       @error="$event.target.style.display='none'"

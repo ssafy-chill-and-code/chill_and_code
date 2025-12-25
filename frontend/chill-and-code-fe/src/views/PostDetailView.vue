@@ -53,6 +53,48 @@ const derivedCategory = computed(() => {
   return null // 카테고리 없음
 })
 
+// 이미지 URL을 숨기고 이미지 태그만 표시하도록 처리
+const processedContent = computed(() => {
+  const content = postStore.post?.content || ''
+  if (!content) return ''
+  
+  // 이미지 URL 패턴 (http/https로 시작하고 이미지 확장자로 끝나는 URL)
+  const imageUrlPattern = /https?:\/\/[^\s<>"']+\.(jpg|jpeg|png|gif|webp|svg)(\?[^\s<>"']*)?/gi
+  
+  // content를 줄 단위로 분리
+  const lines = content.split('\n')
+  const processedLines = lines.map(line => {
+    const trimmedLine = line.trim()
+    
+    // img 태그가 이미 포함된 경우는 그대로 유지
+    if (trimmedLine.includes('<img')) {
+      return line
+    }
+    
+    // 이미지 URL만 있는 줄인지 확인
+    const urlMatches = trimmedLine.match(imageUrlPattern)
+    if (urlMatches && urlMatches.length > 0) {
+      // 줄이 이미지 URL만 있는 경우 (다른 텍스트가 없음)
+      const withoutUrls = trimmedLine.replace(imageUrlPattern, '').trim()
+      if (withoutUrls === '') {
+        return '' // URL만 있는 줄 제거
+      }
+      
+      // 줄에 이미지 URL과 다른 텍스트가 함께 있는 경우, URL만 제거
+      return trimmedLine.replace(imageUrlPattern, '').trim()
+    }
+    
+    return line
+  })
+  
+  // 빈 줄 제거 및 정리
+  return processedLines
+    .filter(line => line.trim() !== '')
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n') // 연속된 빈 줄을 2개로 제한
+    .trim()
+})
+
 function avatarUrl() {
   const p = postStore.post || {}
   // 사용자가 설정한 프로필 이미지가 있으면 그것을 사용, 없으면 dicebear
@@ -291,7 +333,7 @@ onMounted(load)
         <div 
           class="mb-6 post-content" 
           style="white-space: pre-wrap; line-height: 1.7; color: #374151; font-size: 0.95rem;"
-          v-html="postStore.post ? postStore.post.content : '게시글 내용'"
+          v-html="processedContent || '게시글 내용'"
         ></div>
 
         <!-- 지도 링크 카드 -->
